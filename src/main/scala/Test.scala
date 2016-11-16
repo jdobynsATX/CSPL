@@ -14,7 +14,11 @@ object Test extends Bdsl {
 
     val dbService = new DBService
 
-    dbService GetAllCoffee;
-    dbService GetQ;
+    
+    dbService.GetAllEmployees();
+    dbService.AddEmployee();
+    dbService.AddEmployee();
+    dbService.GetAllEmployees();
+    dbService.Stop();
   }
 }
