@@ -13,16 +13,19 @@ object Test extends Bdsl {
     UPDATE EMPLOYEE 496 MODIFY RANK TO 10 MODIFY NAME TO "Bob Jones";
 
     val dbService = new DBService
-
     
     dbService.GetAllEmployees();
-    var emp = dbService.NewEmployee()
+    
+    var emp = dbService.NewEmployee();
     println(emp);
-    emp.name = "TEST"
+
+    emp.name = "TEST";
     println(dbService.UpdateEmployee(emp));
     dbService.GetAllEmployees();
-    println(dbService.DeleteEmployee(emp));
+
+    dbService.DeleteEmployee(emp);
     dbService.GetAllEmployees();
+
     dbService.Stop();
   }
 }
