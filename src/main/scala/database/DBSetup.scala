@@ -2,6 +2,17 @@ package cs345.database
 
 import slick.driver.H2Driver.api._
 
+class Employee {
+  var id = -1
+  var name = ""
+  var rank = -1
+  var pay = 0.0
+
+  override def toString: String = {
+    return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay
+  }
+}
+
 object DBSetup {
 
   // Definition of the EMPLOYEES table
@@ -9,7 +20,7 @@ object DBSetup {
     def id = column[Int]("ID", O.PrimaryKey, O.AutoInc) // This is the primary key column
     def name = column[String]("NAME")
     def rank = column[Int]("RANK")
-    def pay = column[Double]("CITY")
+    def pay = column[Double]("PAY")
     // Every table needs a * projection with the same type as the table's type parameter
     def * = (id, name, rank, pay)
   }

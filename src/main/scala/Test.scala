@@ -16,8 +16,12 @@ object Test extends Bdsl {
 
     
     dbService.GetAllEmployees();
-    dbService.AddEmployee();
-    dbService.AddEmployee();
+    var emp = dbService.NewEmployee()
+    println(emp);
+    emp.name = "TEST"
+    println(dbService.UpdateEmployee(emp));
+    dbService.GetAllEmployees();
+    println(dbService.DeleteEmployee(emp));
     dbService.GetAllEmployees();
     dbService.Stop();
   }

@@ -30,14 +30,37 @@ class DBService() {
     })
   }
 
-  def AddEmployee() = {
-    val insert = DBIO.seq (
-      employees += (-1, "Another PERSON", 4, 7.99)
-    )
-    val insertSeq =  db.run(insert);
-    Await.result(insertSeq, Duration.Inf)
+  def NewEmployee(): Employee = {
+    val insert = (employees returning employees.map(_.id)) += (-1, "", -1, -1)
+    val insertSeq: Future[Int] = db.run(insert)
+
+    val empId = Await.result(insertSeq, Duration.Inf)
+    var result = new Employee()
+    result.id = empId
+    return result
   }
 
+  def UpdateEmployee(emp: Employee): Employee = {
+    val updated = employees.insertOrUpdate(emp.id, emp.name, emp.rank, emp.pay)
+    // val update = (employees returning employees).insertOrUpdate(-1, emp.name, emp.rank, emp.pay)
+    val updateSeq: Future[Int] = db.run(updated)
+
+    if (Await.result(updateSeq, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find emp")
+    return emp
+  }
+
+  def DeleteEmployee(emp: Employee): Employee = {
+    val query = employees.filter(_.id === emp.id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find emp")
+    return emp
+  }
+
+  // Examples
   def GetAllCoffee() = {
 
     // Read all coffees and print them to the console
