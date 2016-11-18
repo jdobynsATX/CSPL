@@ -1,6 +1,8 @@
 package cs345.database
 
 import slick.driver.H2Driver.api._
+import java.sql.Date
+import java.sql.Timestamp
 
 class Employee {
   var id = -1
@@ -11,6 +13,29 @@ class Employee {
   override def toString: String = {
     return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay
   }
+}
+
+class Clients {
+  var id = -1
+  var name = ""
+  var addDate : Date = new Date(0)
+
+  override def toString: String = {
+    return "id: " + id + ", name: " + name + ", dateAdded: " + addDate
+  }
+
+}
+
+class Events {
+  var id = -1
+  var name = ""
+  var start : Timestamp = new Timestamp(0)
+  var end : Timestamp = new Timestamp(0)
+
+  override def toString: String = {
+    return "id: " + id + ", name: " + name + ", Start Time: " + start + ", End Time: " + end
+  }
+
 }
 
 object DBSetup {
@@ -51,6 +76,25 @@ object DBSetup {
     def supplier = foreignKey("SUP_FK", supID, suppliers)(_.id)
   }
   val coffees = TableQuery[Coffees]
+
+  class Clients(tag: Tag) extends Table[(Int, String, Date)](tag, "CLIENTS") {
+    def id = column[Int]("CLIENT_ID", O.PrimaryKey, O.AutoInc)
+    def name = column[String]("CLIENT_NAME")
+    def addDate = column[Date]("DATE_ADDED")
+    //ISSUE: Insert 1-* for Meetings here + foreign
+    def * = (id, name, addDate)
+  }
+  val clients = TableQuery[Clients]
+
+  class Events(tag: Tag) extends Table[(Int, String, Timestamp, Timestamp)](tag, "EVENTS") {
+    def id = column[Int]("CLIENT_ID", O.PrimaryKey, O.AutoInc)
+    def name = column[String]("EVENT_NAME")
+    def start = column[Timestamp]("EVENT_DATE")
+    def end = column[Timestamp]("EVENT_DURATION")
+    //ISSUE: Insert *-* relationships for Employees and Clients
+    def * = (id, name, start, end)
+  }
+  val events = TableQuery[Events]
 
   val setupSequence = DBIO.seq(
     // Create the tables, including primary and foreign keys
