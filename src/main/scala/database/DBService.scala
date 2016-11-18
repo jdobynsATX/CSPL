@@ -30,6 +30,24 @@ class DBService() {
     })
   }
 
+  def GetEmployee( id: Int ): Employee = {
+    val query = for {
+      emp <- employees if emp.id === id
+    } yield emp
+
+    val action = query.result.head
+
+    val f: Future[(Int, String, Int, Double)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val e = new Employee()
+    e.id = result._1
+    e.name = result._2
+    e.rank = result._3
+    e.pay = result._4
+    return e
+  }
+
   def NewEmployee(): Employee = {
     val insert = (employees returning employees.map(_.id)) += (-1, "", -1, -1)
     val insertSeq: Future[Int] = db.run(insert)

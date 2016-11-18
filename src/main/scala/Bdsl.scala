@@ -11,11 +11,11 @@ import scala.collection.mutable.Map
   */
 
 class Bdsl {
-  
+  val dbService = new DBService
   object CREATE {
 
     def NEW(keyword: ObjectKeyword) = {
-      val emp = new Employee
+      val emp = dbService.NewEmployee()
       new CreateEmployee(emp)
     }
 
@@ -34,6 +34,8 @@ class Bdsl {
             case RANK => emp.rank = num
           }
 
+          dbService.UpdateEmployee(emp)
+
           println(emp)
           new CreateEmployee(emp)
         }
@@ -42,6 +44,8 @@ class Bdsl {
           val attribute = GetAttribute(keyword)
           println("Inserting (" + attribute + ", " + str + ") into emp record")
           emp.name = str
+
+          dbService.UpdateEmployee(emp)
           println(emp)
           new CreateEmployee(emp)
         }
@@ -60,7 +64,7 @@ class Bdsl {
 
     def EMPLOYEE( id: Int ) = {
       println( "Obtaining EMPLOYEE")
-      val emp = new Employee
+      val emp = dbService.GetEmployee(id)
       new ModifyEmployee(emp)
     }
 
@@ -79,6 +83,8 @@ class Bdsl {
             case RANK => emp.rank = num
           }
 
+          dbService.UpdateEmployee(emp)
+
           println(emp)
           new ModifyEmployee(emp)
         }
@@ -87,6 +93,7 @@ class Bdsl {
           val attribute = GetAttribute(keyword)
           println("Updating (" + attribute + ", " + str + ") into emp record")
           emp.name = str
+          dbService.UpdateEmployee(emp)
           println(emp)
           new ModifyEmployee(emp)
         }
@@ -98,6 +105,13 @@ class Bdsl {
       case NAME => "name"
       case RANK => "rank"
       case _ => "UNKNOWN"
+    }
+  }
+
+  object REMOVE {
+
+    def EMPLOYEE( id: Int ) = {
+      println( "Removing EMPLOYEE")
     }
   }
 }
