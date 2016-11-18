@@ -13,8 +13,8 @@ class DBService() {
   val setupFuture = db.run(DBSetup.setupSequence)
   Await.result(setupFuture, Duration.Inf)
 
-  val coffees = DBSetup.coffees
-  val suppliers = DBSetup.suppliers
+  val events = DBSetup.events
+  val clients = DBSetup.clients
   val employees = DBSetup.employees
 
   def Stop() = {
@@ -61,27 +61,27 @@ class DBService() {
   }
 
   // Examples
-  def GetAllCoffee() = {
+  // def GetAllCoffee() = {
 
-    // Read all coffees and print them to the console
-    println("Coffees:")
-    db.run(coffees.result).map(_.foreach {
-      case (name, supID, price, sales, total) =>
-        println("  " + name + "\t" + supID + "\t" + price + "\t" + sales + "\t" + total)
-    })
-  }
+  //   // Read all coffees and print them to the console
+  //   println("Coffees:")
+  //   db.run(coffees.result).map(_.foreach {
+  //     case (name, supID, price, sales, total) =>
+  //       println("  " + name + "\t" + supID + "\t" + price + "\t" + sales + "\t" + total)
+  //   })
+  // }
 
-  def GetQ() = {
-    // Perform a join to retrieve coffee names and supplier names for
-    // all coffees costing less than $9.00
-    val q2 = for {
-      c <- coffees if c.price < 9.0
-      s <- suppliers if s.id === c.supID
-    } yield (c.name, s.name)
-    // Equivalent SQL code:
-    // select c.COF_NAME, s.SUP_NAME from COFFEES c, SUPPLIERS s where c.PRICE < 9.0 and s.SUP_ID = c.SUP_ID
-    db.stream(q2.result).foreach(println)
-  }
+  // def GetQ() = {
+  //   // Perform a join to retrieve coffee names and supplier names for
+  //   // all coffees costing less than $9.00
+  //   val q2 = for {
+  //     c <- coffees if c.price < 9.0
+  //     s <- suppliers if s.id === c.supID
+  //   } yield (c.name, s.name)
+  //   // Equivalent SQL code:
+  //   // select c.COF_NAME, s.SUP_NAME from COFFEES c, SUPPLIERS s where c.PRICE < 9.0 and s.SUP_ID = c.SUP_ID
+  //   db.stream(q2.result).foreach(println)
+  // }
 
 }
 
