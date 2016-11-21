@@ -31,3 +31,40 @@ To test the code and see output we just need to run the code. You can do this by
 make test
 ```
 
+##Console
+
+To use the dsl on in the console
+
+```
+$ sbt console
+scala> val bdsl = new cs345.bdsl.Bdsl
+scala> import bdsl._
+scala> import cs345.bdsl._
+```
+and then type commands
+```
+scala> CREATE NEW EMPLOYEE WITH NAME AS "Taylor Jones"
+```
+
+##Functionality
+####Adding new objects
+```
+CREATE NEW objectType [ WITH attribute AS value ]
+CREATE NEW EMPLOYEE WITH NAME AS "Morgan Smith" WITH RANK AS 4
+```
+####Updating objects
+```
+UPDATE objectType id [ MODIFY attribute TO value ]
+UPDATE EMPLOYEE 3 MODIFY RANK TO 6
+```
+####Removing objects
+```
+REMOVE objectType id
+REMOVE EMPLOYEE 3
+```
+
+####Printing objects
+```
+PRINT ALL objectType
+PRINT ALL EMPLOYEE
+```

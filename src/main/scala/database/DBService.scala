@@ -78,6 +78,16 @@ class DBService() {
     return emp
   }
 
+  def DeleteEmployee(id: Int): Int = {
+    val query = employees.filter(_.id === id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find emp")
+    return id
+  }
+
   // Examples
   // def GetAllCoffee() = {
 
