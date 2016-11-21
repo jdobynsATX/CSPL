@@ -32,6 +32,15 @@ class DBService() {
     })
   }
 
+  def GetAllEmployees(): Array[Employee] = {
+    val result: Array[Employee] = new Array[Employee](0)
+    db.run(employees.result).map(_.foreach {
+      case data =>
+        result :+ (new Employee(data))
+    })
+    return result
+  }
+
   def GetEmployee(id: Int): Employee = {
     val query = for {
       emp <- employees if emp.id === id
