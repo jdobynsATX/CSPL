@@ -32,6 +32,17 @@ object Test extends Bdsl {
     dbService.ListAllClients();
     dbService.DeleteClient(2);
     dbService.ListAllClients();
+
+    var event = dbService.NewEvent()
+    event.name = "EVENT Name"
+    event.start = new Timestamp(999923438);
+    event.end = new Timestamp(999923438);
+    dbService.UpdateEvent(event);
+    dbService.NewEvent()
+    println(dbService.GetEvent(1));
+    dbService.ListAllEvents();
+    dbService.DeleteEvent(2);
+    dbService.ListAllEvents();
     
     /*var emp = dbService.NewEmployee();
     println(emp);

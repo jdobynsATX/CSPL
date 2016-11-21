@@ -23,7 +23,7 @@ class DBService() {
     db.close
   }
 
-  def GetAllEmployees() = {
+  def ListAllEmployees() = {
     // Read all coffees and print them to the console
     println("Emps:")
     db.run(employees.result).map(_.foreach {
@@ -138,6 +138,64 @@ class DBService() {
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
       throw new RuntimeException("Did not find emp")
+    return id
+  }
+
+  def ListAllEvents() = {
+    println("Clients:")
+    db.run(events.result).map(_.foreach {
+      case (id, name, start, end) =>
+        println("  " + id + "\t" + name + "\t" + start + "\t" + end + "\t")
+    })
+  }
+
+  def GetEvent(id: Int): Event = {
+    val query = for {
+      event <- events if event.id === id
+    } yield event
+    val action = query.result.head
+    val f: Future[(Int, String, Timestamp, Timestamp)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retEvent = new Event(result)
+    return retEvent
+  }
+
+  def NewEvent(): Event = {
+    val insert = (events returning events.map(_.id)) += (-1, "", new Timestamp(0), new Timestamp(0))
+    val insertSeq: Future[Int] = db.run(insert)
+
+    val eventId = Await.result(insertSeq, Duration.Inf)
+    var result = new Event(eventId)
+    return result
+  }
+
+  def UpdateEvent(event: Event): Event = {
+    val updated = events.insertOrUpdate(event.id, event.name, event.start, event.end)
+    val updateSeq: Future[Int] = db.run(updated)
+
+    if (Await.result(updateSeq, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find event")
+    return event
+  }
+
+  def DeleteEvent(event: Event): Event = {
+    val query = events.filter(_.id === event.id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find event")
+    return event
+  }
+
+  def DeleteEvent(id: Int): Int = {
+    val query = events.filter(_.id === id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find event")
     return id
   }
 

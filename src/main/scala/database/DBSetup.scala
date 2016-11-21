@@ -47,15 +47,24 @@ object Client {
   val ADDDATE_DEFAULT_VALUE: Date = new Date(0)
 }
 
-class Event {
-  var id = -1
-  var name = ""
-  var start : Timestamp = new Timestamp(0)
-  var end : Timestamp = new Timestamp(0)
+class Event(var id: Int, var name: String, var start: Timestamp, var end: Timestamp) extends DBObject {
+  def this(id: Int) {
+    this(id, Event.NAME_DEFAULT_VALUE, Event.START_DEFAULT_VALUE, Event.END_DEFAULT_VALUE);
+  }
+
+  def this(data: (Int, String, Timestamp, Timestamp)) {
+    this(data._1, data._2, data._3, data._4);
+  }
 
   override def toString: String = {
     return "id: " + id + ", name: " + name + ", Start Time: " + start + ", End Time: " + end
   }
+}
+
+object Event {
+  val NAME_DEFAULT_VALUE = ""
+  val START_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val END_DEFAULT_VALUE: Timestamp = new Timestamp(0)
 }
 
 object DBSetup {

@@ -121,7 +121,7 @@ class Bdsl {
 
   object PRINT {
     def ALL( keyword: EmployeeKeyword ) = { 
-      dbService.GetAllEmployees()
+      dbService.ListAllEmployees()
     }
   }
 }
