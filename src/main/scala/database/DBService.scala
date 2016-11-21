@@ -26,18 +26,19 @@ class DBService() {
   def ListAllEmployees() = {
     // Read all coffees and print them to the console
     println("Employees:")
-    db.run(employees.result).map(_.foreach {
-      case (id, name, rank, pay) =>
-        println("  " + id + "\t" + name + "\t" + rank + "\t" + pay + "\t")
-    })
+    val employees: Seq[Employee] = GetAllEmployees()
+    for (emp <- employees) {
+      println(emp)
+    }
   }
 
   def GetAllEmployees(): Array[Employee] = {
-    val result: Array[Employee] = new Array[Employee](0)
-    db.run(employees.result).map(_.foreach {
-      case data =>
-        result :+ (new Employee(data))
-    })
+    var result: Array[Employee] = new Array[Employee](0)
+    val f: Future[Seq[(Int, String, Int, Double)]] = db.run(employees.result)
+    val queryResult: Seq[(Int, String, Int, Double)] = Await.result(f, Duration.Inf)
+    for (empData <- queryResult) {
+      result = result :+ (new Employee(empData))
+    }
     return result
   }
 
@@ -94,10 +95,20 @@ class DBService() {
 
   def ListAllClients() = {
     println("Clients:")
-    db.run(clients.result).map(_.foreach {
-      case (id, name, dateAdded) =>
-        println("  " + id + "\t" + name + "\t" + dateAdded + "\t")
-    })
+    val clients: Seq[Client] = GetAllClients()
+    for (client <- clients) {
+      println(client)
+    }
+  }
+
+  def GetAllClients(): Array[Client] = {
+    var result: Array[Client] = new Array[Client](0)
+    val f: Future[Seq[(Int, String, Date)]] = db.run(clients.result)
+    val queryResult: Seq[(Int, String, Date)] = Await.result(f, Duration.Inf)
+    for (data <- queryResult) {
+      result = result :+ (new Client(data))
+    }
+    return result
   }
 
   def GetClient(id: Int): Client = {
