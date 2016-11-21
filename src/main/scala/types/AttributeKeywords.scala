@@ -18,3 +18,12 @@ object RANK extends RankKeyword
 
 abstract sealed class PayKeyword extends DoubleTypedKeyword
 object PAY extends PayKeyword
+
+abstract sealed class StartKeyword extends IntTypedKeyword
+object START extends StartKeyword
+
+abstract sealed class EndKeyword extends IntTypedKeyword
+object END extends EndKeyword
+
+abstract sealed class DateKeyword extends IntTypedKeyword
+object DATE extends DateKeyword

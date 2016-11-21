@@ -23,6 +23,17 @@ object Test extends Bdsl {
 
     PRINT ALL EMPLOYEE;
 
+    CREATE NEW CLIENT WITH NAME AS "Morgan Smith" WITH DATE AS 999923438;
+
+    CREATE NEW CLIENT WITH NAME AS "Taylor Jones";
+
+    PRINT ALL CLIENT;
+
+    REMOVE CLIENT 2;
+
+    PRINT ALL CLIENT;
+
+    /*
     var cli = dbService.NewClient()
     cli.name = "Client Name"
     cli.addDate = new Date(999923438);
@@ -32,7 +43,21 @@ object Test extends Bdsl {
     dbService.ListAllClients();
     dbService.DeleteClient(2);
     dbService.ListAllClients();
+    */
 
+    CREATE NEW EVENT WITH NAME AS "Meeting with Morgan Smith";
+
+    UPDATE EVENT 1 MODIFY START TO 999923438 MODIFY END TO 999923438;
+
+    CREATE NEW EVENT WITH NAME AS "Meeting with Taylor Jones" WITH START AS 999923438;
+
+    PRINT ALL EVENT;
+
+    REMOVE EVENT 2;
+
+    PRINT ALL EVENT;
+
+    /*
     var event = dbService.NewEvent()
     event.name = "EVENT Name"
     event.start = new Timestamp(999923438);
@@ -43,6 +68,7 @@ object Test extends Bdsl {
     dbService.ListAllEvents();
     dbService.DeleteEvent(2);
     dbService.ListAllEvents();
+    */
     
     /*var emp = dbService.NewEmployee();
     println(emp);
@@ -54,6 +80,13 @@ object Test extends Bdsl {
     dbService.DeleteEmployee(emp);
     dbService.GetAllEmployees();
 */
+
+    PRINT ALL EMPLOYEE;
+
+    PRINT ALL CLIENT;
+    
+    PRINT ALL EVENT;
+
     dbService.Stop();
   }
 }

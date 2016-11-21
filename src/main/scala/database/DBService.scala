@@ -25,7 +25,7 @@ class DBService() {
 
   def ListAllEmployees() = {
     // Read all coffees and print them to the console
-    println("Emps:")
+    println("Employees:")
     db.run(employees.result).map(_.foreach {
       case (id, name, rank, pay) =>
         println("  " + id + "\t" + name + "\t" + rank + "\t" + pay + "\t")
@@ -142,7 +142,7 @@ class DBService() {
   }
 
   def ListAllEvents() = {
-    println("Clients:")
+    println("Events:")
     db.run(events.result).map(_.foreach {
       case (id, name, start, end) =>
         println("  " + id + "\t" + name + "\t" + start + "\t" + end + "\t")
