@@ -2,6 +2,9 @@ import cs345.bdsl._
 import cs345.database._
 
 import scala.language.postfixOps
+import java.sql.Date
+import java.sql.Timestamp
+
 /**
   * Created by Sean on 11/9/16.
   */
@@ -19,6 +22,16 @@ object Test extends Bdsl {
     REMOVE EMPLOYEE 3;
 
     PRINT ALL EMPLOYEE;
+
+    var cli = dbService.NewClient()
+    cli.name = "Client Name"
+    cli.addDate = new Date(999923438);
+    dbService.UpdateClient(cli);
+    dbService.NewClient()
+    println(dbService.GetClient(1));
+    dbService.ListAllClients();
+    dbService.DeleteClient(2);
+    dbService.ListAllClients();
     
     /*var emp = dbService.NewEmployee();
     println(emp);

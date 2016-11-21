@@ -5,7 +5,6 @@ import cs345.database._
 import scala.language.postfixOps
 import scala.collection.mutable.Map
 
-
 /**
   * Created by Sean on 11/9/16.
   */

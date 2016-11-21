@@ -4,28 +4,50 @@ import slick.driver.H2Driver.api._
 import java.sql.Date
 import java.sql.Timestamp
 
-class Employee {
-  var id = -1
-  var name = ""
-  var rank = -1
-  var pay = 0.0
+trait DBObject {
+  
+}
+
+class Employee(var id: Int, var name: String, var rank: Int, var pay: Double) extends DBObject {
+  def this(id: Int) {
+    this(id, Employee.NAME_DEFAULT_VALUE, Employee.RANK_DEFAULT_VALUE, Employee.PAY_DEFAULT_VALUE);
+  }
+
+  def this(data: (Int, String, Int, Double)) {
+    this(data._1, data._2, data._3, data._4);
+  }
 
   override def toString: String = {
     return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay
   }
 }
 
-class Clients {
-  var id = -1
-  var name = ""
-  var addDate : Date = new Date(0)
+object Employee {
+  val NAME_DEFAULT_VALUE = ""
+  val RANK_DEFAULT_VALUE = -1
+  val PAY_DEFAULT_VALUE = 0.0
+}
+
+class Client(var id: Int, var name: String, var addDate: Date) extends DBObject {
+  def this(id: Int) {
+    this(id, Client.NAME_DEFAULT_VALUE, Client.ADDDATE_DEFAULT_VALUE);
+  }
+
+  def this(data: (Int, String, Date)) {
+    this(data._1, data._2, data._3);
+  }
 
   override def toString: String = {
     return "id: " + id + ", name: " + name + ", dateAdded: " + addDate
   }
 }
 
-class Events {
+object Client {
+  val NAME_DEFAULT_VALUE = ""
+  val ADDDATE_DEFAULT_VALUE: Date = new Date(0)
+}
+
+class Event {
   var id = -1
   var name = ""
   var start : Timestamp = new Timestamp(0)
