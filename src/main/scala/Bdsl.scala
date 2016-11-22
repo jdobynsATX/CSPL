@@ -110,6 +110,66 @@ class Bdsl {
 
   object UPDATE {
 
+    def ALL( keyword: EmployeeKeyword ) = {
+      val emps = dbService.GetAllEmployees()
+      new QueryResults( emps )
+    }
+
+    class QueryResults( emps: Array[Employee] ) {
+      def WHERE( keyword: AttributeKeyword ) = {
+        new WhereContinue( keyword )
+      }
+
+      class WhereContinue( keyword: AttributeKeyword ) {
+        def EQUAL( num: Int ) = {
+          keyword match {
+            case ID => new QueryResults( emps.filter( _.id == num ) )
+            case PAY => new QueryResults( emps.filter( _.pay == num ) )
+            case RANK => new QueryResults( emps.filter( _.rank == num ) )
+          }
+        }
+
+        def LESSTHAN( num: Int ) = {
+          keyword match {
+            case ID => new QueryResults( emps.filter( _.id < num ) )
+            case PAY => new QueryResults( emps.filter( _.pay < num ) )
+            case RANK => new QueryResults( emps.filter( _.rank < num ) )
+          }
+        }
+
+        def GREATERTHAN( num: Int ) = {
+          keyword match {
+            case ID => new QueryResults( emps.filter( _.id > num ) )
+            case PAY => new QueryResults( emps.filter( _.pay > num ) )
+            case RANK => new QueryResults( emps.filter( _.rank > num ) )
+          }
+        }
+
+        def LESSTHANEQUAL( num: Int ) = {
+          keyword match {
+            case ID => new QueryResults( emps.filter( _.id <= num ) )
+            case PAY => new QueryResults( emps.filter( _.pay <= num ) )
+            case RANK => new QueryResults( emps.filter( _.rank <= num ) )
+          }
+        }
+
+        def GREATERTHANEQUAL( num: Int ) = {
+          keyword match {
+            case ID => new QueryResults( emps.filter( _.id >= num ) )
+            case PAY => new QueryResults( emps.filter( _.pay >= num ) )
+            case RANK => new QueryResults( emps.filter( _.rank >= num ) )
+          }
+        }
+      }
+
+      def PRINT = {
+        println("printing")
+        for( emp <- emps ) {
+          println( emp )
+        }
+      }
+    }
+
     def EMPLOYEE( id: Int ) = {
       println( "Updating EMPLOYEE " + id)
       new ModifyEmployee(dbService.GetEmployee(id))
