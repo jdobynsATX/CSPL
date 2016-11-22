@@ -86,11 +86,7 @@ object Test extends Bdsl {
     dbService.GetAllEmployees();
 */
 
-    PRINT ALL EMPLOYEE;
-
-    PRINT ALL CLIENT;
-    
-    PRINT ALL MEETING;
+    PRINT ALL;
 
     dbService.Stop();
   }
