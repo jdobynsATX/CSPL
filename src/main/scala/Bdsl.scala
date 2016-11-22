@@ -27,10 +27,10 @@ class Bdsl {
       new CreateClient(cli)
     }
 
-    def NEW(keyword: EventKeyword) = {
-      val env = dbService.NewEvent()
-      println( "Created new event with ID " + env.id )
-      new CreateEvent(env)
+    def NEW(keyword: MeetingKeyword) = {
+      val env = dbService.NewMeeting()
+      println( "Created new meeting with ID " + env.id )
+      new CreateMeeting(env)
     }
 
     class CreateEmployee(emp: Employee) {
@@ -82,7 +82,7 @@ class Bdsl {
       }
     }
 
-    class CreateEvent(env: Event) {
+    class CreateMeeting(env: Meeting) {
 
       def WITH(keyword: AttributeKeyword) = {
         new AsContinue( keyword )
@@ -95,14 +95,14 @@ class Bdsl {
             case START => env.start = new Timestamp(num)
             case END => env.end = new Timestamp(num)
           }
-          dbService.UpdateEvent(env)
-          new CreateEvent(env)
+          dbService.UpdateMeeting(env)
+          new CreateMeeting(env)
         }
 
         def AS(str: String) = {
           env.name = str
-          dbService.UpdateEvent(env)
-          new CreateEvent(env)
+          dbService.UpdateMeeting(env)
+          new CreateMeeting(env)
         }
       }
     }
@@ -195,9 +195,9 @@ class Bdsl {
       new ModifyClient(dbService.GetClient(id))
     }
 
-    def EVENT( id: Int ) = {
-      println( "Updating EVENT " + id)
-      new ModifyEvent(dbService.GetEvent(id))
+    def MEETING( id: Int ) = {
+      println( "Updating MEETING " + id)
+      new ModifyMeeting(dbService.GetMeeting(id))
     }
 
     class ModifyEmployee( emp: Employee ) {
@@ -249,7 +249,7 @@ class Bdsl {
       }
     }
 
-    class ModifyEvent( env: Event ) {
+    class ModifyMeeting(env: Meeting ) {
 
       def MODIFY(keyword: AttributeKeyword) = {
         new UpdateContinue( keyword )
@@ -262,14 +262,14 @@ class Bdsl {
             case START => env.start = new Timestamp(num)
             case END => env.end = new Timestamp(num)
           }
-          dbService.UpdateEvent(env)
-          new ModifyEvent(env)
+          dbService.UpdateMeeting(env)
+          new ModifyMeeting(env)
         }
 
         def TO(str: String) = {
           env.name = str
-          dbService.UpdateEvent(env)
-          new ModifyEvent(env)
+          dbService.UpdateMeeting(env)
+          new ModifyMeeting(env)
         }
       }
     }
@@ -286,8 +286,8 @@ class Bdsl {
       println( "Removing CLIENT " + dbService.DeleteClient(id) )
     }
 
-    def EVENT( id: Int ) = {
-      println( "Removing EVENT " + dbService.DeleteEvent(id) )
+    def MEETING( id: Int ) = {
+      println( "Removing MEETING " + dbService.DeleteMeeting(id) )
     }
   }
 
@@ -296,14 +296,14 @@ class Bdsl {
       keyword match {
         case EMPLOYEE => dbService.ListAllEmployees()
         case CLIENT => dbService.ListAllClients()
-        case EVENT => dbService.ListAllEvents()
+        case MEETING => dbService.ListAllMeetings()
       }
     }
 
     def ALL = {
       dbService.ListAllEmployees()
       dbService.ListAllClients()
-      dbService.ListAllEvents()
+      dbService.ListAllMeetings()
     }
   }
 

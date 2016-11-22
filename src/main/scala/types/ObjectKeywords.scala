@@ -12,5 +12,8 @@ object EMPLOYEE extends EmployeeKeyword
 abstract sealed class ClientKeyword extends ObjectKeyword
 object CLIENT extends ClientKeyword
 
-abstract sealed class EventKeyword extends ObjectKeyword
-object EVENT extends EventKeyword
+abstract sealed class MeetingKeyword extends ObjectKeyword
+object MEETING extends MeetingKeyword
+
+abstract sealed class ProjectKeyword extends ObjectKeyword
+object PROJECT extends ProjectKeyword

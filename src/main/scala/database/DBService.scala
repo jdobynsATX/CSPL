@@ -8,6 +8,8 @@ import scala.concurrent.duration.Duration
 import slick.driver.H2Driver.api._
 import java.sql.Date
 import java.sql.Timestamp
+import java.sql.Blob
+import javax.sql.rowset.serial.SerialBlob
 
 class DBService() {
   val db = Database.forConfig("h2mem1")
@@ -15,7 +17,7 @@ class DBService() {
   val setupFuture = db.run(DBSetup.setupSequence)
   Await.result(setupFuture, Duration.Inf)
 
-  val events = DBSetup.events
+  val meetings = DBSetup.meetings
   val clients = DBSetup.clients
   val employees = DBSetup.employees
 
@@ -47,7 +49,7 @@ class DBService() {
       emp <- employees if emp.id === id
     } yield emp
     val action = query.result.head
-    val f: Future[(Int, String, Int, Double)] = db.run(action)
+    val f: Future[(Int, String, Int, Double, Blob)] = db.run(action)
 
     val result = Await.result(f, Duration.Inf)
     val e = new Employee(result)
@@ -55,7 +57,8 @@ class DBService() {
   }
 
   def NewEmployee(): Employee = {
-    val insert = (employees returning employees.map(_.id)) += (-1, "", -1, -1)
+    val default_blob = new SerialBlob(Array[Byte](0))
+    val insert = (employees returning employees.map(_.id)) += (-1, "", -1, -1, default_blob)
     val insertSeq: Future[Int] = db.run(insert)
 
     val empId = Await.result(insertSeq, Duration.Inf)
@@ -64,8 +67,8 @@ class DBService() {
   }
 
   def UpdateEmployee(emp: Employee): Employee = {
-    val updated = employees.insertOrUpdate(emp.id, emp.name, emp.rank, emp.pay)
-    // val update = (employees returning employees).insertOrUpdate(-1, emp.name, emp.rank, emp.pay)
+    val updated = employees.insertOrUpdate(emp.id, emp.name, emp.rank, emp.pay, emp.schedule)
+    println( "DEBUG") //DEBUG
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)
@@ -161,86 +164,63 @@ class DBService() {
     return id
   }
 
-  def ListAllEvents() = {
-    println("Events:")
-    db.run(events.result).map(_.foreach {
-      case (id, name, start, end) =>
-        println("  " + id + "\t" + name + "\t" + start + "\t" + end + "\t")
+  def ListAllMeetings() = {
+    println("Meetings:")
+    db.run(meetings.result).map(_.foreach {
+      case (id, client_id, name, start, end) =>
+        println("  " + id + "\t" + client_id + "\t" + name + "\t" + start + "\t" + end + "\t")
     })
   }
 
-  def GetEvent(id: Int): Event = {
+  def GetMeeting(id: Int): Meeting = {
     val query = for {
-      event <- events if event.id === id
-    } yield event
+      meeting <- meetings if meeting.id === id
+    } yield meeting
     val action = query.result.head
-    val f: Future[(Int, String, Timestamp, Timestamp)] = db.run(action)
+    val f: Future[(Int, Int, String, Timestamp, Timestamp)] = db.run(action)
 
     val result = Await.result(f, Duration.Inf)
-    val retEvent = new Event(result)
-    return retEvent
+    val retMeeting = new Meeting(result)
+    return retMeeting
   }
 
-  def NewEvent(): Event = {
-    val insert = (events returning events.map(_.id)) += (-1, "", new Timestamp(0), new Timestamp(0))
+  def NewMeeting(): Meeting = {
+    val insert = (meetings returning meetings.map(_.id)) += (-1, -1,"", new Timestamp(0), new Timestamp(0))
     val insertSeq: Future[Int] = db.run(insert)
 
-    val eventId = Await.result(insertSeq, Duration.Inf)
-    var result = new Event(eventId)
+    val meetingId = Await.result(insertSeq, Duration.Inf)
+    var result = new Meeting(meetingId)
     return result
   }
 
-  def UpdateEvent(event: Event): Event = {
-    val updated = events.insertOrUpdate(event.id, event.name, event.start, event.end)
+  def UpdateMeeting(meeting: Meeting): Meeting = {
+    val updated = meetings.insertOrUpdate(meeting.id, meeting.client_id, meeting.name, meeting.start, meeting.end)
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)
-      throw new RuntimeException("Did not find event")
-    return event
+      throw new RuntimeException("Did not find meeting")
+    return meeting
   }
 
-  def DeleteEvent(event: Event): Event = {
-    val query = events.filter(_.id === event.id)
+  def DeleteMeeting(meeting: Meeting): Meeting = {
+    val query = meetings.filter(_.id === meeting.id)
     val action = query.delete
     val affectedRowsCount: Future[Int] = db.run(action)
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
-      throw new RuntimeException("Did not find event")
-    return event
+      throw new RuntimeException("Did not find meeting")
+    return meeting
   }
 
-  def DeleteEvent(id: Int): Int = {
-    val query = events.filter(_.id === id)
+  def DeleteMeeting(id: Int): Int = {
+    val query = meetings.filter(_.id === id)
     val action = query.delete
     val affectedRowsCount: Future[Int] = db.run(action)
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
-      throw new RuntimeException("Did not find event")
+      throw new RuntimeException("Did not find meeting")
     return id
   }
-
-  // Examples
-  // def GetAllCoffee() = {
-
-  //   // Read all coffees and print them to the console
-  //   println("Coffees:")
-  //   db.run(coffees.result).map(_.foreach {
-  //     case (name, supID, price, sales, total) =>
-  //       println("  " + name + "\t" + supID + "\t" + price + "\t" + sales + "\t" + total)
-  //   })
-  // }
-
-  // def GetQ() = {
-  //   // Perform a join to retrieve coffee names and supplier names for
-  //   // all coffees costing less than $9.00
-  //   val q2 = for {
-  //     c <- coffees if c.price < 9.0
-  //     s <- suppliers if s.id === c.supID
-  //   } yield (c.name, s.name)
-  //   // Equivalent SQL code:
-  //   // select c.COF_NAME, s.SUP_NAME from COFFEES c, SUPPLIERS s where c.PRICE < 9.0 and s.SUP_ID = c.SUP_ID
-  //   db.stream(q2.result).foreach(println)
-  // }
 
 }
 
