@@ -306,4 +306,26 @@ class Bdsl {
       dbService.ListAllEvents()
     }
   }
+
+  object IMPORT {
+    def FROM( file: String ) = {
+      new ImportTo( file )
+    }
+
+    class ImportTo( file: String ) {
+      def TO( keyword: ObjectKeyword )
+      {
+        val bufferedSource = io.Source.fromFile(file)
+        for (line <- bufferedSource.getLines) {
+          val cols = line.split(",").map(_.trim)
+          val emp = dbService.NewEmployee()
+          emp.name = cols(0)
+          emp.rank = cols(1).toInt
+          emp.pay = cols(2).toInt
+          dbService.UpdateEmployee(emp)
+        }
+        bufferedSource.close
+      }
+    }
+  }
 }

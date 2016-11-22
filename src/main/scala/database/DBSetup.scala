@@ -114,10 +114,7 @@ object DBSetup {
 
   val setupSequence = DBIO.seq(
     // Create the tables, including primary and foreign keys
-    (employees.schema ++ clients.schema ++ events.schema).create,
-
-    employees += (0, "Existing One", 5, 75.5),
-    employees += (0, "Existing Two", 3, 78.95)
+    (employees.schema ++ clients.schema ++ events.schema).create
 
   )
 }

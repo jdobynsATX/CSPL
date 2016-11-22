@@ -11,7 +11,17 @@ import java.sql.Timestamp
 object Test extends Bdsl {
 
   def main(args: Array[String]): Unit = {
-    CREATE NEW EMPLOYEE WITH NAME AS "Bob Smith" WITH RANK AS 2;
+    /*CREATE NEW EMPLOYEE WITH NAME AS "Bob Smith" WITH RANK AS 2;
+    CREATE NEW EMPLOYEE WITH NAME AS "Bob Jones" WITH RANK AS 3;
+    CREATE NEW EMPLOYEE WITH NAME AS "Bill Smith" WITH RANK AS 2;
+    CREATE NEW EMPLOYEE WITH NAME AS "Bill Jones" WITH RANK AS 4;
+
+    UPDATE ALL EMPLOYEE WHERE RANK LESSTHANEQUAL 3 WHERE PAY EQUAL 0 MODIFY PAY TO 10;*/
+
+    IMPORT FROM "file.csv" TO EMPLOYEE
+
+    PRINT ALL;
+    /*CREATE NEW EMPLOYEE WITH NAME AS "Bob Smith" WITH RANK AS 2;
 
     UPDATE EMPLOYEE 3 MODIFY PAY TO 10 MODIFY NAME TO "Bob Jones";
 
@@ -81,7 +91,7 @@ object Test extends Bdsl {
     dbService.GetAllEmployees();
 */
 
-    PRINT ALL;
+    PRINT ALL;*/
 
     dbService.Stop();
   }
