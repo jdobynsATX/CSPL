@@ -12,6 +12,11 @@ object Test extends Bdsl {
 
   def main(args: Array[String]): Unit = {
     CREATE NEW EMPLOYEE WITH NAME AS "Bob Smith" WITH RANK AS 2;
+    //CREATE NEW EMPLOYEE
+    //CREATE NEW EMPLOYEE
+    CREATE NEW CLIENT
+    //CREATE NEW MEETING WITH NAME AS "Meeting with Morgan Smith";
+    UPDATE CLIENT 1 MODIFY NAME TO "Morgan Smith"
 
     UPDATE EMPLOYEE 3 MODIFY PAY TO 10 MODIFY NAME TO "Bob Jones";
 
@@ -45,17 +50,17 @@ object Test extends Bdsl {
     dbService.ListAllClients();
     */
 
-    CREATE NEW EVENT WITH NAME AS "Meeting with Morgan Smith";
+    CREATE NEW MEETING WITH NAME AS "Meeting with Morgan Smith";
 
-    UPDATE EVENT 1 MODIFY START TO 999923438 MODIFY END TO 999923438;
+    UPDATE MEETING 1 MODIFY START TO 999923438 MODIFY END TO 999923438;
 
-    CREATE NEW EVENT WITH NAME AS "Meeting with Taylor Jones" WITH START AS 999923438;
+    CREATE NEW MEETING WITH NAME AS "Meeting with Taylor Jones" WITH START AS 999923438;
 
-    PRINT ALL EVENT;
+    PRINT ALL MEETING;
 
-    REMOVE EVENT 2;
+    REMOVE MEETING 2;
 
-    PRINT ALL EVENT;
+    PRINT ALL MEETING;
 
     /*
     var event = dbService.NewEvent()
@@ -85,7 +90,7 @@ object Test extends Bdsl {
 
     PRINT ALL CLIENT;
     
-    PRINT ALL EVENT;
+    PRINT ALL MEETING;
 
     dbService.Stop();
   }
