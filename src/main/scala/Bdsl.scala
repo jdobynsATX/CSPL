@@ -162,10 +162,25 @@ class Bdsl {
         }
       }
 
-      def PRINT = {
-        println("printing")
-        for( emp <- emps ) {
-          println( emp )
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue( keyword )
+      }
+
+      class UpdateContinue( keyword: AttributeKeyword ) {
+        def TO(num: Int) = {
+          keyword match {
+            case ID => emps.foreach(_.id = num)
+            case RANK => emps.foreach(_.rank = num)
+            case PAY => emps.foreach(_.pay = num)
+          }
+          emps.foreach( dbService.UpdateEmployee(_) )
+          new QueryResults(emps)
+        }
+
+        def TO(str: String) = {
+          emps.foreach(_.name = str)
+          emps.foreach( dbService.UpdateEmployee(_) )
+          new QueryResults(emps)
         }
       }
     }
@@ -198,13 +213,13 @@ class Bdsl {
             case RANK => emp.rank = num
             case PAY => emp.pay = num
           }
-          dbService.UpdateEmployee(emp)
+          dbService.UpdateEmployee(emp) 
           new ModifyEmployee(emp)
         }
 
         def TO(str: String) = {
           emp.name = str
-          dbService.UpdateEmployee(emp)
+          dbService.UpdateEmployee(emp) 
           new ModifyEmployee(emp)
         }
       }
@@ -217,7 +232,7 @@ class Bdsl {
       }
 
       class UpdateContinue( keyword: AttributeKeyword ) {
-        def To(num: Int)= {
+        def TO(num: Int)= {
           keyword match {
             case ID => cli.id = num
             case DATE => cli.addDate = new Date( num )
@@ -226,7 +241,7 @@ class Bdsl {
           new ModifyClient(cli)
         }
 
-        def To(str: String) = {
+        def TO(str: String) = {
           cli.name = str
           dbService.UpdateClient(cli)
           new ModifyClient(cli)
