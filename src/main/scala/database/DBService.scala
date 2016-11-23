@@ -107,8 +107,8 @@ class DBService() {
 
   def GetAllClients(): Array[Client] = {
     var result: Array[Client] = new Array[Client](0)
-    val f: Future[Seq[(Int, String, Date)]] = db.run(clients.result)
-    val queryResult: Seq[(Int, String, Date)] = Await.result(f, Duration.Inf)
+    val f: Future[Seq[(Int, String, Date, Double)]] = db.run(clients.result)
+    val queryResult: Seq[(Int, String, Date, Double)] = Await.result(f, Duration.Inf)
     for (data <- queryResult) {
       result = result :+ (new Client(data))
     }
@@ -120,7 +120,7 @@ class DBService() {
       client <- clients if client.id === id
     } yield client
     val action = query.result.head
-    val f: Future[(Int, String, Date)] = db.run(action)
+    val f: Future[(Int, String, Date, Double)] = db.run(action)
 
     val result = Await.result(f, Duration.Inf)
     val retClient = new Client(result)
@@ -128,7 +128,7 @@ class DBService() {
   }
 
   def NewClient(): Client = {
-    val insert = (clients returning clients.map(_.id)) += (-1, "", new Date(0))
+    val insert = (clients returning clients.map(_.id)) += (-1, "", new Date(0), 0.0)
     val insertSeq: Future[Int] = db.run(insert)
 
     val clientId = Await.result(insertSeq, Duration.Inf)
@@ -137,7 +137,7 @@ class DBService() {
   }
 
   def UpdateClient(client: Client): Client = {
-    val updated = clients.insertOrUpdate(client.id, client.name, client.addDate)
+    val updated = clients.insertOrUpdate(client.id, client.name, client.addDate, client.balance)
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)

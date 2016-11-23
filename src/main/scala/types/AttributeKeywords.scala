@@ -30,3 +30,30 @@ object DATE extends DateKeyword
 
 abstract sealed class Client_IdKeyword extends IntTypedKeyword
 object CLIENT_ID extends Client_IdKeyword
+
+abstract sealed class Emp_IdKeyword extends IntTypedKeyword
+object EMP_ID extends Emp_IdKeyword
+
+abstract sealed class AmountKeyword extends DoubleTypedKeyword
+object AMOUNT extends AmountKeyword
+
+abstract sealed class BalanceKeyword extends DoubleTypedKeyword
+object BALANCE extends BalanceKeyword
+
+abstract sealed class Total_CostKeyword extends DoubleTypedKeyword
+object TOTAL_COST extends Total_CostKeyword
+
+abstract sealed class Total_EarningKeyword extends DoubleTypedKeyword
+object TOTAL_EARNING extends Total_EarningKeyword
+
+abstract sealed class CountKeyword extends IntTypedKeyword
+object COUNT extends CountKeyword
+
+abstract sealed class Inv_IdKeyword extends IntTypedKeyword
+object INV_ID extends Inv_IdKeyword
+
+abstract sealed class ReceivedKeyword extends IntTypedKeyword
+object RECEIVED extends ReceivedKeyword
+
+abstract sealed class Purchase_DateKeyword extends IntTypedKeyword
+object PURCHASE_DATE extends Purchase_DateKeyword

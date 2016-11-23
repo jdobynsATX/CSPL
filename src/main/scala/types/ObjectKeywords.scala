@@ -17,3 +17,15 @@ object MEETING extends MeetingKeyword
 
 abstract sealed class ProjectKeyword extends ObjectKeyword
 object PROJECT extends ProjectKeyword
+
+abstract sealed class PaymentKeyword extends ObjectKeyword
+object PAYMENT extends PaymentKeyword
+
+abstract sealed class PurchaseKeyword extends ObjectKeyword
+object PURCHASE extends PurchaseKeyword
+
+abstract sealed class ShipmentKeyword extends ObjectKeyword
+object SHIPMENT extends ShipmentKeyword
+
+abstract sealed class InventoryKeyword extends ObjectKeyword
+object INVENTORY extends InventoryKeyword

@@ -21,6 +21,7 @@ object Employee {
 object Client {
   val NAME_DEFAULT_VALUE = ""
   val ADDDATE_DEFAULT_VALUE: Date = new Date(0)
+  val BALANCE_DEFAULT = 0.0
 }
 
 object Meeting {
@@ -35,13 +36,38 @@ object Project {
   val CLIENT_DEFAULT = -1
   val END_DEFAULT_VALUE: Date = new Date(0)
 }
-/*
-object Event {
-  val NAME_DEFAULT_VALUE = ""
-  val START_DEFAULT_VALUE: Timestamp = new Timestamp(0)
-  val END_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+
+object Payment {
+  val CLIENT_DEFAULT = -1
+  val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val EMPLOYEE_DEFAULT = -1
+  val AMOUNT_DEFAULT = 0.0
 }
-*/
+
+object Purchase {
+  val CLIENT_DEFAULT = -1
+  val PURCHASE_DATE_VALUE: Timestamp = new Timestamp(0)
+  val EMPLOYEE_DEFAULT = -1
+  val INVENTORY_DEFAULT = -1
+  val COUNT_DEFAULT = 0
+  val TOTAL_COST_DEFAULT = 0.0
+}
+
+object Shipment {
+  val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val EMPLOYEE_DEFAULT = -1
+  val INVENTORY_DEFAULT = -1
+  val COUNT_DEFAULT_VALUE = 0
+  val TOTAL_COST_DEFAULT = 0.0
+}
+
+object Inventory {
+  val NAME_DEFAULT_VALUE = ""
+  val COUNT_DEFAULT_VALUE = 0
+  val TOTAL_COST_DEFAULT = 0.0
+  val TOTAL_EARNING_DEFAULT = 0.0
+}
+
 
 class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, var schedule: Blob) extends DBObject {
   def this(id: Int) {
@@ -58,17 +84,17 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
   }
 }
 
-class Client(var id: Int, var name: String, var addDate: Date) extends DBObject {
+class Client(var id: Int, var name: String, var addDate: Date, var balance: Double) extends DBObject {
   def this(id: Int) {
-    this(id, Client.NAME_DEFAULT_VALUE, Client.ADDDATE_DEFAULT_VALUE);
+    this(id, Client.NAME_DEFAULT_VALUE, Client.ADDDATE_DEFAULT_VALUE, Client.BALANCE_DEFAULT);
   }
 
-  def this(data: (Int, String, Date)) {
-    this(data._1, data._2, data._3);
+  def this(data: (Int, String, Date, Double)) {
+    this(data._1, data._2, data._3, data._4);
   }
 
   override def toString: String = {
-    return "id: " + id + ", name: " + name + ", dateAdded: " + addDate
+    return "id: " + id + ", name: " + name + ", dateAdded: " + addDate + ", Balance: " + balance
   }
 }
 
@@ -88,7 +114,7 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
 }
 
 class Project(var id: Int, var client_id: Int, var name: String, var end: Date)
-      extends DBObject {
+  extends DBObject {
   def this(id: Int) {
     this(id, Project.CLIENT_DEFAULT, Project.NAME_DEFAULT_VALUE, Project.END_DEFAULT_VALUE);
   }
@@ -99,6 +125,66 @@ class Project(var id: Int, var client_id: Int, var name: String, var end: Date)
 
   override def toString: String = {
     return "id: " + id + ", name: " + name + ", End Time: " + end
+  }
+}
+
+class Payment(var id: Int, var client_id: Int, var emp_id: Int, var amount: Double, var received: Timestamp)
+  extends DBObject {
+  def this(id: Int) {
+    this(id, Payment.CLIENT_DEFAULT, Payment.EMPLOYEE_DEFAULT, Payment.AMOUNT_DEFAULT, Payment.RECEIVED_DEFAULT_VALUE);
+  }
+
+  def this(data: (Int, Int, Int, Double, Timestamp)) {
+    this(data._1, data._2, data._3, data._4, data._5);
+  }
+
+  override def toString: String = {
+    return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Amount: " + amount + ", Received: " + received
+  }
+}
+
+class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int, var count: Int, var total_cost: Double, var purchase_date: Timestamp)
+  extends DBObject {
+  def this(id: Int) {
+    this(id, Purchase.CLIENT_DEFAULT, Purchase.EMPLOYEE_DEFAULT, Purchase.INVENTORY_DEFAULT, Purchase.COUNT_DEFAULT, Purchase.TOTAL_COST_DEFAULT, Purchase.PURCHASE_DATE_VALUE);
+  }
+
+  def this(data: (Int, Int, Int, Int, Int, Double, Timestamp)) {
+    this(data._1, data._2, data._3, data._4, data._5, data._6, data._7);
+  }
+
+  override def toString: String = {
+    return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
+  }
+}
+
+class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var count: Int, var total_cost: Double, var received: Timestamp)
+  extends DBObject {
+  def this(id: Int) {
+    this(id, Shipment.EMPLOYEE_DEFAULT, Shipment.INVENTORY_DEFAULT, Shipment.COUNT_DEFAULT_VALUE, Shipment.TOTAL_COST_DEFAULT, Shipment.RECEIVED_DEFAULT_VALUE);
+  }
+
+  def this(data: (Int, Int, Int, Int, Double, Timestamp)) {
+    this(data._1, data._2, data._3, data._4, data._5, data._6);
+  }
+
+  override def toString: String = {
+    return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Received: " + received
+  }
+}
+
+class Inventory(var id: Int, var name: String, var count: Int, var total_cost: Double, var total_earning: Double)
+  extends DBObject {
+  def this(id: Int) {
+    this(id, Inventory.NAME_DEFAULT_VALUE, Inventory.COUNT_DEFAULT_VALUE, Inventory.TOTAL_COST_DEFAULT, Inventory.TOTAL_EARNING_DEFAULT);
+  }
+
+  def this(data: (Int, String, Int, Double, Double)) {
+    this(data._1, data._2, data._3, data._4, data._5);
+  }
+
+  override def toString: String = {
+    return "id: " + id + ", Name: " + name + ", Count: " + count + ", Total Cost: " + total_cost + ", Total Earning: " + total_earning
   }
 }
 
@@ -114,11 +200,12 @@ object DBSetup {
   }
   val employees = TableQuery[Employees]
 
-  class Clients(tag: Tag) extends Table[(Int, String, Date)](tag, "CLIENTS") {
+  class Clients(tag: Tag) extends Table[(Int, String, Date, Double)](tag, "CLIENTS") {
     def id = column[Int]("CLIENT_ID", O.PrimaryKey, O.AutoInc)
     def name = column[String]("CLIENT_NAME")
     def addDate = column[Date]("DATE_ADDED")
-    def * = (id, name, addDate)
+    def balance = column[Double]("BALANCE")
+    def * = (id, name, addDate, balance)
   }
   val clients = TableQuery[Clients]
 
@@ -143,16 +230,56 @@ object DBSetup {
     def * = (id, client_id, name, start, end)
   }
   val meetings = TableQuery[Meetings]
-/*
-  class Events(tag: Tag) extends Table[(Int, String, Timestamp, Timestamp)](tag, "EVENTS") {
-    def id = column[Int]("CLIENT_ID", O.PrimaryKey, O.AutoInc)
-    def name = column[String]("EVENT_NAME")
-    def start = column[Timestamp]("EVENT_DATE")
-    def end = column[Timestamp]("EVENT_DURATION")
-    def * = (id, name, start, end)
+
+  //add foreign keys
+  class Payments(tag: Tag) extends Table[(Int, Int, Int, Double, Timestamp)](tag, "PAYMENTS") {
+    def id = column[Int]("PAYMENT_ID", O.PrimaryKey, O.AutoInc)
+    def client_id = column[Int]("CLIENT_ID")
+    def emp_id = column[Int]("EMP_ID")
+    def amount = column[Double]("AMOUNT")
+    def received = column[Timestamp]("RECEIVED")
+    def * = (id, client_id, emp_id, amount, received)
   }
-  val events = TableQuery[Events]
-*/
+  val payments = TableQuery[Payments]
+
+  //add foreign keys
+  class Purchases(tag: Tag) extends Table[(Int, Int, Int, Int, Int, Double, Timestamp)](tag, "PURCHASES") {
+    def id = column[Int]("PURCHASE_ID", O.PrimaryKey, O.AutoInc)
+    def client_id = column[Int]("CLIENT_ID")
+    def emp_id = column[Int]("EMP_ID")
+    def inv_id = column[Int]("INV_ID")
+    def count = column[Int]("COUNT")
+    def total_cost = column[Double]("TOTAL_COST")
+    def purchase_date = column[Timestamp]("PURCHASE_DATE")
+    def * = (id, client_id, emp_id, inv_id, count, total_cost, purchase_date)
+  }
+  val purchases = TableQuery[Purchases]
+
+  //add foreign keys
+  class Shipments(tag: Tag) extends Table[(Int, Int, Int, Int, Double, Timestamp)](tag, "" +
+    "SHIPMENTS") {
+    def id = column[Int]("PURCHASE_ID", O.PrimaryKey, O.AutoInc)
+    def emp_id = column[Int]("EMP_ID")
+    def inv_id = column[Int]("INV_ID")
+    def count = column[Int]("COUNT")
+    def total_cost = column[Double]("TOTAL_COST")
+    def received = column[Timestamp]("RECEIVED")
+    def * = (id, emp_id, inv_id, count, total_cost, received)
+  }
+  val shipments = TableQuery[Shipments]
+
+  //add foreign keys
+  class Inventorys(tag: Tag) extends Table[(Int, Int, Double, Double)](tag, "" +
+    "INVENTORYS") {
+    def id = column[Int]("PURCHASE_ID", O.PrimaryKey, O.AutoInc)
+    def count = column[Int]("COUNT")
+    def total_cost = column[Double]("TOTAL_COST")
+    def total_earning = column[Double]("TOTAL_EARNING")
+    def * = (id, count, total_cost, total_earning)
+  }
+  val Inventorys = TableQuery[Inventorys]
+
+
   class MeetingJoin(tag: Tag) extends Table[(Int, Int)](tag, "MEET_JOIN") {
     def meeting_id = column[Int]("MEETING_ID")
     def emp_id = column[Int]("EMP_ID")
@@ -179,7 +306,7 @@ object DBSetup {
       ++ projects.schema ++ meetingJoinTable.schema ++ projectJoinTable.schema).create,
     employees += (0, "Existing One", 5, 75.5, default_blob),
     employees += (0, "Existing Two", 3, 78.95, default_blob),
-    clients += (2, "C1", Client.ADDDATE_DEFAULT_VALUE),
+    clients += (2, "C1", Client.ADDDATE_DEFAULT_VALUE, 0),
     meetings += (0, 1, "M0", Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE)
 
   )

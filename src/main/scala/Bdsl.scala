@@ -50,7 +50,6 @@ class Bdsl {
           keyword match {
             case ID => emp.id = num
             case RANK => emp.rank = num
-            case PAY => emp.pay = num
           }
           dbService.UpdateEmployee(emp)
           new CreateEmployee(emp)
@@ -58,6 +57,12 @@ class Bdsl {
 
         def AS(str: String) = {
           emp.name = str
+          dbService.UpdateEmployee(emp)
+          new CreateEmployee(emp)
+        }
+
+        def AS(dou: Double) = {
+          emp.pay = dou
           dbService.UpdateEmployee(emp)
           new CreateEmployee(emp)
         }
@@ -82,6 +87,12 @@ class Bdsl {
 
         def AS(str: String) = {
           cli.name = str
+          dbService.UpdateClient(cli)
+          new CreateClient(cli)
+        }
+
+        def AS(dou: Double) = {
+          cli.balance = dou
           dbService.UpdateClient(cli)
           new CreateClient(cli)
         }
@@ -248,14 +259,13 @@ class Bdsl {
           keyword match {
             case ID => emp.id = num
             case RANK => emp.rank = num
-            case PAY => emp.pay = num
           }
           dbService.UpdateEmployee(emp) 
           new ModifyEmployee(emp)
         }
 
-        def TO(str: String) = {
-          emp.name = str
+        def TO(dou: Double) = {
+          emp.pay = dou
           dbService.UpdateEmployee(emp) 
           new ModifyEmployee(emp)
         }
@@ -280,6 +290,12 @@ class Bdsl {
 
         def TO(str: String) = {
           cli.name = str
+          dbService.UpdateClient(cli)
+          new ModifyClient(cli)
+        }
+
+        def TO(dou: Double) = {
+          cli.balance = dou
           dbService.UpdateClient(cli)
           new ModifyClient(cli)
         }
@@ -389,7 +405,7 @@ class Bdsl {
           val emp = dbService.NewEmployee()
           emp.name = cols(0)
           emp.rank = cols(1).toInt
-          emp.pay = cols(2).toInt
+          emp.pay = cols(2).toDouble
           dbService.UpdateEmployee(emp)
         }
         bufferedSource.close
