@@ -33,6 +33,12 @@ class Bdsl {
       new CreateMeeting(env)
     }
 
+    def NEW(keyword: ProjectKeyword) = {
+      val pro = dbService.NewProject()
+      println( "Created new project with ID " + pro.id )
+      new CreateProject(pro)
+    }
+
     class CreateEmployee(emp: Employee) {
 
       def WITH(keyword: AttributeKeyword) = {
@@ -106,6 +112,32 @@ class Bdsl {
         }
       }
     }
+
+    class CreateProject(pro: Project) {
+
+      def WITH(keyword: AttributeKeyword) = {
+        new AsContinue( keyword )
+      }
+
+      class AsContinue(keyword: AttributeKeyword) {
+        def AS(num: Int)= {
+          keyword match {
+            case ID => pro.id = num
+            case CLIENT_ID => pro.client_id = num
+            case START => pro.end = new Date(num)
+          }
+          dbService.UpdateProject(pro)
+          new CreateProject(pro)
+        }
+
+        def AS(str: String) = {
+          pro.name = str
+          dbService.UpdateProject(pro)
+          new CreateProject(pro)
+        }
+      }
+    }
+
   }
 
   object UPDATE {
@@ -200,6 +232,11 @@ class Bdsl {
       new ModifyMeeting(dbService.GetMeeting(id))
     }
 
+    def PROJECT( id: Int ) = {
+      println( "Updating PROJECT " + id)
+      new ModifyProject(dbService.GetProject(id))
+    }
+
     class ModifyEmployee( emp: Employee ) {
 
       def MODIFY(keyword: AttributeKeyword) = {
@@ -259,6 +296,7 @@ class Bdsl {
         def TO(num: Int)= {
           keyword match {
             case ID => env.id = num
+            case CLIENT_ID => env.client_id = num
             case START => env.start = new Timestamp(num)
             case END => env.end = new Timestamp(num)
           }
@@ -274,6 +312,30 @@ class Bdsl {
       }
     }
 
+    class ModifyProject(pro: Project ) {
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue( keyword )
+      }
+
+      class UpdateContinue( keyword: AttributeKeyword ) {
+        def TO(num: Int)= {
+          keyword match {
+            case ID => pro.id = num
+            case CLIENT_ID => pro.client_id = num
+            case END => pro.end = new Date(num)
+          }
+          dbService.UpdateProject(pro)
+          new ModifyProject(pro)
+        }
+
+        def TO(str: String) = {
+          pro.name = str
+          dbService.UpdateProject(pro)
+          new ModifyProject(pro)
+        }
+      }
+    }
   }
 
   object REMOVE {
@@ -289,6 +351,10 @@ class Bdsl {
     def MEETING( id: Int ) = {
       println( "Removing MEETING " + dbService.DeleteMeeting(id) )
     }
+
+    def PROJECT( id: Int ) = {
+      println( "Removing PROJECT " + dbService.DeleteProject(id) )
+    }
   }
 
   object PRINT {
@@ -297,6 +363,7 @@ class Bdsl {
         case EMPLOYEE => dbService.ListAllEmployees()
         case CLIENT => dbService.ListAllClients()
         case MEETING => dbService.ListAllMeetings()
+        case PROJECT => dbService.ListAllProjects()
       }
     }
 
@@ -304,6 +371,7 @@ class Bdsl {
       dbService.ListAllEmployees()
       dbService.ListAllClients()
       dbService.ListAllMeetings()
+      dbService.ListAllProjects()
     }
   }
 

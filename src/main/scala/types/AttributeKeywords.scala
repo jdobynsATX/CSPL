@@ -27,3 +27,6 @@ object END extends EndKeyword
 
 abstract sealed class DateKeyword extends IntTypedKeyword
 object DATE extends DateKeyword
+
+abstract sealed class Client_IdKeyword extends IntTypedKeyword
+object CLIENT_ID extends Client_IdKeyword

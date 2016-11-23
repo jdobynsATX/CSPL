@@ -33,15 +33,15 @@ object Meeting {
 object Project {
   val NAME_DEFAULT_VALUE = ""
   val CLIENT_DEFAULT = -1
-  val END_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val END_DEFAULT_VALUE: Date = new Date(0)
 }
-
+/*
 object Event {
   val NAME_DEFAULT_VALUE = ""
   val START_DEFAULT_VALUE: Timestamp = new Timestamp(0)
   val END_DEFAULT_VALUE: Timestamp = new Timestamp(0)
 }
-
+*/
 
 class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, var schedule: Blob) extends DBObject {
   def this(id: Int) {
@@ -87,13 +87,13 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
   }
 }
 
-class Project(var id: Int, var client_id: Int, var name: String, var end: Timestamp) 
+class Project(var id: Int, var client_id: Int, var name: String, var end: Date)
       extends DBObject {
-  def this(id: Int, client_id: Int) {
-    this(id, client_id, Project.NAME_DEFAULT_VALUE, Project.END_DEFAULT_VALUE);
+  def this(id: Int) {
+    this(id, Project.CLIENT_DEFAULT, Project.NAME_DEFAULT_VALUE, Project.END_DEFAULT_VALUE);
   }
 
-  def this(data: (Int, Int, String, Timestamp)) {
+  def this(data: (Int, Int, String, Date)) {
     this(data._1, data._2, data._3, data._4);
   }
 
@@ -143,7 +143,7 @@ object DBSetup {
     def * = (id, client_id, name, start, end)
   }
   val meetings = TableQuery[Meetings]
-
+/*
   class Events(tag: Tag) extends Table[(Int, String, Timestamp, Timestamp)](tag, "EVENTS") {
     def id = column[Int]("CLIENT_ID", O.PrimaryKey, O.AutoInc)
     def name = column[String]("EVENT_NAME")
@@ -152,7 +152,7 @@ object DBSetup {
     def * = (id, name, start, end)
   }
   val events = TableQuery[Events]
-
+*/
   class MeetingJoin(tag: Tag) extends Table[(Int, Int)](tag, "MEET_JOIN") {
     def meeting_id = column[Int]("MEETING_ID")
     def emp_id = column[Int]("EMP_ID")

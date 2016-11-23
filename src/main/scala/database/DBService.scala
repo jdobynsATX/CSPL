@@ -20,6 +20,7 @@ class DBService() {
   val meetings = DBSetup.meetings
   val clients = DBSetup.clients
   val employees = DBSetup.employees
+  val projects = DBSetup.projects
 
   def Stop() = {
     db.close
@@ -36,8 +37,8 @@ class DBService() {
 
   def GetAllEmployees(): Array[Employee] = {
     var result: Array[Employee] = new Array[Employee](0)
-    val f: Future[Seq[(Int, String, Int, Double)]] = db.run(employees.result)
-    val queryResult: Seq[(Int, String, Int, Double)] = Await.result(f, Duration.Inf)
+    val f: Future[Seq[(Int, String, Int, Double, Blob)]] = db.run(employees.result)
+    val queryResult: Seq[(Int, String, Int, Double, Blob)] = Await.result(f, Duration.Inf)
     for (empData <- queryResult) {
       result = result :+ (new Employee(empData))
     }
@@ -140,7 +141,7 @@ class DBService() {
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)
-      throw new RuntimeException("Did not find emp")
+      throw new RuntimeException("Did not find client")
     return client
   }
 
@@ -150,7 +151,7 @@ class DBService() {
     val affectedRowsCount: Future[Int] = db.run(action)
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
-      throw new RuntimeException("Did not find emp")
+      throw new RuntimeException("Did not find client")
     return client
   }
 
@@ -160,7 +161,7 @@ class DBService() {
     val affectedRowsCount: Future[Int] = db.run(action)
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
-      throw new RuntimeException("Did not find emp")
+      throw new RuntimeException("Did not find client")
     return id
   }
 
@@ -221,6 +222,66 @@ class DBService() {
       throw new RuntimeException("Did not find meeting")
     return id
   }
+
+  def ListAllProjects() = {
+    println("Projects:")
+    db.run(projects.result).map(_.foreach {
+      case (id, client_id, name, end) =>
+        println("  " + id + "\t" + client_id + "\t" + name + "\t" + end + "\t")
+    })
+  }
+
+  def GetProject(id: Int): Project = {
+    val query = for {
+      project <- projects if project.id === id
+    } yield project
+    val action = query.result.head
+    val f: Future[(Int, Int, String, Date)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retProject = new Project(result)
+    return retProject
+  }
+
+
+  def NewProject(): Project = {
+    val insert = (projects returning projects.map(_.id)) += (-1, -1, "", new Date(0))
+    val insertSeq: Future[Int] = db.run(insert)
+
+    val projectId = Await.result(insertSeq, Duration.Inf)
+    var result = new Project(projectId)
+    return result
+  }
+
+  def UpdateProject(project: Project): Project = {
+    val updated = projects.insertOrUpdate(project.id, project.client_id, project.name, project.end)
+    val updateSeq: Future[Int] = db.run(updated)
+
+    if (Await.result(updateSeq, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find project")
+    return project
+  }
+
+  def DeleteProject(project: Project): Project = {
+    val query = projects.filter(_.id === project.id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find project")
+    return project
+  }
+
+  def DeleteProject(id: Int): Int = {
+    val query = projects.filter(_.id === id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find project")
+    return id
+  }
+
 
 }
 
