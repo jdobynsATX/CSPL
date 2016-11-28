@@ -1,7 +1,7 @@
 package cs345.database
 
-//import slick.driver.H2Driver.api._
-import slick.driver.MySQLDriver.api._
+import slick.driver.H2Driver.api._
+// import slick.driver.MySQLDriver.api._
 // import slick.driver.PostgresDriver.api._
 import java.sql.Date
 import java.sql.Timestamp
