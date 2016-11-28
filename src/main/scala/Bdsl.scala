@@ -39,6 +39,31 @@ class Bdsl {
       new CreateProject(pro)
     }
 
+    def NEW(keyword: InventoryKeyword) = {
+      val inv = dbService.NewInventory()
+      println( "Created new inventory with ID " + inv.id )
+      new CreateInventory(inv)
+    }
+
+    def NEW(keyword: PurchaseKeyword) = {
+      val pur = dbService.NewPurchase()
+      println( "Created new purchase with ID " + pur.id )
+      new CreatePurchase(pur,0,0)
+    }
+
+    def NEW(keyword: PaymentKeyword) = {
+      val pay = dbService.NewPayment()
+      println( "Created new payment with ID " + pay.id )
+      new CreatePayment(pay,0)
+    }
+
+
+    def NEW(keyword: ShipmentKeyword) = {
+      val ship = dbService.NewShipment()
+      println( "Created new shipment with ID " + ship.id )
+      new CreateShipment(ship,0)
+    }
+
     class CreateEmployee(emp: Employee) {
 
       def WITH(keyword: AttributeKeyword) = {
@@ -149,6 +174,135 @@ class Bdsl {
       }
     }
 
+    class CreateInventory(inv: Inventory) {
+
+      def WITH(keyword: AttributeKeyword) = {
+        new AsContinue( keyword )
+      }
+
+      class AsContinue(keyword: AttributeKeyword) {
+        def AS(num: Int)= {
+          keyword match {
+            case ID => inv.id = num
+            case COUNT => inv.count = num
+          }
+          dbService.UpdateInventory(inv)
+          new CreateInventory(inv)
+        }
+
+        def AS(dou: Double)= {
+          keyword match {
+            case TOTAL_COST => inv.total_cost = dou
+            case TOTAL_EARNING => inv.total_earning = dou
+          }
+          dbService.UpdateInventory(inv)
+          new CreateInventory(inv)
+        }
+
+        def AS(str: String) = {
+          inv.name = str
+          dbService.UpdateInventory(inv)
+          new CreateInventory(inv)
+        }
+      }
+    }
+
+
+    class CreatePurchase(pur:Purchase, id: Int, id2:Int){
+
+      def FOR_CLIENT(num : Int) = {
+        pur.client_id = num
+        dbService.UpdatePurchase(pur)
+        new CreatePurchase(pur, num, 0)
+      }
+      def FOR_AMOUNT(num:Int)={
+        pur.count=num
+        dbService.UpdatePurchase(pur)
+        val item = dbService.GetInventory(id2)
+        val temp = item.count
+        item.count = temp - num
+        dbService.UpdateInventory(item)
+        new CreatePurchase(pur, id, id2)
+      }
+      def FOR_COST(dou:Double)={
+        pur.total_cost = dou
+        dbService.UpdatePurchase(pur)
+        val client = dbService.GetClient(id)
+        val temp = client.balance
+        client.balance = temp + dou
+        dbService.UpdateClient(client)
+        val item = dbService.GetInventory(id2)
+        val temp2 = item.total_earning
+        item.total_earning = temp2 + dou
+        dbService.UpdateInventory(item)
+        new CreatePurchase(pur, id, id2)
+      }
+
+      def OF_ITEM(num:Int)={
+        pur.inv_id=num
+        dbService.UpdatePurchase(pur)
+        new CreatePurchase(pur, id, num)
+      }
+
+
+      def REVIEWED_BY(num:Int)={
+        pur.emp_id=num
+        dbService.UpdatePurchase(pur)
+      }
+    }
+
+    class CreatePayment(pay:Payment, id: Int){
+
+      def FOR_CLIENT(num : Int) = {
+        pay.client_id = num
+        dbService.UpdatePayment(pay)
+        new CreatePayment(pay, num)
+      }
+
+      def FOR_AMOUNT(dou:Double)={
+        pay.amount = dou
+        dbService.UpdatePayment(pay)
+        val client = dbService.GetClient(id)
+        val temp = client.balance
+        client.balance = temp - dou
+        dbService.UpdateClient(client)
+        new CreatePayment(pay, id)
+      }
+
+      def REVIEWED_BY(num:Int)={
+        pay.emp_id=num
+        dbService.UpdatePayment(pay)
+      }
+    }
+
+    class CreateShipment(ship:Shipment, id: Int){
+
+      def OF_ITEM(num : Int) = {
+        ship.inv_id = num
+        dbService.UpdateShipment(ship)
+        new CreateShipment(ship, num)
+      }
+
+      def FOR_COST(dou:Double)={
+        ship.total_cost = dou
+        dbService.UpdateShipment(ship)
+        val inv = dbService.GetInventory(id)
+        val temp = inv.total_cost
+        inv.total_cost = temp + dou
+        dbService.UpdateInventory(inv)
+        new CreateShipment(ship, id)
+      }
+
+      def FOR_AMOUNT(num:Int)={
+        ship.count = num
+        dbService.UpdateShipment(ship)
+        val inv = dbService.GetInventory(id)
+        val temp = inv.count
+        inv.count = temp + num
+        dbService.UpdateInventory(inv)
+        new CreateShipment(ship, id)
+      }
+    }
   }
 
   object UPDATE {
@@ -246,6 +400,11 @@ class Bdsl {
     def PROJECT( id: Int ) = {
       println( "Updating PROJECT " + id)
       new ModifyProject(dbService.GetProject(id))
+    }
+
+    def INVENTORY( id: Int ) = {
+      println( "Updating INVENTORY " + id)
+      new ModifyInventory(dbService.GetInventory(id))
     }
 
     class ModifyEmployee( emp: Employee ) {
@@ -352,6 +511,40 @@ class Bdsl {
         }
       }
     }
+
+    class ModifyInventory(inv: Inventory ) {
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue( keyword )
+      }
+
+      class UpdateContinue( keyword: AttributeKeyword ) {
+        def TO(num: Int)= {
+          keyword match {
+            case ID => inv.id = num
+            case COUNT => inv.count = num
+          }
+          dbService.UpdateInventory(inv)
+          new ModifyInventory(inv)
+        }
+
+        def TO(dou: Double)= {
+          keyword match {
+            case TOTAL_COST => inv.total_cost = dou
+            case TOTAL_EARNING => inv.total_earning = dou
+          }
+          dbService.UpdateInventory(inv)
+          new ModifyInventory(inv)
+        }
+
+        def TO(str: String) = {
+          inv.name = str
+          dbService.UpdateInventory(inv)
+          new ModifyInventory(inv)
+        }
+      }
+    }
+
   }
 
   object REMOVE {
@@ -371,6 +564,10 @@ class Bdsl {
     def PROJECT( id: Int ) = {
       println( "Removing PROJECT " + dbService.DeleteProject(id) )
     }
+
+    def INVENTORY( id: Int ) = {
+      println( "Removing INVENTORY " + dbService.DeleteInventory(id) )
+    }
   }
 
   object PRINT {
@@ -380,6 +577,10 @@ class Bdsl {
         case CLIENT => dbService.ListAllClients()
         case MEETING => dbService.ListAllMeetings()
         case PROJECT => dbService.ListAllProjects()
+        case INVENTORY => dbService.ListAllInventorys()
+        case PAYMENT => dbService.ListAllPayments()
+        case PURCHASE => dbService.ListAllPurchases()
+        case SHIPMENT => dbService.ListAllShipments()
       }
     }
 
@@ -388,6 +589,10 @@ class Bdsl {
       dbService.ListAllClients()
       dbService.ListAllMeetings()
       dbService.ListAllProjects()
+      dbService.ListAllInventorys()
+      dbService.ListAllPayments()
+      dbService.ListAllPurchases()
+      dbService.ListAllShipments()
     }
   }
 

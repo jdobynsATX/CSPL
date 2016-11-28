@@ -1,8 +1,6 @@
 package cs345.database
 
 import slick.driver.H2Driver.api._
-// import slick.driver.MySQLDriver.api._
-// import slick.driver.PostgresDriver.api._
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
@@ -272,15 +270,16 @@ object DBSetup {
   val shipments = TableQuery[Shipments]
 
   //add foreign keys
-  class Inventorys(tag: Tag) extends Table[(Int, Int, Double, Double)](tag, "" +
+  class Inventorys(tag: Tag) extends Table[(Int, String, Int, Double, Double)](tag, "" +
     "INVENTORYS") {
     def id = column[Int]("PURCHASE_ID", O.PrimaryKey, O.AutoInc)
+    def name = column[String]("NAME")
     def count = column[Int]("COUNT")
     def total_cost = column[Double]("TOTAL_COST")
     def total_earning = column[Double]("TOTAL_EARNING")
-    def * = (id, count, total_cost, total_earning)
+    def * = (id, name, count, total_cost, total_earning)
   }
-  val Inventorys = TableQuery[Inventorys]
+  val inventorys = TableQuery[Inventorys]
 
 
   class MeetingJoin(tag: Tag) extends Table[(Int, Int)](tag, "MEET_JOIN") {
@@ -306,11 +305,13 @@ object DBSetup {
     // Create the tables, including primary and foreign keys
 
     (employees.schema ++ clients.schema ++ meetings.schema
-      ++ projects.schema ++ meetingJoinTable.schema ++ projectJoinTable.schema).create//,
-    // employees += (0, "Existing One", 5, 75.5, default_blob),
-    // employees += (0, "Existing Two", 3, 78.95, default_blob),
-    // clients += (2, "C1", Client.ADDDATE_DEFAULT_VALUE, 0),
-    // meetings += (0, 1, "M0", Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE)
+      ++ projects.schema ++ inventorys.schema ++ shipments.schema ++
+      payments.schema ++ purchases.schema ++ meetingJoinTable.schema ++ projectJoinTable.schema).create//,
+    //employees += (0, "Existing One", 5, 75.5, default_blob),
+    //employees += (0, "Existing Two", 3, 78.95, default_blob),
+    //clients += (2, "C1", Client.ADDDATE_DEFAULT_VALUE, 0),
+   // meetings += (0, 1, "M0", Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE),
+ //   inventorys +=(0, "item1", 4, 342.2, 0)
 
   )
 }

@@ -6,8 +6,6 @@ import scala.concurrent.duration.Duration
 
 // Use H2Driver to connect to an H2 database
 import slick.driver.H2Driver.api._
-// import slick.driver.MySQLDriver.api._
-// import slick.driver.PostgresDriver.api._
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
@@ -23,6 +21,10 @@ class DBService() {
   val clients = DBSetup.clients
   val employees = DBSetup.employees
   val projects = DBSetup.projects
+  val payments = DBSetup.payments
+  val purchases = DBSetup.purchases
+  val shipments = DBSetup.shipments
+  val inventorys = DBSetup.inventorys
 
   def Stop() = {
     db.close
@@ -284,6 +286,240 @@ class DBService() {
     return id
   }
 
+  def ListAllPayments() = {
+    println("Payments:")
+    db.run(payments.result).map(_.foreach {
+      case (id, client_id, emp_id, amount, received) =>
+        println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + amount + "\t" +received + "\t")
+    })
+  }
+
+  def GetPayment(id: Int): Payment = {
+    val query = for {
+      payment <- payments if payment.id === id
+    } yield payment
+    val action = query.result.head
+    val f: Future[(Int, Int, Int, Double, Timestamp)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retPayment = new Payment(result)
+    return retPayment
+  }
+
+
+  def NewPayment(): Payment = {
+    val insert = (payments returning payments.map(_.id)) += (-1, -1, -1, 0.0, new Timestamp(0))
+    val insertSeq: Future[Int] = db.run(insert)
+
+    val paymentId = Await.result(insertSeq, Duration.Inf)
+    var result = new Payment(paymentId)
+    return result
+  }
+
+  def UpdatePayment(payment: Payment): Payment = {
+    val updated = payments.insertOrUpdate(payment.id, payment.client_id, payment.emp_id, payment.amount, payment.received)
+    val updateSeq: Future[Int] = db.run(updated)
+
+    if (Await.result(updateSeq, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find payment")
+    return payment
+  }
+
+  def DeletePayment(payment: Payment): Payment = {
+    val query = payments.filter(_.id === payment.id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find payment")
+    return payment
+  }
+
+  def DeletePayment(id: Int): Int = {
+    val query = payments.filter(_.id === id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find payment")
+    return id
+  }
+
+  def ListAllPurchases() = {
+    println("Purchases:")
+    db.run(purchases.result).map(_.foreach {
+      case (id, client_id, emp_id, inv_id, count, total_cost, purchase_date) =>
+        println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + inv_id + "\t" + count + "\t" + total_cost + "\t" + purchase_date + "\t")
+    })
+  }
+
+  def GetPurchase(id: Int): Purchase = {
+    val query = for {
+      purchase <- purchases if purchase.id === id
+    } yield purchase
+    val action = query.result.head
+    val f: Future[(Int, Int, Int, Int, Int, Double, Timestamp)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retPurchase = new Purchase(result)
+    return retPurchase
+  }
+
+
+  def NewPurchase(): Purchase = {
+    val insert = (purchases returning purchases.map(_.id)) += (-1, -1, -1, -1, -1, 0.0, new Timestamp(0))
+    val insertSeq: Future[Int] = db.run(insert)
+
+    val purchaseId = Await.result(insertSeq, Duration.Inf)
+    var result = new Purchase(purchaseId)
+    return result
+  }
+
+  def UpdatePurchase(purchase: Purchase): Purchase = {
+    val updated = purchases.insertOrUpdate(purchase.id, purchase.client_id, purchase.emp_id, purchase.inv_id, purchase.count, purchase.total_cost, purchase.purchase_date)
+    val updateSeq: Future[Int] = db.run(updated)
+
+    if (Await.result(updateSeq, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find purchase")
+    return purchase
+  }
+
+  def DeletePurchase(purchase: Purchase): Purchase = {
+    val query = purchases.filter(_.id === purchase.id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find purchase")
+    return purchase
+  }
+
+  def DeletePurchase(id: Int): Int = {
+    val query = purchases.filter(_.id === id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find purchase")
+    return id
+  }
+
+  def ListAllShipments() = {
+    println("Shipments:")
+    db.run(shipments.result).map(_.foreach {
+      case (id, emp_id, inv_id, count, total_cost, received) =>
+        println("  " + id + "\t" + emp_id + "\t" + inv_id + "\t" + count + "\t" + total_cost + "\t" + received + "\t")
+    })
+  }
+
+  def GetShipment(id: Int): Shipment = {
+    val query = for {
+      shipment <- shipments if shipment.id === id
+    } yield shipment
+    val action = query.result.head
+    val f: Future[(Int, Int, Int, Int, Double, Timestamp)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retShipment = new Shipment(result)
+    return retShipment
+  }
+
+  def NewShipment(): Shipment = {
+    val insert = (shipments returning shipments.map(_.id)) += (-1, -1, -1, -1, 0.0, new Timestamp(0))
+    val insertSeq: Future[Int] = db.run(insert)
+
+    val shipmentId = Await.result(insertSeq, Duration.Inf)
+    var result = new Shipment(shipmentId)
+    return result
+  }
+
+  def UpdateShipment(shipment: Shipment): Shipment = {
+    val updated = shipments.insertOrUpdate(shipment.id, shipment.emp_id, shipment.inv_id, shipment.count,  shipment.total_cost, shipment.received)
+    val updateSeq: Future[Int] = db.run(updated)
+
+    if (Await.result(updateSeq, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find shipment")
+    return shipment
+  }
+
+  def DeleteShipment(shipment: Shipment): Shipment = {
+    val query = shipments.filter(_.id === shipment.id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find shipment")
+    return shipment
+  }
+
+  def DeleteShipment(id: Int): Int = {
+    val query = shipments.filter(_.id === id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find shipment")
+    return id
+  }
+
+  def ListAllInventorys() = {
+    println("Inventories:")
+    db.run(inventorys.result).map(_.foreach {
+      case (id, name, count, total_cost, total_earning) =>
+        println("  " + id + "\t" + name + "\t" + count + "\t" + total_cost + "\t" + total_earning + "\t")
+    })
+  }
+
+  def GetInventory(id: Int): Inventory = {
+    val query = for {
+      inventory <- inventorys if inventory.id === id
+    } yield inventory
+    val action = query.result.head
+    val f: Future[(Int, String, Int, Double, Double)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retInventory = new Inventory(result)
+    return retInventory
+  }
+
+
+  def NewInventory(): Inventory = {
+    val insert = (inventorys returning inventorys.map(_.id)) += (-1, "", -1, 0.0, 0.0)
+    val insertSeq: Future[Int] = db.run(insert)
+
+    val inventoryId = Await.result(insertSeq, Duration.Inf)
+    var result = new Inventory(inventoryId)
+    return result
+  }
+
+  def UpdateInventory(inventory: Inventory): Inventory = {
+    val updated = inventorys.insertOrUpdate(inventory.id, inventory.name, inventory.count, inventory.total_cost, inventory.total_earning)
+    val updateSeq: Future[Int] = db.run(updated)
+
+    if (Await.result(updateSeq, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find inventory")
+    return inventory
+  }
+
+  def DeleteInventory(inventory: Inventory): Inventory = {
+    val query = inventorys.filter(_.id === inventory.id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find inventory")
+    return inventory
+  }
+
+  def DeleteInventory(id: Int): Int = {
+    val query = inventorys.filter(_.id === id)
+    val action = query.delete
+    val affectedRowsCount: Future[Int] = db.run(action)
+
+    if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find inventory")
+    return id
+  }
 
 }
 

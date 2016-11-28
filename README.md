@@ -68,3 +68,18 @@ REMOVE EMPLOYEE 3
 PRINT ALL objectType
 PRINT ALL EMPLOYEE
 ```
+
+####Restocking
+```
+CREATE NEW SHIPMENT OF_ITEM -id- FOR_AMOUNT -count- FOR_COST -total_cost-
+```
+
+####Orders
+```
+CREATE NEW PURCHASE FOR_CLIENT -client_id- OF_ITEM -inv_id- FOR_AMOUNT -count- FOR_COST -cost- REVIEWED_BY -emp_id-
+```
+
+####Payments
+```
+CREATE NEW PAYMENT FOR_CLIENT -client_id- FOR_AMOUNT -amount- REVIEWED_BY -emp_id-
+```
