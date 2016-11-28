@@ -190,7 +190,7 @@ class DBService() {
   }
 
   def NewMeeting(): Meeting = {
-    val insert = (meetings returning meetings.map(_.id)) += (-1, -1,"", new Timestamp(0), new Timestamp(0))
+    val insert = (meetings returning meetings.map(_.id)) += (-1, 1 ,"", new Timestamp(0), new Timestamp(0))
     val insertSeq: Future[Int] = db.run(insert)
 
     val meetingId = Await.result(insertSeq, Duration.Inf)
@@ -249,7 +249,7 @@ class DBService() {
 
 
   def NewProject(): Project = {
-    val insert = (projects returning projects.map(_.id)) += (-1, -1, "", new Date(0))
+    val insert = (projects returning projects.map(_.id)) += (-1, 1, "", new Date(0))
     val insertSeq: Future[Int] = db.run(insert)
 
     val projectId = Await.result(insertSeq, Duration.Inf)

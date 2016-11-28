@@ -27,14 +27,14 @@ object Client {
 
 object Meeting {
   val NAME_DEFAULT_VALUE = ""
-  val CLIENT_DEFAULT = -1
+  val CLIENT_DEFAULT = 1
   val START_DEFAULT_VALUE: Timestamp = new Timestamp(0)
   val END_DEFAULT_VALUE: Timestamp = new Timestamp(0)
 }
 
 object Project {
   val NAME_DEFAULT_VALUE = ""
-  val CLIENT_DEFAULT = -1
+  val CLIENT_DEFAULT = 1
   val END_DEFAULT_VALUE: Date = new Date(0)
 }
 
@@ -306,12 +306,11 @@ object DBSetup {
 
     (employees.schema ++ clients.schema ++ meetings.schema
       ++ projects.schema ++ inventorys.schema ++ shipments.schema ++
-      payments.schema ++ purchases.schema ++ meetingJoinTable.schema ++ projectJoinTable.schema).create//,
+      payments.schema ++ purchases.schema ++ meetingJoinTable.schema ++ projectJoinTable.schema).create,
     //employees += (0, "Existing One", 5, 75.5, default_blob),
     //employees += (0, "Existing Two", 3, 78.95, default_blob),
-    //clients += (2, "C1", Client.ADDDATE_DEFAULT_VALUE, 0),
+    clients += (1, "SELF", Client.ADDDATE_DEFAULT_VALUE, 0)
+  )
    // meetings += (0, 1, "M0", Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE),
  //   inventorys +=(0, "item1", 4, 342.2, 0)
-
-  )
 }
