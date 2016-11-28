@@ -6,13 +6,15 @@ import scala.concurrent.duration.Duration
 
 // Use H2Driver to connect to an H2 database
 import slick.driver.H2Driver.api._
+// import slick.driver.MySQLDriver.api._
+// import slick.driver.PostgresDriver.api._
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 
 class DBService() {
-  val db = Database.forConfig("h2mem1")
+  val db = Database.forConfig("h2")
 
   val setupFuture = db.run(DBSetup.setupSequence)
   Await.result(setupFuture, Duration.Inf)
