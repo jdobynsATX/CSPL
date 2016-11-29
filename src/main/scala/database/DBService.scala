@@ -1,11 +1,14 @@
 package cs345.database
 
+import cs345.scheduler.datastructures._
+
 import scala.concurrent.{Future, Await}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
 // Use H2Driver to connect to an H2 database
 import slick.driver.H2Driver.api._
+// import slick.driver.MySQLDriver.api._
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
@@ -44,8 +47,8 @@ class DBService() {
 
   def GetAllEmployees(): Array[Employee] = {
     var result: Array[Employee] = new Array[Employee](0)
-    val f: Future[Seq[(Int, String, Int, Double, Blob)]] = db.run(employees.result)
-    val queryResult: Seq[(Int, String, Int, Double, Blob)] = Await.result(f, Duration.Inf)
+    val f: Future[Seq[(Int, String, Int, Double, Array[Byte])]] = db.run(employees.result)
+    val queryResult: Seq[(Int, String, Int, Double, Array[Byte])] = Await.result(f, Duration.Inf)
     for (empData <- queryResult) {
       result = result :+ (new Employee(empData))
     }
@@ -57,7 +60,7 @@ class DBService() {
       emp <- employees if emp.id === id
     } yield emp
     val action = query.result.head
-    val f: Future[(Int, String, Int, Double, Blob)] = db.run(action)
+    val f: Future[(Int, String, Int, Double, Array[Byte])] = db.run(action)
 
     val result = Await.result(f, Duration.Inf)
     val e = new Employee(result)
@@ -65,7 +68,7 @@ class DBService() {
   }
 
   def NewEmployee(): Employee = {
-    val default_blob = new SerialBlob(Array[Byte](0))
+    val default_blob = (new ScheduleMap()).toByteArray()
     val insert = (employees returning employees.map(_.id)) += (-1, "", -1, -1, default_blob)
     val insertSeq: Future[Int] = db.run(insert)
 
@@ -75,7 +78,7 @@ class DBService() {
   }
 
   def UpdateEmployee(emp: Employee): Employee = {
-    val updated = employees.insertOrUpdate(emp.id, emp.name, emp.rank, emp.pay, emp.schedule)
+    val updated = employees.insertOrUpdate(emp.id, emp.name, emp.rank, emp.pay, emp.schedule.toByteArray())
     println( "DEBUG") //DEBUG
     val updateSeq: Future[Int] = db.run(updated)
 
