@@ -160,7 +160,7 @@ class Bdsl {
           keyword match {
             case ID => pro.id = num
             case CLIENT_ID => pro.client_id = num
-            case START => pro.end = new Date(num)
+            case END => pro.end = new Date(num)
           }
           dbService.UpdateProject(pro)
           new CreateProject(pro)
@@ -309,52 +309,287 @@ class Bdsl {
 
     def ALL( keyword: EmployeeKeyword ) = {
       val emps = dbService.GetAllEmployees()
-      new QueryResults( emps )
+      new EmployeeQuery( emps )
     }
 
-    class QueryResults( emps: Array[Employee] ) {
+    def ALL( keyword: ClientKeyword ) = {
+      val cli = dbService.GetAllClients()
+      new ClientQuery( cli )
+    }
+
+    def ALL( keyword: MeetingKeyword ) = {
+      val mtng = dbService.GetAllMeetings()
+      new MeetingQuery( mtng )
+    }
+
+    def ALL( keyword: ProjectKeyword ) = {
+      val proj = dbService.GetAllProjects()
+      new ProjectQuery( proj )
+    }
+
+    class EmployeeQuery( emps: Array[Employee] ) {
       def WHERE( keyword: AttributeKeyword ) = {
         new WhereContinue( keyword )
       }
 
       class WhereContinue( keyword: AttributeKeyword ) {
-        def EQUAL( num: Int ) = {
+        def EQUAL( num: Any ) = {
           keyword match {
-            case ID => new QueryResults( emps.filter( _.id == num ) )
-            case PAY => new QueryResults( emps.filter( _.pay == num ) )
-            case RANK => new QueryResults( emps.filter( _.rank == num ) )
+            case PAY => new EmployeeQuery( emps.filter( _.pay == num.asInstanceOf[Double] ) )
+            case RANK => new EmployeeQuery( emps.filter( _.rank == num.asInstanceOf[Int] ) )
+            case NAME => new EmployeeQuery( emps.filter( _.name == num.asInstanceOf[String] ) )
           }
         }
 
-        def LESSTHAN( num: Int ) = {
+        def LESSTHAN( num: Any ) = {
           keyword match {
-            case ID => new QueryResults( emps.filter( _.id < num ) )
-            case PAY => new QueryResults( emps.filter( _.pay < num ) )
-            case RANK => new QueryResults( emps.filter( _.rank < num ) )
+            case PAY => new EmployeeQuery( emps.filter( _.pay < num.asInstanceOf[Double] ) )
+            case RANK => new EmployeeQuery( emps.filter( _.rank < num.asInstanceOf[Int] ) )
+            case NAME => new EmployeeQuery( emps.filter( _.name < num.asInstanceOf[String] ) )
           }
         }
 
-        def GREATERTHAN( num: Int ) = {
+        def GREATERTHAN( num: Any ) = {
           keyword match {
-            case ID => new QueryResults( emps.filter( _.id > num ) )
-            case PAY => new QueryResults( emps.filter( _.pay > num ) )
-            case RANK => new QueryResults( emps.filter( _.rank > num ) )
+            case PAY => new EmployeeQuery( emps.filter( _.pay > num.asInstanceOf[Double] ) )
+            case RANK => new EmployeeQuery( emps.filter( _.rank > num.asInstanceOf[Int] ) )
+            case NAME => new EmployeeQuery( emps.filter( _.name > num.asInstanceOf[String] ) )
           }
         }
 
-        def LESSTHANEQUAL( num: Int ) = {
+        def LESSTHANEQUAL( num: Any ) = {
           keyword match {
-            case ID => new QueryResults( emps.filter( _.id <= num ) )
-            case PAY => new QueryResults( emps.filter( _.pay <= num ) )
-            case RANK => new QueryResults( emps.filter( _.rank <= num ) )
+            case PAY => new EmployeeQuery( emps.filter( _.pay <= num.asInstanceOf[Double] ) )
+            case RANK => new EmployeeQuery( emps.filter( _.rank <= num.asInstanceOf[Int] ) )
+            case NAME => new EmployeeQuery( emps.filter( _.name <= num.asInstanceOf[String] ) )
           }
         }
 
-        def GREATERTHANEQUAL( num: Int ) = {
+        def GREATERTHANEQUAL( num: Any ) = {
           keyword match {
-            case ID => new QueryResults( emps.filter( _.id >= num ) )
-            case PAY => new QueryResults( emps.filter( _.pay >= num ) )
-            case RANK => new QueryResults( emps.filter( _.rank >= num ) )
+            case PAY => new EmployeeQuery( emps.filter( _.pay >= num.asInstanceOf[Double] ) )
+            case RANK => new EmployeeQuery( emps.filter( _.rank >= num.asInstanceOf[Int] ) )
+            case NAME => new EmployeeQuery( emps.filter( _.name >= num.asInstanceOf[String] ) )
+          }
+        }
+      }
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue( keyword )
+      }
+
+      class UpdateContinue( keyword: AttributeKeyword ) {
+        def TO(num: Int) = {
+          emps.foreach(_.rank = num)
+          emps.foreach( dbService.UpdateEmployee(_) )
+          new EmployeeQuery(emps)
+        }
+
+        def TO(num: Double) = {
+          emps.foreach(_.pay = num)
+          emps.foreach( dbService.UpdateEmployee(_) )
+          new EmployeeQuery(emps)
+        }
+
+        def TO(str: String) = {
+          emps.foreach(_.name = str)
+          emps.foreach( dbService.UpdateEmployee(_) )
+          new EmployeeQuery(emps)
+        }
+      }
+    }
+
+    class ClientQuery( cli: Array[Client] ) {
+      def WHERE( keyword: AttributeKeyword ) = {
+        new WhereContinue( keyword )
+      }
+
+      class WhereContinue( keyword: AttributeKeyword ) {
+        def EQUAL( num: Any ) = {
+          keyword match {
+            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))==0 ) )
+            case BALANCE => new ClientQuery( cli.filter( _.balance == num.asInstanceOf[Double] ) )
+            case NAME => new ClientQuery( cli.filter( _.name == num.asInstanceOf[String] ) )
+          }
+        }
+
+        def LESSTHAN( num: Any ) = {
+          keyword match {
+            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))<0 ) )
+            case BALANCE => new ClientQuery( cli.filter( _.balance < num.asInstanceOf[Double] ) )
+            case NAME => new ClientQuery( cli.filter( _.name < num.asInstanceOf[String] ) )
+          }
+        }
+
+        def GREATERTHAN( num: Any ) = {
+          keyword match {
+            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))>0 ) )
+            case BALANCE => new ClientQuery( cli.filter( _.balance > num.asInstanceOf[Double] ) )
+            case NAME => new ClientQuery( cli.filter( _.name > num.asInstanceOf[String] ) )
+          }
+        }
+
+        def LESSTHANEQUAL( num: Any ) = {
+          keyword match {
+            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))<=0 ) )
+            case BALANCE => new ClientQuery( cli.filter( _.balance <= num.asInstanceOf[Double] ) )
+            case NAME => new ClientQuery( cli.filter( _.name <= num.asInstanceOf[String] ) )
+          }
+        }
+
+        def GREATERTHANEQUAL( num: Any ) = {
+          keyword match {
+            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))>=0 ) )
+            case BALANCE => new ClientQuery( cli.filter( _.balance >= num.asInstanceOf[Double] ) )
+            case NAME => new ClientQuery( cli.filter( _.name >= num.asInstanceOf[String] ) )
+          }
+        }
+      }
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue( keyword )
+      }
+
+      class UpdateContinue( keyword: AttributeKeyword ) {
+        def TO(num: Int) = {
+          cli.foreach(_.addDate = new Date( num ))
+          cli.foreach( dbService.UpdateClient(_) )
+          new ClientQuery(cli)
+        }
+
+        def TO(num: Double) = {
+          cli.foreach(_.balance = num)
+          cli.foreach( dbService.UpdateClient(_) )
+          new ClientQuery(cli)
+        }
+
+        def TO(str: String) = {
+          cli.foreach(_.name = str)
+          cli.foreach( dbService.UpdateClient(_) )
+          new ClientQuery(cli)
+        }
+      }
+    }
+
+    class MeetingQuery( mtng: Array[Meeting] ) {
+      def WHERE( keyword: AttributeKeyword ) = {
+        new WhereContinue( keyword )
+      }
+
+      class WhereContinue( keyword: AttributeKeyword ) {
+        def EQUAL( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id == num.asInstanceOf[Int] ) )
+            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))==0 ) )
+            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))==0 ) )
+            case NAME => new MeetingQuery( mtng.filter( _.name == num.asInstanceOf[String] ) )
+          }
+        }
+
+        def LESSTHAN( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id < num.asInstanceOf[Int] ) )
+            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<0 ) )
+            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))<0 ) )
+            case NAME => new MeetingQuery( mtng.filter( _.name < num.asInstanceOf[String] ) )
+          }
+        }
+
+        def GREATERTHAN( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id > num.asInstanceOf[Int] ) )
+            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))>0 ) )
+            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))>0 ) )
+            case NAME => new MeetingQuery( mtng.filter( _.name > num.asInstanceOf[String] ) )
+          }
+        }
+
+        def LESSTHANEQUAL( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id <= num.asInstanceOf[Int] ) )
+            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<=0 ) )
+            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))<=0 ) )
+            case NAME => new MeetingQuery( mtng.filter( _.name <= num.asInstanceOf[String] ) )
+          }
+        }
+
+        def GREATERTHANEQUAL( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id >= num.asInstanceOf[Int] ) )
+            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))>=0 ) )
+            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))>=0 ) )
+            case NAME => new MeetingQuery( mtng.filter( _.name >= num.asInstanceOf[String] ) )
+          }
+        }
+      }
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue( keyword )
+      }
+
+      class UpdateContinue( keyword: AttributeKeyword ) {
+
+        def TO(num: Int) = {
+          keyword match {
+            case CLIENT_ID => mtng.foreach(_.client_id = num)
+            case START => mtng.foreach(_.start = new Timestamp(num) )
+            case END => mtng.foreach(_.end = new Timestamp(num) )
+          }
+          mtng.foreach( dbService.UpdateMeeting(_) )
+          new MeetingQuery(mtng)
+        }
+
+        def TO(str: String) = {
+          mtng.foreach(_.name = str)
+          mtng.foreach( dbService.UpdateMeeting(_) )
+          new MeetingQuery(mtng)
+        }
+      }
+    }
+
+    class ProjectQuery( proj: Array[Project] ) {
+      def WHERE( keyword: AttributeKeyword ) = {
+        new WhereContinue( keyword )
+      }
+
+      class WhereContinue( keyword: AttributeKeyword ) {
+        def EQUAL( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id == num.asInstanceOf[Int] ) )
+            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))==0 ) )
+            case NAME => new ProjectQuery( proj.filter( _.name == num.asInstanceOf[String] ) )
+          }
+        }
+
+        def LESSTHAN( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id < num.asInstanceOf[Int] ) )
+            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))<0 ) )
+            case NAME => new ProjectQuery( proj.filter( _.name < num.asInstanceOf[String] ) )
+          }
+        }
+
+        def GREATERTHAN( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id > num.asInstanceOf[Int] ) )
+            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))>0 ) )
+            case NAME => new ProjectQuery( proj.filter( _.name > num.asInstanceOf[String] ) )
+          }
+        }
+
+        def LESSTHANEQUAL( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id <= num.asInstanceOf[Int] ) )
+            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))<=0 ) )
+            case NAME => new ProjectQuery( proj.filter( _.name <= num.asInstanceOf[String] ) )
+          }
+        }
+
+        def GREATERTHANEQUAL( num: Any ) = {
+          keyword match {
+            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id >= num.asInstanceOf[Int] ) )
+            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))>=0 ) )
+            case NAME => new ProjectQuery( proj.filter( _.name >= num.asInstanceOf[String] ) )
           }
         }
       }
@@ -366,18 +601,17 @@ class Bdsl {
       class UpdateContinue( keyword: AttributeKeyword ) {
         def TO(num: Int) = {
           keyword match {
-            case ID => emps.foreach(_.id = num)
-            case RANK => emps.foreach(_.rank = num)
-            case PAY => emps.foreach(_.pay = num)
+            case CLIENT_ID => proj.foreach(_.client_id = num)
+            case END => proj.foreach(_.end = new Date(num) )
           }
-          emps.foreach( dbService.UpdateEmployee(_) )
-          new QueryResults(emps)
+          proj.foreach( dbService.UpdateProject(_) )
+          new ProjectQuery(proj)
         }
 
         def TO(str: String) = {
-          emps.foreach(_.name = str)
-          emps.foreach( dbService.UpdateEmployee(_) )
-          new QueryResults(emps)
+          proj.foreach(_.name = str)
+          proj.foreach( dbService.UpdateProject(_) )
+          new ProjectQuery(proj)
         }
       }
     }

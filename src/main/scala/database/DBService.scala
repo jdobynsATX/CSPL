@@ -180,6 +180,16 @@ class DBService() {
     })
   }
 
+  def GetAllMeetings(): Array[Meeting] = {
+    var result: Array[Meeting] = new Array[Meeting](0)
+    val f: Future[Seq[(Int, Int, String, Timestamp, Timestamp)]] = db.run(meetings.result)
+    val queryResult: Seq[(Int, Int, String, Timestamp, Timestamp)] = Await.result(f, Duration.Inf)
+    for (mtngData <- queryResult) {
+      result = result :+ (new Meeting(mtngData))
+    }
+    return result
+  }
+
   def GetMeeting(id: Int): Meeting = {
     val query = for {
       meeting <- meetings if meeting.id === id
@@ -236,6 +246,16 @@ class DBService() {
       case (id, client_id, name, end) =>
         println("  " + id + "\t" + client_id + "\t" + name + "\t" + end + "\t")
     })
+  }
+
+  def GetAllProjects(): Array[Project] = {
+    var result: Array[Project] = new Array[Project](0)
+    val f: Future[Seq[(Int, Int, String, Date)]] = db.run(projects.result)
+    val queryResult: Seq[(Int, Int, String, Date)] = Await.result(f, Duration.Inf)
+    for (projData <- queryResult) {
+      result = result :+ (new Project(projData))
+    }
+    return result
   }
 
   def GetProject(id: Int): Project = {
