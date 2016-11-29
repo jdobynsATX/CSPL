@@ -1,6 +1,9 @@
 package cs345.database
 
+import cs345.scheduler.datastructures._
+
 import slick.driver.H2Driver.api._
+// import slick.driver.MySQLDriver.api._
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
@@ -16,7 +19,7 @@ object Employee {
   val RANK_DEFAULT_VALUE = -1
   val PAY_DEFAULT_VALUE = 0.0
   // val BITSET_DEFAULT: Blob = new SerialBlob(new Array[Byte](0))
-  val BITSET_DEFAULT : Blob = new SerialBlob(Array[Byte](0))
+  val SCHEDULE_DEFAULT: Array[Byte] = (new ScheduleMap()).toByteArray()
 }
 
 object Client {
@@ -70,18 +73,22 @@ object Inventory {
 }
 
 
-class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, var schedule: Blob) extends DBObject {
+class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, var schedule: ScheduleMap) extends DBObject {
   def this(id: Int) {
     this(id, Employee.NAME_DEFAULT_VALUE, Employee.RANK_DEFAULT_VALUE, Employee.PAY_DEFAULT_VALUE, 
-      Employee.BITSET_DEFAULT);
+      new ScheduleMap());
   }
 
-  def this(data: (Int, String, Int, Double, Blob)) {
-    this(data._1, data._2, data._3, data._4, data._5);
+  def this(data: (Int, String, Int, Double, Array[Byte])) {
+    this(data._1, data._2, data._3, data._4, new ScheduleMap(data._5));
   }
+
+  // def this(data: (Int, String, Int, Double, ScheduleMap)) {
+  //   this(data._1, data._2, data._3, data._4, data._5);
+  // }
 
   override def toString: String = {
-    return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay
+    return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay + " Schedule: " + schedule
   }
 }
 
@@ -191,12 +198,12 @@ class Inventory(var id: Int, var name: String, var count: Int, var total_cost: D
 
 object DBSetup {
 
-  class Employees(tag: Tag) extends Table[(Int, String, Int, Double, Blob)](tag, "EMPLOYEES") {
+  class Employees(tag: Tag) extends Table[(Int, String, Int, Double, Array[Byte])](tag, "EMPLOYEES") {
     def id = column[Int]("ID", O.PrimaryKey, O.AutoInc)
     def name = column[String]("NAME")
     def rank = column[Int]("RANK")
     def pay = column[Double]("PAY")
-    def schedule = column[Blob]("SCHEDULE")
+    def schedule = column[Array[Byte]]("SCHEDULE")
     def * = (id, name, rank, pay, schedule)
   }
   val employees = TableQuery[Employees]
