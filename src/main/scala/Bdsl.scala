@@ -804,6 +804,32 @@ class Bdsl {
     }
   }
 
+  object ASSIGN {
+    def EMPLOYEE(id: Int) = {
+      new AssignEmployee(dbService.GetEmployee(id))
+    }
+
+    class AssignEmployee(emp: Employee) {
+      def TO(keyword: EventKeyword) = {
+        new Assignment(keyword)
+      }
+
+      def MEETING(id: Int) = {
+          println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeMeeting(emp.id, id))
+        }
+
+      class Assignment(keyword: EventKeyword) {
+        def MEETING(id: Int) = {
+          println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeMeeting(emp.id, id))
+        }
+
+        def PROJECT(id:Int) = {
+          println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeProject(emp.id, id))
+        }
+      }
+    }
+  }
+
   object PRINT {
     def ALL( keyword: ObjectKeyword ) = { 
       keyword match {
@@ -815,6 +841,8 @@ class Bdsl {
         case PAYMENT => dbService.ListAllPayments()
         case PURCHASE => dbService.ListAllPurchases()
         case SHIPMENT => dbService.ListAllShipments()
+        case MEETING_ASSIGNMENTS => dbService.ListAllMeetingAssignments()
+        case PROJECT_ASSIGNMENTS => dbService.ListAllProjectAssignments()
       }
     }
 

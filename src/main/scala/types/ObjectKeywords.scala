@@ -18,6 +18,9 @@ object MEETING extends MeetingKeyword
 abstract sealed class ProjectKeyword extends ObjectKeyword
 object PROJECT extends ProjectKeyword
 
+abstract sealed class EventKeyword extends ObjectKeyword
+object EVENT extends EventKeyword
+
 abstract sealed class PaymentKeyword extends ObjectKeyword
 object PAYMENT extends PaymentKeyword
 
@@ -29,3 +32,9 @@ object SHIPMENT extends ShipmentKeyword
 
 abstract sealed class InventoryKeyword extends ObjectKeyword
 object INVENTORY extends InventoryKeyword
+
+abstract sealed class MeetingAssignKeyword extends ObjectKeyword
+object MEETING_ASSIGNMENTS extends MeetingAssignKeyword
+
+abstract sealed class ProjectAssignKeyword extends ObjectKeyword
+object PROJECT_ASSIGNMENTS extends ProjectAssignKeyword

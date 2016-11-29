@@ -26,6 +26,9 @@ class DBService() {
   val shipments = DBSetup.shipments
   val inventorys = DBSetup.inventorys
 
+  val meetingJoinTable = DBSetup.meetingJoinTable
+  val projectJoinTable = DBSetup.projectJoinTable
+
   def Stop() = {
     db.close
   }
@@ -99,6 +102,36 @@ class DBService() {
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
       throw new RuntimeException("Did not find emp")
     return id
+  }
+
+  def AssignEmployeeMeeting(emp_id: Int, meet_id: Int)= {
+    val insert = meetingJoinTable += (meet_id, emp_id)
+    val insertSeq: Future[Int] = db.run(insert)
+    val insertComplete = Await.result(insertSeq, Duration.Inf)
+    //DEBUG/ISSUE IMPORTANT: Schedule the employee here
+  }
+
+  def AssignEmployeeProject(emp_id: Int, pro_id: Int)= {
+    val insert = projectJoinTable += (pro_id, emp_id)
+    val insertSeq: Future[Int] = db.run(insert)
+    val insertComplete = Await.result(insertSeq, Duration.Inf)
+    //DEBUG/ISSUE IMPORTANT: Schedule the employee here
+  }
+
+   def ListAllMeetingAssignments() = {
+    println("Meeting Assignments:")
+    db.run(meetingJoinTable.result).map(_.foreach {
+      case (meet_id, emp_id) =>
+        println("  " + meet_id + "\t" + emp_id + "\t")
+    })
+  }
+
+  def ListAllProjectAssignments() = {
+    println("Project Assignments:")
+    db.run(projectJoinTable.result).map(_.foreach {
+      case (meet_id, emp_id) =>
+        println("  " + meet_id + "\t" + emp_id + "\t")
+    })
   }
 
   def ListAllClients() = {
