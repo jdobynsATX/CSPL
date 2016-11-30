@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 object Scheduler {
   def firstAvailableTimeFromNow(employees: Seq[Employee]): LocalDateTime = {
     var curTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).plusHours(1)
-    for (curIter <- 1 to 250){
+    for (curIter <- 1 to 3000){
       // println( "Value of curTime: " + curTime )
       var timeWorks = true
       for (emp <- employees){
@@ -21,12 +21,15 @@ object Scheduler {
 
       curTime = curTime.plusMinutes(30)
     }
-    return LocalDateTime.now()
+    return LocalDateTime.of(0,0,0,0,0)
   }
 
   def firstAvailableTimeFromNow(employees: Seq[Employee], atLeast: Int): LocalDateTime = {
+    if (employees.size < atLeast) {
+      return LocalDateTime.of(0,0,0,0,0)
+    }
     var curTime = LocalDateTime.now().withMinute(0).withSecond(0).withNano(0).plusHours(1)
-    for (curIter <- 1 to 250){
+    for (curIter <- 1 to 3000){
       var timeWorks = 0
       for (emp <- employees){
         if (emp.schedule.isFree(curTime))
@@ -37,7 +40,7 @@ object Scheduler {
 
       curTime = curTime.plusMinutes(30)
     }
-    return LocalDateTime.now()
+    return LocalDateTime.of(0,0,0,0,0)
   }
 
   // def firstAvailableTimeFromNow(employees: Seq[ScheduleMap]): LocalDateTime = {
