@@ -19,7 +19,7 @@ object Employee {
   val RANK_DEFAULT_VALUE = -1
   val PAY_DEFAULT_VALUE = 0.0
   // val BITSET_DEFAULT: Blob = new SerialBlob(new Array[Byte](0))
-  val SCHEDULE_DEFAULT: Array[Byte] = (new ScheduleMap()).toByteArray()
+  val SCHEDULE_DEFAULT:Array[Byte] = (new ScheduleMap()).toByteArray()
 }
 
 object Client {
@@ -31,8 +31,8 @@ object Client {
 object Meeting {
   val NAME_DEFAULT_VALUE = ""
   val CLIENT_DEFAULT = 1
-  val START_DEFAULT_VALUE: Timestamp = new Timestamp(0)
-  val END_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val START_DEFAULT_VALUE:Timestamp = new Timestamp(0)
+  val END_DEFAULT_VALUE:Timestamp = new Timestamp(0)
 }
 
 object Project {
