@@ -93,7 +93,6 @@ object SchedulerTester {
     ical.addEvent(meeting1.getCalEvent())
     ical.addEvent(meeting2.getCalEvent())
     ical.addEvent(meeting3.getCalEvent())
-    ical.addEvent(meeting4.getCalEvent())
     var str = Biweekly.write(ical).go()
     println(str)
 
