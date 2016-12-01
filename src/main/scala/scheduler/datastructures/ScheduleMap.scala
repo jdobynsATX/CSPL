@@ -6,23 +6,32 @@ import java.util.BitSet
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 
+object DEFAULT {
+  val START_DATE: LocalDate = LocalDate.of(2016,11,1)
+}
+
 class ScheduleMap(var startDate: LocalDate, val intervalMins: Int, val numDays: Int) {
   def this() {
-    // TODO: CREATE DEFAULT SCHEDULE WITH TIMES BLOCKED OFF;
-    this(LocalDate.of(2016,6,1), 30, 365)
-    println("DEBUG BitSet size: " + bitmap.size())
+    this(DEFAULT.START_DATE, 30, 365)
+    var date: LocalDate = startDate
+    for (day <- 1 to 365) {
+      if (date.getDayOfWeek().getValue() <= 5) {
+        blockWorkingDay(date)
+      } else {
+        blockDay(date)
+      }
+      date = date.plusDays(1)
+    }
   }
 
   def this(data: Blob) {
-    this(LocalDate.of(2016,6,1), 30, 365)
+    this(DEFAULT.START_DATE, 30, 365)
     bitmap = BitSet.valueOf(data.getBytes(1, (NUM_INTERVALS/8)-1))
-    println("DEBUG BitSet size: " + bitmap.size())
   }
 
   def this(data: Array[Byte]) {
-    this(LocalDate.of(2016,6,1), 30, 365)
+    this(DEFAULT.START_DATE, 30, 365)
     bitmap = BitSet.valueOf(data)
-    println("DEBUG BitSet size: " + bitmap.size())
   }
 
   val INTERVALS_PER_DAY: Int = (1440/intervalMins)
@@ -40,11 +49,22 @@ class ScheduleMap(var startDate: LocalDate, val intervalMins: Int, val numDays: 
   }
 
   def setFree(startTime: LocalDateTime, endTime: LocalDateTime) = {
-    bitmap.set(convertToOffset(startTime), convertToOffset(endTime) + 1, false)
+    bitmap.set(convertToOffset(startTime), convertToOffset(endTime.minusMinutes(1)) + 1, false)
   }
 
   def setBusy(startTime: LocalDateTime, endTime: LocalDateTime) = {
-    bitmap.set(convertToOffset(startTime), convertToOffset(endTime) + 1, true)
+    // HACKY: To get not inclusive of one next block of time on interval changes
+    bitmap.set(convertToOffset(startTime), convertToOffset(endTime.minusMinutes(1)) + 1, true)
+  }
+
+  def blockWorkingDay(day: LocalDate) = {
+    setBusy(day.atTime(0,0), day.atTime(7,59))
+    setBusy(day.atTime(12,0), day.atTime(12,59))
+    setBusy(day.atTime(17,0), day.atTime(23,59))
+  }
+
+  def blockDay(day: LocalDate) = {
+    setBusy(day.atTime(0,0), day.atTime(23,59))
   }
 
   def isFree(dateTime: LocalDateTime): Boolean = {
