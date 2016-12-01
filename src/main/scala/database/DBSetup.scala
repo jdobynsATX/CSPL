@@ -8,6 +8,8 @@ import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
+import java.time.LocalDateTime
+import java.time.ZoneId
 //ISSUE: Blob is a placeholder for a user-defined type
 trait DBObject {
   
@@ -88,7 +90,7 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
   // }
 
   override def toString: String = {
-    return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay + " Schedule: " + schedule
+    return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay //+ " Schedule: " + schedule
   }
 }
 
@@ -114,6 +116,18 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
 
   def this(data: (Int, Int, String, Timestamp, Timestamp)) {
     this(data._1, data._2, data._3, data._4, data._5);
+  }
+
+  def setStart(time: LocalDateTime) {
+    var zoneId = ZoneId.systemDefault(); 
+    var epoch = time.atZone(zoneId).toEpochSecond();
+    this.start = new Timestamp(epoch * 1000);
+  }
+
+  def setEnd(time: LocalDateTime) {
+    var zoneId = ZoneId.systemDefault(); 
+    var epoch = time.atZone(zoneId).toEpochSecond();
+    this.end = new Timestamp(epoch * 1000);
   }
 
   override def toString: String = {
