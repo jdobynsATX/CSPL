@@ -2,6 +2,8 @@ package cs345.database
 
 import cs345.scheduler.datastructures._
 
+import biweekly.Biweekly
+import biweekly.component.VEvent
 import slick.driver.H2Driver.api._
 // import slick.driver.MySQLDriver.api._
 import java.sql.Date
@@ -128,6 +130,15 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
     var zoneId = ZoneId.systemDefault(); 
     var epoch = time.atZone(zoneId).toEpochSecond();
     this.end = new Timestamp(epoch * 1000);
+  }
+
+  def getCalEvent(): VEvent = {
+    var event = new VEvent()
+    event.setDateStart(this.start)
+    event.setDateEnd(this.end)
+    event.setSummary(this.name)
+    // event.setLocation("NONE")
+    return event
   }
 
   override def toString: String = {

@@ -12,5 +12,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick-hikaricp" % "3.1.1",
   "com.zaxxer" % "HikariCP" % "2.4.1",
   "org.slf4j" % "slf4j-nop" % "1.6.4",
-  "com.h2database" % "h2" % "1.4.177"
+  "com.h2database" % "h2" % "1.4.177",
+  "net.sf.biweekly" % "biweekly" % "0.6.0"
 )

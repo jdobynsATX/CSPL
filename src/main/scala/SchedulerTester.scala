@@ -2,9 +2,13 @@ import cs345.scheduler.datastructures._
 import cs345.scheduler._
 import cs345.database._
 
+import biweekly.ICalendar
+import biweekly.Biweekly
+
 import java.time.LocalDateTime
 import java.sql.Timestamp
 import java.time.ZoneId
+import java.io._
 
 
 object SchedulerTester {
@@ -83,6 +87,19 @@ object SchedulerTester {
 
     val meeting5StartTime = Scheduler.firstAvailableTimeFromNow(30, emps1)
     println(meeting5StartTime)
+
+    // CALENDAR TESTING
+    var ical = new ICalendar()
+    ical.addEvent(meeting1.getCalEvent())
+    ical.addEvent(meeting2.getCalEvent())
+    ical.addEvent(meeting3.getCalEvent())
+    ical.addEvent(meeting4.getCalEvent())
+    var str = Biweekly.write(ical).go()
+    println(str)
+
+    val pw = new PrintWriter(new File("calendartest.ics" ))
+    pw.write(str)
+    pw.close
 
     // var schedule1 = new ScheduleMap()
     // var schedule2 = new ScheduleMap()
