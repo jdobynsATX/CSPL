@@ -15,8 +15,8 @@ object Scheduler {
       // println( "Value of curTime: " + curTime )
       var timeWorks = true
       for (emp <- employees) {
-        println("DEBUG: " + emp + " TIME: " + curTime)
-        println("DEBUG: " + !emp.schedule.isFree(curTime, curTime.plusMinutes(durationMinutes)))
+        // println("DEBUG: " + emp + " TIME: " + curTime)
+        // println("DEBUG: " + !emp.schedule.isFree(curTime, curTime.plusMinutes(durationMinutes)))
         if (!emp.schedule.isFree(curTime, curTime.plusMinutes(durationMinutes)))
           timeWorks = false
       }
