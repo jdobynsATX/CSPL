@@ -8,6 +8,7 @@ import javax.sql.rowset.serial.SerialBlob
 
 class ScheduleMap(var startDate: LocalDate, val intervalMins: Int, val numDays: Int) {
   def this() {
+    // TODO: CREATE DEFAULT SCHEDULE WITH TIMES BLOCKED OFF;
     this(LocalDate.of(2016,6,1), 30, 365)
     println("DEBUG BitSet size: " + bitmap.size())
   }
@@ -48,6 +49,10 @@ class ScheduleMap(var startDate: LocalDate, val intervalMins: Int, val numDays: 
 
   def isFree(dateTime: LocalDateTime): Boolean = {
     return !bitmap.get(convertToOffset(dateTime))
+  }
+
+  def isFree(startTime: LocalDateTime, endTime: LocalDateTime): Boolean = {
+    return bitmap.get(convertToOffset(startTime), convertToOffset(endTime)).isEmpty()
   }
 
   def getStartDate(): LocalDate = {
