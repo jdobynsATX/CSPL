@@ -305,7 +305,7 @@ class Bdsl {
     }
   }
 
-  object UPDATE {
+  object BATCH {
 
     def ALL( keyword: EmployeeKeyword ) = {
       val emps = dbService.GetAllEmployees()
@@ -397,6 +397,16 @@ class Bdsl {
           new EmployeeQuery(emps)
         }
       }
+
+      def PRINT = {
+        println("Employees:")
+        println("    ID    |             NAME             |   RANK   |   PAY    ")
+        emps.foreach( println(_) )
+      }
+
+      def REMOVE = {
+        //emps.foreach( println( "Removing EMPLOYEE " + dbService.DeleteEmployee(_.id) ) )
+      }
     }
 
     class ClientQuery( cli: Array[Client] ) {
@@ -468,6 +478,16 @@ class Bdsl {
           cli.foreach( dbService.UpdateClient(_) )
           new ClientQuery(cli)
         }
+      }
+
+      def PRINT = {
+        println("Clients:")
+        println("    ID    |             NAME             |        DATE        | BALANCE  ")
+        cli.foreach( println(_) )
+      }
+
+      def REMOVE = {
+        //cli.foreach( println( "Removing CLIENT " + dbService.DeleteClient(_.id) ) )
       }
     }
 
@@ -545,6 +565,16 @@ class Bdsl {
           new MeetingQuery(mtng)
         }
       }
+
+      def PRINT = {
+        println("Meetings:")
+        println("    ID    |             NAME             |       START        |   END")
+        mtng.foreach( println(_) )
+      }
+
+      def REMOVE = {
+        //mtng.foreach( println( "Removing MEETING " + dbService.DeleteMeeting(_.id) ) )
+      }
     }
 
     class ProjectQuery( proj: Array[Project] ) {
@@ -614,7 +644,20 @@ class Bdsl {
           new ProjectQuery(proj)
         }
       }
+
+      def PRINT = {
+        println("Projects:")
+        println("    ID    |             NAME             |   END")
+        proj.foreach( println(_) )
+      }
+
+      def REMOVE = {
+        //proj.foreach( println( "Removing PROJECT " + dbService.DeleteProject(_.id) ) )
+      }
     }
+  }
+
+  object UPDATE {
 
     def EMPLOYEE( id: Int ) = {
       println( "Updating EMPLOYEE " + id)
