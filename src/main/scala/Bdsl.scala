@@ -13,65 +13,66 @@ import scala.collection.mutable.Map
 
 class Bdsl {
   val dbService = new DBService
+
   object CREATE {
 
     def NEW(keyword: EmployeeKeyword) = {
       val emp = dbService.NewEmployee()
-      println( "Created new employee with ID " + emp.id )
+      println("Created new employee with ID " + emp.id)
       new CreateEmployee(emp)
     }
 
     def NEW(keyword: ClientKeyword) = {
       val cli = dbService.NewClient()
-      println( "Created new client with ID " + cli.id )
+      println("Created new client with ID " + cli.id)
       new CreateClient(cli)
     }
 
     def NEW(keyword: MeetingKeyword) = {
       val env = dbService.NewMeeting()
-      println( "Created new meeting with ID " + env.id )
+      println("Created new meeting with ID " + env.id)
       new CreateMeeting(env)
     }
 
     def NEW(keyword: ProjectKeyword) = {
       val pro = dbService.NewProject()
-      println( "Created new project with ID " + pro.id )
+      println("Created new project with ID " + pro.id)
       new CreateProject(pro)
     }
 
     def NEW(keyword: InventoryKeyword) = {
       val inv = dbService.NewInventory()
-      println( "Created new inventory with ID " + inv.id )
+      println("Created new inventory with ID " + inv.id)
       new CreateInventory(inv)
     }
 
     def NEW(keyword: PurchaseKeyword) = {
       val pur = dbService.NewPurchase()
-      println( "Created new purchase with ID " + pur.id )
-      new CreatePurchase(pur,0,0)
+      println("Created new purchase with ID " + pur.id)
+      new CreatePurchase(pur, 0, 0)
     }
 
     def NEW(keyword: PaymentKeyword) = {
       val pay = dbService.NewPayment()
-      println( "Created new payment with ID " + pay.id )
-      new CreatePayment(pay,0)
+      println("Created new payment with ID " + pay.id)
+      new CreatePayment(pay, 0)
     }
 
 
     def NEW(keyword: ShipmentKeyword) = {
       val ship = dbService.NewShipment()
-      println( "Created new shipment with ID " + ship.id )
-      new CreateShipment(ship,0)
+      println("Created new shipment with ID " + ship.id)
+      new CreateShipment(ship, 0)
     }
 
     class CreateEmployee(emp: Employee) {
 
       def WITH(keyword: AttributeKeyword) = {
-        new AsContinue( keyword )
+        new AsContinue(keyword)
       }
 
       class AsContinue(keyword: AttributeKeyword) {
-        def AS(num: Int)= {
+        def AS(num: Int) = {
           keyword match {
             case ID => emp.id = num
             case RANK => emp.rank = num
@@ -92,19 +93,20 @@ class Bdsl {
           new CreateEmployee(emp)
         }
       }
+
     }
 
     class CreateClient(cli: Client) {
 
       def WITH(keyword: AttributeKeyword) = {
-        new AsContinue( keyword )
+        new AsContinue(keyword)
       }
 
       class AsContinue(keyword: AttributeKeyword) {
-        def AS(num: Int)= {
+        def AS(num: Int) = {
           keyword match {
             case ID => cli.id = num
-            case DATE => cli.addDate = new Date( num )
+            case DATE => cli.addDate = new Date(num)
           }
           dbService.UpdateClient(cli)
           new CreateClient(cli)
@@ -122,16 +124,17 @@ class Bdsl {
           new CreateClient(cli)
         }
       }
+
     }
 
     class CreateMeeting(env: Meeting) {
 
       def WITH(keyword: AttributeKeyword) = {
-        new AsContinue( keyword )
+        new AsContinue(keyword)
       }
 
       class AsContinue(keyword: AttributeKeyword) {
-        def AS(num: Int)= {
+        def AS(num: Int) = {
           keyword match {
             case ID => env.id = num
             case START => env.start = new Timestamp(num)
@@ -147,16 +150,17 @@ class Bdsl {
           new CreateMeeting(env)
         }
       }
+
     }
 
     class CreateProject(pro: Project) {
 
       def WITH(keyword: AttributeKeyword) = {
-        new AsContinue( keyword )
+        new AsContinue(keyword)
       }
 
       class AsContinue(keyword: AttributeKeyword) {
-        def AS(num: Int)= {
+        def AS(num: Int) = {
           keyword match {
             case ID => pro.id = num
             case CLIENT_ID => pro.client_id = num
@@ -172,25 +176,26 @@ class Bdsl {
           new CreateProject(pro)
         }
       }
+
     }
 
     class CreateInventory(inv: Inventory) {
 
       def WITH(keyword: AttributeKeyword) = {
-        new AsContinue( keyword )
+        new AsContinue(keyword)
       }
 
       class AsContinue(keyword: AttributeKeyword) {
-        def AS(num: Int)= {
+        def AS(num: Int) = {
           keyword match {
             case ID => inv.id = num
-            case COUNT => inv.count = num
+            case QUANTITY => inv.quantity = num
           }
           dbService.UpdateInventory(inv)
           new CreateInventory(inv)
         }
 
-        def AS(dou: Double)= {
+        def AS(dou: Double) = {
           keyword match {
             case TOTAL_COST => inv.total_cost = dou
             case TOTAL_EARNING => inv.total_earning = dou
@@ -205,26 +210,29 @@ class Bdsl {
           new CreateInventory(inv)
         }
       }
+
     }
 
 
-    class CreatePurchase(pur:Purchase, id: Int, id2:Int){
+    class CreatePurchase(pur: Purchase, id: Int, id2: Int) {
 
-      def FOR_CLIENT(num : Int) = {
+      def FOR_CLIENT(num: Int) = {
         pur.client_id = num
         dbService.UpdatePurchase(pur)
         new CreatePurchase(pur, num, 0)
       }
-      def FOR_AMOUNT(num:Int)={
-        pur.count=num
+
+      def FOR_AMOUNT(num: Int) = {
+        pur.quantity = num
         dbService.UpdatePurchase(pur)
         val item = dbService.GetInventory(id2)
-        val temp = item.count
-        item.count = temp - num
+        val temp = item.quantity
+        item.quantity = temp - num
         dbService.UpdateInventory(item)
         new CreatePurchase(pur, id, id2)
       }
-      def FOR_COST(dou:Double)={
+
+      def FOR_COST(dou: Double) = {
         pur.total_cost = dou
         dbService.UpdatePurchase(pur)
         val client = dbService.GetClient(id)
@@ -238,28 +246,28 @@ class Bdsl {
         new CreatePurchase(pur, id, id2)
       }
 
-      def OF_ITEM(num:Int)={
-        pur.inv_id=num
+      def OF_ITEM(num: Int) = {
+        pur.inv_id = num
         dbService.UpdatePurchase(pur)
         new CreatePurchase(pur, id, num)
       }
 
 
-      def REVIEWED_BY(num:Int)={
-        pur.emp_id=num
+      def REVIEWED_BY(num: Int) = {
+        pur.emp_id = num
         dbService.UpdatePurchase(pur)
       }
     }
 
-    class CreatePayment(pay:Payment, id: Int){
+    class CreatePayment(pay: Payment, id: Int) {
 
-      def FOR_CLIENT(num : Int) = {
+      def FOR_CLIENT(num: Int) = {
         pay.client_id = num
         dbService.UpdatePayment(pay)
         new CreatePayment(pay, num)
       }
 
-      def FOR_AMOUNT(dou:Double)={
+      def FOR_AMOUNT(dou: Double) = {
         pay.amount = dou
         dbService.UpdatePayment(pay)
         val client = dbService.GetClient(id)
@@ -269,21 +277,21 @@ class Bdsl {
         new CreatePayment(pay, id)
       }
 
-      def REVIEWED_BY(num:Int)={
-        pay.emp_id=num
+      def REVIEWED_BY(num: Int) = {
+        pay.emp_id = num
         dbService.UpdatePayment(pay)
       }
     }
 
-    class CreateShipment(ship:Shipment, id: Int){
+    class CreateShipment(ship: Shipment, id: Int) {
 
-      def OF_ITEM(num : Int) = {
+      def OF_ITEM(num: Int) = {
         ship.inv_id = num
         dbService.UpdateShipment(ship)
         new CreateShipment(ship, num)
       }
 
-      def FOR_COST(dou:Double)={
+      def FOR_COST(dou: Double) = {
         ship.total_cost = dou
         dbService.UpdateShipment(ship)
         val inv = dbService.GetInventory(id)
@@ -293,389 +301,417 @@ class Bdsl {
         new CreateShipment(ship, id)
       }
 
-      def FOR_AMOUNT(num:Int)={
-        ship.count = num
+      def FOR_AMOUNT(num: Int) = {
+        ship.quantity = num
         dbService.UpdateShipment(ship)
         val inv = dbService.GetInventory(id)
-        val temp = inv.count
-        inv.count = temp + num
+        val temp = inv.quantity
+        inv.quantity = temp + num
         dbService.UpdateInventory(inv)
         new CreateShipment(ship, id)
       }
+
+      def RECEIVED_BY(num: Int) = {
+        ship.emp_id = num
+        dbService.UpdateShipment(ship)
+        new CreateShipment(ship, id)
+      }
     }
+
   }
 
   object UPDATE {
 
-    def ALL( keyword: EmployeeKeyword ) = {
+    def ALL(keyword: EmployeeKeyword) = {
       val emps = dbService.GetAllEmployees()
-      new EmployeeQuery( emps )
+      new EmployeeQuery(emps)
     }
 
-    def ALL( keyword: ClientKeyword ) = {
+    def ALL(keyword: ClientKeyword) = {
       val cli = dbService.GetAllClients()
-      new ClientQuery( cli )
+      new ClientQuery(cli)
     }
 
-    def ALL( keyword: MeetingKeyword ) = {
+    def ALL(keyword: MeetingKeyword) = {
       val mtng = dbService.GetAllMeetings()
-      new MeetingQuery( mtng )
+      new MeetingQuery(mtng)
     }
 
-    def ALL( keyword: ProjectKeyword ) = {
+    def ALL(keyword: ProjectKeyword) = {
       val proj = dbService.GetAllProjects()
-      new ProjectQuery( proj )
+      new ProjectQuery(proj)
     }
 
-    class EmployeeQuery( emps: Array[Employee] ) {
-      def WHERE( keyword: AttributeKeyword ) = {
-        new WhereContinue( keyword )
+    class EmployeeQuery(emps: Array[Employee]) {
+      def WHERE(keyword: AttributeKeyword) = {
+        new WhereContinue(keyword)
       }
 
-      class WhereContinue( keyword: AttributeKeyword ) {
-        def EQUAL( num: Any ) = {
+      class WhereContinue(keyword: AttributeKeyword) {
+        def EQUAL(num: Any) = {
           keyword match {
-            case PAY => new EmployeeQuery( emps.filter( _.pay == num.asInstanceOf[Double] ) )
-            case RANK => new EmployeeQuery( emps.filter( _.rank == num.asInstanceOf[Int] ) )
-            case NAME => new EmployeeQuery( emps.filter( _.name == num.asInstanceOf[String] ) )
+            case PAY => new EmployeeQuery(emps.filter(_.pay == num.asInstanceOf[Double]))
+            case RANK => new EmployeeQuery(emps.filter(_.rank == num.asInstanceOf[Int]))
+            case NAME => new EmployeeQuery(emps.filter(_.name == num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHAN( num: Any ) = {
+        def LESSTHAN(num: Any) = {
           keyword match {
-            case PAY => new EmployeeQuery( emps.filter( _.pay < num.asInstanceOf[Double] ) )
-            case RANK => new EmployeeQuery( emps.filter( _.rank < num.asInstanceOf[Int] ) )
-            case NAME => new EmployeeQuery( emps.filter( _.name < num.asInstanceOf[String] ) )
+            case PAY => new EmployeeQuery(emps.filter(_.pay < num.asInstanceOf[Double]))
+            case RANK => new EmployeeQuery(emps.filter(_.rank < num.asInstanceOf[Int]))
+            case NAME => new EmployeeQuery(emps.filter(_.name < num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHAN( num: Any ) = {
+        def GREATERTHAN(num: Any) = {
           keyword match {
-            case PAY => new EmployeeQuery( emps.filter( _.pay > num.asInstanceOf[Double] ) )
-            case RANK => new EmployeeQuery( emps.filter( _.rank > num.asInstanceOf[Int] ) )
-            case NAME => new EmployeeQuery( emps.filter( _.name > num.asInstanceOf[String] ) )
+            case PAY => new EmployeeQuery(emps.filter(_.pay > num.asInstanceOf[Double]))
+            case RANK => new EmployeeQuery(emps.filter(_.rank > num.asInstanceOf[Int]))
+            case NAME => new EmployeeQuery(emps.filter(_.name > num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHANEQUAL( num: Any ) = {
+        def LESSTHANEQUAL(num: Any) = {
           keyword match {
-            case PAY => new EmployeeQuery( emps.filter( _.pay <= num.asInstanceOf[Double] ) )
-            case RANK => new EmployeeQuery( emps.filter( _.rank <= num.asInstanceOf[Int] ) )
-            case NAME => new EmployeeQuery( emps.filter( _.name <= num.asInstanceOf[String] ) )
+            case PAY => new EmployeeQuery(emps.filter(_.pay <= num.asInstanceOf[Double]))
+            case RANK => new EmployeeQuery(emps.filter(_.rank <= num.asInstanceOf[Int]))
+            case NAME => new EmployeeQuery(emps.filter(_.name <= num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHANEQUAL( num: Any ) = {
+        def GREATERTHANEQUAL(num: Any) = {
           keyword match {
-            case PAY => new EmployeeQuery( emps.filter( _.pay >= num.asInstanceOf[Double] ) )
-            case RANK => new EmployeeQuery( emps.filter( _.rank >= num.asInstanceOf[Int] ) )
-            case NAME => new EmployeeQuery( emps.filter( _.name >= num.asInstanceOf[String] ) )
+            case PAY => new EmployeeQuery(emps.filter(_.pay >= num.asInstanceOf[Double]))
+            case RANK => new EmployeeQuery(emps.filter(_.rank >= num.asInstanceOf[Int]))
+            case NAME => new EmployeeQuery(emps.filter(_.name >= num.asInstanceOf[String]))
           }
         }
       }
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
+      class UpdateContinue(keyword: AttributeKeyword) {
         def TO(num: Int) = {
           emps.foreach(_.rank = num)
-          emps.foreach( dbService.UpdateEmployee(_) )
+          emps.foreach(dbService.UpdateEmployee(_))
           new EmployeeQuery(emps)
+
         }
 
         def TO(num: Double) = {
           emps.foreach(_.pay = num)
-          emps.foreach( dbService.UpdateEmployee(_) )
+          emps.foreach(dbService.UpdateEmployee(_))
           new EmployeeQuery(emps)
         }
 
         def TO(str: String) = {
           emps.foreach(_.name = str)
-          emps.foreach( dbService.UpdateEmployee(_) )
+          emps.foreach(dbService.UpdateEmployee(_))
           new EmployeeQuery(emps)
         }
       }
+
     }
 
-    class ClientQuery( cli: Array[Client] ) {
-      def WHERE( keyword: AttributeKeyword ) = {
-        new WhereContinue( keyword )
+    class ClientQuery(cli: Array[Client]) {
+      def WHERE(keyword: AttributeKeyword) = {
+        new WhereContinue(keyword)
       }
 
-      class WhereContinue( keyword: AttributeKeyword ) {
-        def EQUAL( num: Any ) = {
+      class WhereContinue(keyword: AttributeKeyword) {
+        def EQUAL(num: Any) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))==0 ) )
-            case BALANCE => new ClientQuery( cli.filter( _.balance == num.asInstanceOf[Double] ) )
-            case NAME => new ClientQuery( cli.filter( _.name == num.asInstanceOf[String] ) )
+            case DATE => new ClientQuery(cli.filter(_.addDate.compareTo(new Date(num.asInstanceOf[Int])) == 0))
+            case BALANCE => new ClientQuery(cli.filter(_.balance == num.asInstanceOf[Double]))
+            case NAME => new ClientQuery(cli.filter(_.name == num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHAN( num: Any ) = {
+        def LESSTHAN(num: Any) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))<0 ) )
-            case BALANCE => new ClientQuery( cli.filter( _.balance < num.asInstanceOf[Double] ) )
-            case NAME => new ClientQuery( cli.filter( _.name < num.asInstanceOf[String] ) )
+            case DATE => new ClientQuery(cli.filter(_.addDate.compareTo(new Date(num.asInstanceOf[Int])) < 0))
+            case BALANCE => new ClientQuery(cli.filter(_.balance < num.asInstanceOf[Double]))
+            case NAME => new ClientQuery(cli.filter(_.name < num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHAN( num: Any ) = {
+        def GREATERTHAN(num: Any) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))>0 ) )
-            case BALANCE => new ClientQuery( cli.filter( _.balance > num.asInstanceOf[Double] ) )
-            case NAME => new ClientQuery( cli.filter( _.name > num.asInstanceOf[String] ) )
+            case DATE => new ClientQuery(cli.filter(_.addDate.compareTo(new Date(num.asInstanceOf[Int])) > 0))
+            case BALANCE => new ClientQuery(cli.filter(_.balance > num.asInstanceOf[Double]))
+            case NAME => new ClientQuery(cli.filter(_.name > num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHANEQUAL( num: Any ) = {
+        def LESSTHANEQUAL(num: Any) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))<=0 ) )
-            case BALANCE => new ClientQuery( cli.filter( _.balance <= num.asInstanceOf[Double] ) )
-            case NAME => new ClientQuery( cli.filter( _.name <= num.asInstanceOf[String] ) )
+            case DATE => new ClientQuery(cli.filter(_.addDate.compareTo(new Date(num.asInstanceOf[Int])) <= 0))
+            case BALANCE => new ClientQuery(cli.filter(_.balance <= num.asInstanceOf[Double]))
+            case NAME => new ClientQuery(cli.filter(_.name <= num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHANEQUAL( num: Any ) = {
+        def GREATERTHANEQUAL(num: Any) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))>=0 ) )
-            case BALANCE => new ClientQuery( cli.filter( _.balance >= num.asInstanceOf[Double] ) )
-            case NAME => new ClientQuery( cli.filter( _.name >= num.asInstanceOf[String] ) )
+            case DATE => new ClientQuery(cli.filter(_.addDate.compareTo(new Date(num.asInstanceOf[Int])) >= 0))
+            case BALANCE => new ClientQuery(cli.filter(_.balance >= num.asInstanceOf[Double]))
+            case NAME => new ClientQuery(cli.filter(_.name >= num.asInstanceOf[String]))
           }
         }
       }
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
+      class UpdateContinue(keyword: AttributeKeyword) {
         def TO(num: Int) = {
-          cli.foreach(_.addDate = new Date( num ))
-          cli.foreach( dbService.UpdateClient(_) )
+          cli.foreach(_.addDate = new Date(num))
+          cli.foreach(dbService.UpdateClient(_))
           new ClientQuery(cli)
         }
 
         def TO(num: Double) = {
           cli.foreach(_.balance = num)
-          cli.foreach( dbService.UpdateClient(_) )
+          cli.foreach(dbService.UpdateClient(_))
           new ClientQuery(cli)
         }
 
         def TO(str: String) = {
           cli.foreach(_.name = str)
-          cli.foreach( dbService.UpdateClient(_) )
+          cli.foreach(dbService.UpdateClient(_))
           new ClientQuery(cli)
         }
       }
+
     }
 
-    class MeetingQuery( mtng: Array[Meeting] ) {
-      def WHERE( keyword: AttributeKeyword ) = {
-        new WhereContinue( keyword )
+    class MeetingQuery(mtng: Array[Meeting]) {
+      def WHERE(keyword: AttributeKeyword) = {
+        new WhereContinue(keyword)
       }
 
-      class WhereContinue( keyword: AttributeKeyword ) {
-        def EQUAL( num: Any ) = {
+      class WhereContinue(keyword: AttributeKeyword) {
+        def EQUAL(num: Any) = {
           keyword match {
-            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id == num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))==0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))==0 ) )
-            case NAME => new MeetingQuery( mtng.filter( _.name == num.asInstanceOf[String] ) )
+            case CLIENT_ID => new MeetingQuery(mtng.filter(_.client_id == num.asInstanceOf[Int]))
+            case START => new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(num.asInstanceOf[Int])) == 0))
+            case END => new MeetingQuery(mtng.filter(_.end.compareTo(new Timestamp(num.asInstanceOf[Int])) == 0))
+            case NAME => new MeetingQuery(mtng.filter(_.name == num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHAN( num: Any ) = {
+        def LESSTHAN(num: Any) = {
           keyword match {
-            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id < num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))<0 ) )
-            case NAME => new MeetingQuery( mtng.filter( _.name < num.asInstanceOf[String] ) )
+            case CLIENT_ID => new MeetingQuery(mtng.filter(_.client_id < num.asInstanceOf[Int]))
+            case START => new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(num.asInstanceOf[Int])) < 0))
+            case END => new MeetingQuery(mtng.filter(_.end.compareTo(new Timestamp(num.asInstanceOf[Int])) < 0))
+            case NAME => new MeetingQuery(mtng.filter(_.name < num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHAN( num: Any ) = {
+        def GREATERTHAN(num: Any) = {
           keyword match {
-            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id > num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))>0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))>0 ) )
-            case NAME => new MeetingQuery( mtng.filter( _.name > num.asInstanceOf[String] ) )
+            case CLIENT_ID => new MeetingQuery(mtng.filter(_.client_id > num.asInstanceOf[Int]))
+            case START => new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(num.asInstanceOf[Int])) > 0))
+            case END => new MeetingQuery(mtng.filter(_.end.compareTo(new Timestamp(num.asInstanceOf[Int])) > 0))
+            case NAME => new MeetingQuery(mtng.filter(_.name > num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHANEQUAL( num: Any ) = {
+        def LESSTHANEQUAL(num: Any) = {
           keyword match {
-            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id <= num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<=0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))<=0 ) )
-            case NAME => new MeetingQuery( mtng.filter( _.name <= num.asInstanceOf[String] ) )
+            case CLIENT_ID => new MeetingQuery(mtng.filter(_.client_id <= num.asInstanceOf[Int]))
+            case START => new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(num.asInstanceOf[Int])) <= 0))
+            case END => new MeetingQuery(mtng.filter(_.end.compareTo(new Timestamp(num.asInstanceOf[Int])) <= 0))
+            case NAME => new MeetingQuery(mtng.filter(_.name <= num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHANEQUAL( num: Any ) = {
+        def GREATERTHANEQUAL(num: Any) = {
           keyword match {
-            case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id >= num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))>=0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))>=0 ) )
-            case NAME => new MeetingQuery( mtng.filter( _.name >= num.asInstanceOf[String] ) )
+            case CLIENT_ID => new MeetingQuery(mtng.filter(_.client_id >= num.asInstanceOf[Int]))
+            case START => new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(num.asInstanceOf[Int])) >= 0))
+            case END => new MeetingQuery(mtng.filter(_.end.compareTo(new Timestamp(num.asInstanceOf[Int])) >= 0))
+            case NAME => new MeetingQuery(mtng.filter(_.name >= num.asInstanceOf[String]))
           }
         }
       }
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
+      class UpdateContinue(keyword: AttributeKeyword) {
 
         def TO(num: Int) = {
           keyword match {
             case CLIENT_ID => mtng.foreach(_.client_id = num)
-            case START => mtng.foreach(_.start = new Timestamp(num) )
-            case END => mtng.foreach(_.end = new Timestamp(num) )
+            case START => mtng.foreach(_.start = new Timestamp(num))
+            case END => mtng.foreach(_.end = new Timestamp(num))
           }
-          mtng.foreach( dbService.UpdateMeeting(_) )
+          mtng.foreach(dbService.UpdateMeeting(_))
           new MeetingQuery(mtng)
         }
 
         def TO(str: String) = {
           mtng.foreach(_.name = str)
-          mtng.foreach( dbService.UpdateMeeting(_) )
+          mtng.foreach(dbService.UpdateMeeting(_))
           new MeetingQuery(mtng)
         }
       }
+
     }
 
-    class ProjectQuery( proj: Array[Project] ) {
-      def WHERE( keyword: AttributeKeyword ) = {
-        new WhereContinue( keyword )
+    class ProjectQuery(proj: Array[Project]) {
+      def WHERE(keyword: AttributeKeyword) = {
+        new WhereContinue(keyword)
       }
 
-      class WhereContinue( keyword: AttributeKeyword ) {
-        def EQUAL( num: Any ) = {
+      class WhereContinue(keyword: AttributeKeyword) {
+        def EQUAL(num: Any) = {
           keyword match {
-            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id == num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))==0 ) )
-            case NAME => new ProjectQuery( proj.filter( _.name == num.asInstanceOf[String] ) )
+            case CLIENT_ID => new ProjectQuery(proj.filter(_.client_id == num.asInstanceOf[Int]))
+            case END => new ProjectQuery(proj.filter(_.end.compareTo(new Date(num.asInstanceOf[Int])) == 0))
+            case NAME => new ProjectQuery(proj.filter(_.name == num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHAN( num: Any ) = {
+        def LESSTHAN(num: Any) = {
           keyword match {
-            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id < num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))<0 ) )
-            case NAME => new ProjectQuery( proj.filter( _.name < num.asInstanceOf[String] ) )
+            case CLIENT_ID => new ProjectQuery(proj.filter(_.client_id < num.asInstanceOf[Int]))
+            case END => new ProjectQuery(proj.filter(_.end.compareTo(new Date(num.asInstanceOf[Int])) < 0))
+            case NAME => new ProjectQuery(proj.filter(_.name < num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHAN( num: Any ) = {
+        def GREATERTHAN(num: Any) = {
           keyword match {
-            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id > num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))>0 ) )
-            case NAME => new ProjectQuery( proj.filter( _.name > num.asInstanceOf[String] ) )
+            case CLIENT_ID => new ProjectQuery(proj.filter(_.client_id > num.asInstanceOf[Int]))
+            case END => new ProjectQuery(proj.filter(_.end.compareTo(new Date(num.asInstanceOf[Int])) > 0))
+            case NAME => new ProjectQuery(proj.filter(_.name > num.asInstanceOf[String]))
           }
         }
 
-        def LESSTHANEQUAL( num: Any ) = {
+        def LESSTHANEQUAL(num: Any) = {
           keyword match {
-            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id <= num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))<=0 ) )
-            case NAME => new ProjectQuery( proj.filter( _.name <= num.asInstanceOf[String] ) )
+            case CLIENT_ID => new ProjectQuery(proj.filter(_.client_id <= num.asInstanceOf[Int]))
+            case END => new ProjectQuery(proj.filter(_.end.compareTo(new Date(num.asInstanceOf[Int])) <= 0))
+            case NAME => new ProjectQuery(proj.filter(_.name <= num.asInstanceOf[String]))
           }
         }
 
-        def GREATERTHANEQUAL( num: Any ) = {
+        def GREATERTHANEQUAL(num: Any) = {
           keyword match {
-            case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id >= num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))>=0 ) )
-            case NAME => new ProjectQuery( proj.filter( _.name >= num.asInstanceOf[String] ) )
+            case CLIENT_ID => new ProjectQuery(proj.filter(_.client_id >= num.asInstanceOf[Int]))
+            case END => new ProjectQuery(proj.filter(_.end.compareTo(new Date(num.asInstanceOf[Int])) >= 0))
+            case NAME => new ProjectQuery(proj.filter(_.name >= num.asInstanceOf[String]))
           }
         }
       }
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
+      class UpdateContinue(keyword: AttributeKeyword) {
         def TO(num: Int) = {
           keyword match {
             case CLIENT_ID => proj.foreach(_.client_id = num)
-            case END => proj.foreach(_.end = new Date(num) )
+            case END => proj.foreach(_.end = new Date(num))
           }
-          proj.foreach( dbService.UpdateProject(_) )
+          proj.foreach(dbService.UpdateProject(_))
           new ProjectQuery(proj)
         }
 
         def TO(str: String) = {
           proj.foreach(_.name = str)
-          proj.foreach( dbService.UpdateProject(_) )
+          proj.foreach(dbService.UpdateProject(_))
           new ProjectQuery(proj)
         }
       }
+
     }
 
-    def EMPLOYEE( id: Int ) = {
-      println( "Updating EMPLOYEE " + id)
+    def EMPLOYEE(id: Int) = {
+      println("Updating EMPLOYEE " + id)
       new ModifyEmployee(dbService.GetEmployee(id))
     }
 
-    def CLIENT( id: Int ) = {
-      println( "Updating CLIENT " + id)
+    def CLIENT(id: Int) = {
+      println("Updating CLIENT " + id)
       new ModifyClient(dbService.GetClient(id))
     }
 
-    def MEETING( id: Int ) = {
-      println( "Updating MEETING " + id)
+    def MEETING(id: Int) = {
+      println("Updating MEETING " + id)
       new ModifyMeeting(dbService.GetMeeting(id))
     }
 
-    def PROJECT( id: Int ) = {
-      println( "Updating PROJECT " + id)
+    def PROJECT(id: Int) = {
+      println("Updating PROJECT " + id)
       new ModifyProject(dbService.GetProject(id))
     }
 
-    def INVENTORY( id: Int ) = {
-      println( "Updating INVENTORY " + id)
+    def INVENTORY(id: Int) = {
+      println("Updating INVENTORY " + id)
       new ModifyInventory(dbService.GetInventory(id))
     }
 
-    class ModifyEmployee( emp: Employee ) {
+    def SHIPMENT(id: Int) = {
+      println("Updating SHIPMENT " + id)
+      new ModifyShipment(dbService.GetShipment(id))
+    }
+
+    def PURCHASE(id: Int) = {
+      println("Updating PURCHASE " + id)
+      new ModifyPurchase(dbService.GetPurchase(id))
+    }
+
+    def PAYMENT(id: Int) = {
+      println("Updating PAYMENT " + id)
+      new ModifyPayment(dbService.GetPayment(id))
+    }
+
+    class ModifyEmployee(emp: Employee) {
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
+      class UpdateContinue(keyword: AttributeKeyword) {
         def TO(num: Int) = {
           keyword match {
             case ID => emp.id = num
             case RANK => emp.rank = num
           }
-          dbService.UpdateEmployee(emp) 
+          dbService.UpdateEmployee(emp)
           new ModifyEmployee(emp)
         }
 
         def TO(dou: Double) = {
           emp.pay = dou
-          dbService.UpdateEmployee(emp) 
+          dbService.UpdateEmployee(emp)
           new ModifyEmployee(emp)
         }
       }
+
     }
 
-    class ModifyClient( cli: Client ) {
+    class ModifyClient(cli: Client) {
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
-        def TO(num: Int)= {
+      class UpdateContinue(keyword: AttributeKeyword) {
+        def TO(num: Int) = {
           keyword match {
             case ID => cli.id = num
-            case DATE => cli.addDate = new Date( num )
+            case DATE => cli.addDate = new Date(num)
           }
           dbService.UpdateClient(cli)
           new ModifyClient(cli)
@@ -693,16 +729,17 @@ class Bdsl {
           new ModifyClient(cli)
         }
       }
+
     }
 
-    class ModifyMeeting(env: Meeting ) {
+    class ModifyMeeting(env: Meeting) {
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
-        def TO(num: Int)= {
+      class UpdateContinue(keyword: AttributeKeyword) {
+        def TO(num: Int) = {
           keyword match {
             case ID => env.id = num
             case CLIENT_ID => env.client_id = num
@@ -719,16 +756,17 @@ class Bdsl {
           new ModifyMeeting(env)
         }
       }
+
     }
 
-    class ModifyProject(pro: Project ) {
+    class ModifyProject(pro: Project) {
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
-        def TO(num: Int)= {
+      class UpdateContinue(keyword: AttributeKeyword) {
+        def TO(num: Int) = {
           keyword match {
             case ID => pro.id = num
             case CLIENT_ID => pro.client_id = num
@@ -744,25 +782,26 @@ class Bdsl {
           new ModifyProject(pro)
         }
       }
+
     }
 
-    class ModifyInventory(inv: Inventory ) {
+    class ModifyInventory(inv: Inventory) {
 
       def MODIFY(keyword: AttributeKeyword) = {
-        new UpdateContinue( keyword )
+        new UpdateContinue(keyword)
       }
 
-      class UpdateContinue( keyword: AttributeKeyword ) {
-        def TO(num: Int)= {
+      class UpdateContinue(keyword: AttributeKeyword) {
+        def TO(num: Int) = {
           keyword match {
             case ID => inv.id = num
-            case COUNT => inv.count = num
+            case QUANTITY => inv.quantity = num
           }
           dbService.UpdateInventory(inv)
           new ModifyInventory(inv)
         }
 
-        def TO(dou: Double)= {
+        def TO(dou: Double) = {
           keyword match {
             case TOTAL_COST => inv.total_cost = dou
             case TOTAL_EARNING => inv.total_earning = dou
@@ -777,30 +816,227 @@ class Bdsl {
           new ModifyInventory(inv)
         }
       }
+
+    }
+
+    class ModifyShipment(ship: Shipment) {
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue(keyword)
+      }
+
+      class UpdateContinue(keyword: AttributeKeyword) {
+        def TO(num: Int) = {
+          keyword match {
+            case EMP_ID => ship.emp_id = num
+            case INV_ID =>
+              val oldid = ship.inv_id
+              val oldinv = dbService.GetInventory(oldid)
+              val temp = oldinv.quantity
+              val temp2 = oldinv.total_cost
+              oldinv.quantity = temp - ship.quantity
+              oldinv.total_cost = temp2 - ship.total_cost
+              dbService.UpdateInventory(oldinv)
+              ship.inv_id = num
+              val inv = dbService.GetInventory(num)
+              val newtemp = inv.quantity
+              val newtemp2 = inv.total_cost
+              inv.quantity = newtemp - ship.quantity
+              inv.total_cost = newtemp2 - ship.total_cost
+              dbService.UpdateInventory(inv)
+            case QUANTITY =>
+              val tempcount = ship.quantity
+              ship.quantity = num
+              val diff = num - tempcount
+              val inv = dbService.GetInventory(ship.inv_id)
+              val temp = inv.quantity
+              inv.quantity = temp + diff
+              dbService.UpdateInventory(inv)
+          }
+          dbService.UpdateShipment(ship)
+          new ModifyShipment(ship)
+        }
+
+        def TO(dou: Double) = {
+          val tempcost = ship.total_cost
+          ship.total_cost = dou
+          val diff = dou - tempcost
+          val inv = dbService.GetInventory(ship.inv_id)
+          val temp = inv.total_cost
+          inv.total_cost = temp + diff
+          dbService.UpdateShipment(ship)
+          new ModifyShipment(ship)
+        }
+      }
+
+    }
+
+    class ModifyPurchase(pur: Purchase) {
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue(keyword)
+      }
+
+      class UpdateContinue(keyword: AttributeKeyword) {
+        def TO(num: Int) = {
+          keyword match {
+            case EMP_ID => pur.emp_id = num
+            case INV_ID =>
+              val oldid = pur.inv_id
+              val oldinv = dbService.GetInventory(oldid)
+              val temp = oldinv.quantity
+              val temp2 = oldinv.total_cost
+              oldinv.quantity = temp - pur.quantity
+              oldinv.total_cost = temp2 - pur.total_cost
+              dbService.UpdateInventory(oldinv)
+              pur.inv_id = num
+              val inv = dbService.GetInventory(num)
+              val newtemp = inv.quantity
+              val newtemp2 = inv.total_cost
+              inv.quantity = newtemp + pur.quantity
+              inv.total_cost = newtemp2 + pur.total_cost
+              dbService.UpdateInventory(inv)
+            case QUANTITY =>
+              val tempcount = pur.quantity
+              pur.quantity = num
+              val diff = num - tempcount
+              val inv = dbService.GetInventory(pur.inv_id)
+              val temp = inv.quantity
+              inv.quantity = temp + diff
+              dbService.UpdateInventory(inv)
+            case CLIENT_ID =>
+              val oldid = pur.client_id
+              val oldcli = dbService.GetClient(oldid)
+              val temp = oldcli.balance
+              oldcli.balance = temp - pur.total_cost
+              dbService.UpdateClient(oldcli)
+              pur.client_id = num
+              val cli = dbService.GetClient(num)
+              val newtemp = cli.balance
+              cli.balance = newtemp + pur.total_cost
+              dbService.UpdateClient(cli)
+          }
+          dbService.UpdatePurchase(pur)
+          new ModifyPurchase(pur)
+        }
+
+        def TO(dou: Double) = {
+          val tempcost = pur.total_cost
+          pur.total_cost = dou
+          val diff = dou - tempcost
+          val inv = dbService.GetInventory(pur.inv_id)
+          val temp = inv.total_earning
+          inv.total_earning = temp + diff
+          dbService.UpdateInventory(inv)
+          val cli = dbService.GetClient(pur.client_id)
+          val temp2 = cli.balance
+          cli.balance = temp2 + diff
+          dbService.UpdateClient(cli)
+          dbService.UpdatePurchase(pur)
+          new ModifyPurchase(pur)
+        }
+      }
+
+    }
+
+    class ModifyPayment(pay: Payment) {
+
+      def MODIFY(keyword: AttributeKeyword) = {
+        new UpdateContinue(keyword)
+      }
+
+      class UpdateContinue(keyword: AttributeKeyword) {
+        def TO(num: Int) = {
+          keyword match {
+            case EMP_ID => pay.emp_id = num
+            case CLIENT_ID =>
+              val oldid = pay.client_id
+              val oldcli = dbService.GetClient(oldid)
+              val temp = oldcli.balance
+              oldcli.balance = temp + pay.amount
+              dbService.UpdateClient(oldcli)
+              pay.client_id = num
+              val cli = dbService.GetClient(num)
+              val newtemp = cli.balance
+              cli.balance = newtemp - pay.amount
+              dbService.UpdateClient(cli)
+          }
+          dbService.UpdatePayment(pay)
+          new ModifyPayment(pay)
+        }
+
+        def TO(dou: Double) = {
+          val tempamount = pay.amount
+          pay.amount = dou
+          val diff = dou - tempamount
+          val cli = dbService.GetClient(pay.client_id)
+          val temp2 = cli.balance
+          cli.balance = temp2 - diff
+          dbService.UpdateClient(cli)
+          dbService.UpdatePayment(pay)
+          new ModifyPayment(pay)
+        }
+      }
+
     }
 
   }
 
   object REMOVE {
 
-    def EMPLOYEE( id: Int ) = {
-      println( "Removing EMPLOYEE " + dbService.DeleteEmployee(id) )
+    def EMPLOYEE(id: Int) = {
+      println("Removing EMPLOYEE " + dbService.DeleteEmployee(id))
     }
 
-    def CLIENT( id: Int ) = {
-      println( "Removing CLIENT " + dbService.DeleteClient(id) )
+    def CLIENT(id: Int) = {
+      println("Removing CLIENT " + dbService.DeleteClient(id))
     }
 
-    def MEETING( id: Int ) = {
-      println( "Removing MEETING " + dbService.DeleteMeeting(id) )
+    def MEETING(id: Int) = {
+      println("Removing MEETING " + dbService.DeleteMeeting(id))
     }
 
-    def PROJECT( id: Int ) = {
-      println( "Removing PROJECT " + dbService.DeleteProject(id) )
+    def PROJECT(id: Int) = {
+      println("Removing PROJECT " + dbService.DeleteProject(id))
     }
 
-    def INVENTORY( id: Int ) = {
-      println( "Removing INVENTORY " + dbService.DeleteInventory(id) )
+    def INVENTORY(id: Int) = {
+      println("Removing INVENTORY " + dbService.DeleteInventory(id))
+    }
+
+    def SHIPMENT(id: Int) = {
+      val ship = dbService.GetShipment(id)
+      val inv = dbService.GetInventory(ship.inv_id)
+      val temp = inv.total_cost
+      val temp2 = inv.quantity
+      inv.total_cost = temp - ship.total_cost
+      inv.quantity = temp2 - ship.quantity
+      dbService.UpdateInventory(inv)
+      println("Removing SHIPMENT " + dbService.DeleteShipment(id))
+    }
+
+    def PURCHASE(id: Int) = {
+      val pur = dbService.GetPurchase(id)
+      val inv = dbService.GetInventory(pur.inv_id)
+      val temp = inv.total_earning
+      val temp2 = inv.quantity
+      inv.total_earning = temp - pur.total_cost
+      inv.quantity = temp2 + pur.quantity
+      dbService.UpdateInventory(inv)
+      val cli = dbService.GetClient(pur.client_id)
+      val tempb = cli.balance
+      cli.balance = tempb - pur.total_cost
+      dbService.UpdateClient(cli)
+      println("Removing PURCHASE " + dbService.DeletePurchase(id))
+    }
+
+    def PAYMENT(id: Int) = {
+      val pay = dbService.GetPayment(id)
+      val cli = dbService.GetClient(pay.client_id)
+      val temp = cli.balance
+      cli.balance = temp - pay.amount
+      dbService.UpdateClient(cli)
+      println("Removing PAYMENT " + dbService.DeletePayment(id))
     }
   }
 
@@ -815,23 +1051,25 @@ class Bdsl {
       }
 
       def MEETING(id: Int) = {
-          println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeMeeting(emp.id, id))
-        }
+        println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeMeeting(emp.id, id))
+      }
 
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
           println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeMeeting(emp.id, id))
         }
 
-        def PROJECT(id:Int) = {
+        def PROJECT(id: Int) = {
           println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeProject(emp.id, id))
         }
       }
+
     }
+
   }
 
   object PRINT {
-    def ALL( keyword: ObjectKeyword ) = { 
+    def ALL(keyword: ObjectKeyword) = {
       keyword match {
         case EMPLOYEE => dbService.ListAllEmployees()
         case CLIENT => dbService.ListAllClients()
@@ -856,16 +1094,16 @@ class Bdsl {
       dbService.ListAllPurchases()
       dbService.ListAllShipments()
     }
+
   }
 
   object IMPORT {
-    def FROM( file: String ) = {
-      new ImportTo( file )
+    def FROM(file: String) = {
+      new ImportTo(file)
     }
 
-    class ImportTo( file: String ) {
-      def TO( keyword: ObjectKeyword )
-      {
+    class ImportTo(file: String) {
+      def TO(keyword: ObjectKeyword) {
         val bufferedSource = io.Source.fromFile(file)
         for (line <- bufferedSource.getLines) {
           val cols = line.split(",").map(_.trim)

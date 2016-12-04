@@ -1,5 +1,6 @@
 package cs345.database
 
+
 import cs345.scheduler.datastructures._
 
 import scala.concurrent.{Future, Await}
@@ -8,7 +9,6 @@ import scala.concurrent.duration.Duration
 
 // Use H2Driver to connect to an H2 database
 import slick.driver.H2Driver.api._
-// import slick.driver.MySQLDriver.api._
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
@@ -29,6 +29,7 @@ class DBService() {
   val shipments = DBSetup.shipments
   val inventorys = DBSetup.inventorys
 
+
   val meetingJoinTable = DBSetup.meetingJoinTable
   val projectJoinTable = DBSetup.projectJoinTable
 
@@ -47,8 +48,8 @@ class DBService() {
 
   def GetAllEmployees(): Array[Employee] = {
     var result: Array[Employee] = new Array[Employee](0)
-    val f: Future[Seq[(Int, String, Int, Double, Array[Byte])]] = db.run(employees.result)
-    val queryResult: Seq[(Int, String, Int, Double, Array[Byte])] = Await.result(f, Duration.Inf)
+    val f: Future[Seq[(Int, String, Int, Double,  Array[Byte])]] = db.run(employees.result)
+    val queryResult: Seq[(Int, String, Int, Double,  Array[Byte])] = Await.result(f, Duration.Inf)
     for (empData <- queryResult) {
       result = result :+ (new Employee(empData))
     }
@@ -60,7 +61,7 @@ class DBService() {
       emp <- employees if emp.id === id
     } yield emp
     val action = query.result.head
-    val f: Future[(Int, String, Int, Double, Array[Byte])] = db.run(action)
+    val f: Future[(Int, String, Int, Double,  Array[Byte])] = db.run(action)
 
     val result = Await.result(f, Duration.Inf)
     val e = new Employee(result)
@@ -107,20 +108,21 @@ class DBService() {
     return id
   }
 
+
   def AssignEmployeeMeeting(emp_id: Int, meet_id: Int)= {
     val insert = meetingJoinTable += (meet_id, emp_id)
     val insertSeq: Future[Int] = db.run(insert)
     val insertComplete = Await.result(insertSeq, Duration.Inf)
     //DEBUG/ISSUE IMPORTANT: Schedule the employee here
   }
-
+ 
   def AssignEmployeeProject(emp_id: Int, pro_id: Int)= {
     val insert = projectJoinTable += (pro_id, emp_id)
     val insertSeq: Future[Int] = db.run(insert)
     val insertComplete = Await.result(insertSeq, Duration.Inf)
     //DEBUG/ISSUE IMPORTANT: Schedule the employee here
   }
-
+ 
    def ListAllMeetingAssignments() = {
     println("Meeting Assignments:")
     db.run(meetingJoinTable.result).map(_.foreach {
@@ -128,7 +130,7 @@ class DBService() {
         println("  " + meet_id + "\t" + emp_id + "\t")
     })
   }
-
+ 
   def ListAllProjectAssignments() = {
     println("Project Assignments:")
     db.run(projectJoinTable.result).map(_.foreach {
@@ -404,8 +406,8 @@ class DBService() {
   def ListAllPurchases() = {
     println("Purchases:")
     db.run(purchases.result).map(_.foreach {
-      case (id, client_id, emp_id, inv_id, count, total_cost, purchase_date) =>
-        println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + inv_id + "\t" + count + "\t" + total_cost + "\t" + purchase_date + "\t")
+      case (id, client_id, emp_id, inv_id, quantity, total_cost, purchase_date) =>
+        println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + inv_id + "\t" + quantity + "\t" + total_cost + "\t" + purchase_date + "\t")
     })
   }
 
@@ -423,7 +425,7 @@ class DBService() {
 
 
   def NewPurchase(): Purchase = {
-    val insert = (purchases returning purchases.map(_.id)) += (-1, -1, -1, -1, -1, 0.0, new Timestamp(0))
+    val insert = (purchases returning purchases.map(_.id)) += (-1, -1, -1, -1, 0, 0.0, new Timestamp(0))
     val insertSeq: Future[Int] = db.run(insert)
 
     val purchaseId = Await.result(insertSeq, Duration.Inf)
@@ -432,7 +434,7 @@ class DBService() {
   }
 
   def UpdatePurchase(purchase: Purchase): Purchase = {
-    val updated = purchases.insertOrUpdate(purchase.id, purchase.client_id, purchase.emp_id, purchase.inv_id, purchase.count, purchase.total_cost, purchase.purchase_date)
+    val updated = purchases.insertOrUpdate(purchase.id, purchase.client_id, purchase.emp_id, purchase.inv_id, purchase.quantity, purchase.total_cost, purchase.purchase_date)
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)
@@ -463,8 +465,8 @@ class DBService() {
   def ListAllShipments() = {
     println("Shipments:")
     db.run(shipments.result).map(_.foreach {
-      case (id, emp_id, inv_id, count, total_cost, received) =>
-        println("  " + id + "\t" + emp_id + "\t" + inv_id + "\t" + count + "\t" + total_cost + "\t" + received + "\t")
+      case (id, emp_id, inv_id, quantity, total_cost, received) =>
+        println("  " + id + "\t" + emp_id + "\t" + inv_id + "\t" + quantity + "\t" + total_cost + "\t" + received + "\t")
     })
   }
 
@@ -481,7 +483,7 @@ class DBService() {
   }
 
   def NewShipment(): Shipment = {
-    val insert = (shipments returning shipments.map(_.id)) += (-1, -1, -1, -1, 0.0, new Timestamp(0))
+    val insert = (shipments returning shipments.map(_.id)) += (-1, -1, -1, 0, 0.0, new Timestamp(0))
     val insertSeq: Future[Int] = db.run(insert)
 
     val shipmentId = Await.result(insertSeq, Duration.Inf)
@@ -490,7 +492,7 @@ class DBService() {
   }
 
   def UpdateShipment(shipment: Shipment): Shipment = {
-    val updated = shipments.insertOrUpdate(shipment.id, shipment.emp_id, shipment.inv_id, shipment.count,  shipment.total_cost, shipment.received)
+    val updated = shipments.insertOrUpdate(shipment.id, shipment.emp_id, shipment.inv_id, shipment.quantity,  shipment.total_cost, shipment.received)
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)
@@ -521,8 +523,8 @@ class DBService() {
   def ListAllInventorys() = {
     println("Inventories:")
     db.run(inventorys.result).map(_.foreach {
-      case (id, name, count, total_cost, total_earning) =>
-        println("  " + id + "\t" + name + "\t" + count + "\t" + total_cost + "\t" + total_earning + "\t")
+      case (id, name, quantity, total_cost, total_earning) =>
+        println("  " + id + "\t" + name + "\t" + quantity + "\t" + total_cost + "\t" + total_earning + "\t")
     })
   }
 
@@ -540,7 +542,7 @@ class DBService() {
 
 
   def NewInventory(): Inventory = {
-    val insert = (inventorys returning inventorys.map(_.id)) += (-1, "", -1, 0.0, 0.0)
+    val insert = (inventorys returning inventorys.map(_.id)) += (-1, "", 0, 0.0, 0.0)
     val insertSeq: Future[Int] = db.run(insert)
 
     val inventoryId = Await.result(insertSeq, Duration.Inf)
@@ -549,7 +551,7 @@ class DBService() {
   }
 
   def UpdateInventory(inventory: Inventory): Inventory = {
-    val updated = inventorys.insertOrUpdate(inventory.id, inventory.name, inventory.count, inventory.total_cost, inventory.total_earning)
+    val updated = inventorys.insertOrUpdate(inventory.id, inventory.name, inventory.quantity, inventory.total_cost, inventory.total_earning)
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)

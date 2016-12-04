@@ -1,7 +1,7 @@
 package cs345.database
 
 import cs345.scheduler.datastructures._
-
+ 
 import biweekly.Biweekly
 import biweekly.component.VEvent
 import slick.driver.H2Driver.api._
@@ -35,8 +35,8 @@ object Client {
 object Meeting {
   val NAME_DEFAULT_VALUE = ""
   val CLIENT_DEFAULT = 1
-  val START_DEFAULT_VALUE:Timestamp = new Timestamp(0)
-  val END_DEFAULT_VALUE:Timestamp = new Timestamp(0)
+  val START_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val END_DEFAULT_VALUE: Timestamp = new Timestamp(0)
 }
 
 object Project {
@@ -46,18 +46,18 @@ object Project {
 }
 
 object Payment {
-  val CLIENT_DEFAULT = -1
+  val CLIENT_DEFAULT = 1
   val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(0)
   val EMPLOYEE_DEFAULT = -1
   val AMOUNT_DEFAULT = 0.0
 }
 
 object Purchase {
-  val CLIENT_DEFAULT = -1
+  val CLIENT_DEFAULT = 1
   val PURCHASE_DATE_VALUE: Timestamp = new Timestamp(0)
   val EMPLOYEE_DEFAULT = -1
   val INVENTORY_DEFAULT = -1
-  val COUNT_DEFAULT = 0
+  val QUANTITY_DEFAULT_VALUE = 0
   val TOTAL_COST_DEFAULT = 0.0
 }
 
@@ -65,13 +65,13 @@ object Shipment {
   val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(0)
   val EMPLOYEE_DEFAULT = -1
   val INVENTORY_DEFAULT = -1
-  val COUNT_DEFAULT_VALUE = 0
+  val QUANTITY_DEFAULT_VALUE = 0
   val TOTAL_COST_DEFAULT = 0.0
 }
 
 object Inventory {
   val NAME_DEFAULT_VALUE = ""
-  val COUNT_DEFAULT_VALUE = 0
+  val QUANTITY_DEFAULT_VALUE = 0
   val TOTAL_COST_DEFAULT = 0.0
   val TOTAL_EARNING_DEFAULT = 0.0
 }
@@ -80,16 +80,12 @@ object Inventory {
 class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, var schedule: ScheduleMap) extends DBObject {
   def this(id: Int) {
     this(id, Employee.NAME_DEFAULT_VALUE, Employee.RANK_DEFAULT_VALUE, Employee.PAY_DEFAULT_VALUE, 
-      new ScheduleMap());
+       new ScheduleMap());
   }
 
   def this(data: (Int, String, Int, Double, Array[Byte])) {
     this(data._1, data._2, data._3, data._4, new ScheduleMap(data._5));
   }
-
-  // def this(data: (Int, String, Int, Double, ScheduleMap)) {
-  //   this(data._1, data._2, data._3, data._4, data._5);
-  // }
 
   override def toString: String = {
     return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay //+ " Schedule: " + schedule
@@ -125,13 +121,13 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
     var epoch = time.atZone(zoneId).toEpochSecond();
     this.start = new Timestamp(epoch * 1000);
   }
-
+ 
   def setEnd(time: LocalDateTime) {
     var zoneId = ZoneId.systemDefault(); 
     var epoch = time.atZone(zoneId).toEpochSecond();
     this.end = new Timestamp(epoch * 1000);
   }
-
+ 
   def getCalEvent(): VEvent = {
     var event = new VEvent()
     event.setDateStart(this.start)
@@ -176,10 +172,10 @@ class Payment(var id: Int, var client_id: Int, var emp_id: Int, var amount: Doub
   }
 }
 
-class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int, var count: Int, var total_cost: Double, var purchase_date: Timestamp)
+class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int, var quantity: Int, var total_cost: Double, var purchase_date: Timestamp)
   extends DBObject {
   def this(id: Int) {
-    this(id, Purchase.CLIENT_DEFAULT, Purchase.EMPLOYEE_DEFAULT, Purchase.INVENTORY_DEFAULT, Purchase.COUNT_DEFAULT, Purchase.TOTAL_COST_DEFAULT, Purchase.PURCHASE_DATE_VALUE);
+    this(id, Purchase.CLIENT_DEFAULT, Purchase.EMPLOYEE_DEFAULT, Purchase.INVENTORY_DEFAULT, Purchase.QUANTITY_DEFAULT_VALUE, Purchase.TOTAL_COST_DEFAULT, Purchase.PURCHASE_DATE_VALUE);
   }
 
   def this(data: (Int, Int, Int, Int, Int, Double, Timestamp)) {
@@ -187,14 +183,14 @@ class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int
   }
 
   override def toString: String = {
-    return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
+    return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Quantity: " + quantity + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
   }
 }
 
-class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var count: Int, var total_cost: Double, var received: Timestamp)
+class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var quantity: Int, var total_cost: Double, var received: Timestamp)
   extends DBObject {
   def this(id: Int) {
-    this(id, Shipment.EMPLOYEE_DEFAULT, Shipment.INVENTORY_DEFAULT, Shipment.COUNT_DEFAULT_VALUE, Shipment.TOTAL_COST_DEFAULT, Shipment.RECEIVED_DEFAULT_VALUE);
+    this(id, Shipment.EMPLOYEE_DEFAULT, Shipment.INVENTORY_DEFAULT, Shipment.QUANTITY_DEFAULT_VALUE, Shipment.TOTAL_COST_DEFAULT, Shipment.RECEIVED_DEFAULT_VALUE);
   }
 
   def this(data: (Int, Int, Int, Int, Double, Timestamp)) {
@@ -202,14 +198,14 @@ class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var count: Int, va
   }
 
   override def toString: String = {
-    return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Received: " + received
+    return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", QUANTITY: " + quantity + ", Total Cost: " + total_cost + ", Received: " + received
   }
 }
 
-class Inventory(var id: Int, var name: String, var count: Int, var total_cost: Double, var total_earning: Double)
+class Inventory(var id: Int, var name: String, var quantity: Int, var total_cost: Double, var total_earning: Double)
   extends DBObject {
   def this(id: Int) {
-    this(id, Inventory.NAME_DEFAULT_VALUE, Inventory.COUNT_DEFAULT_VALUE, Inventory.TOTAL_COST_DEFAULT, Inventory.TOTAL_EARNING_DEFAULT);
+    this(id, Inventory.NAME_DEFAULT_VALUE, Inventory.QUANTITY_DEFAULT_VALUE, Inventory.TOTAL_COST_DEFAULT, Inventory.TOTAL_EARNING_DEFAULT);
   }
 
   def this(data: (Int, String, Int, Double, Double)) {
@@ -217,7 +213,7 @@ class Inventory(var id: Int, var name: String, var count: Int, var total_cost: D
   }
 
   override def toString: String = {
-    return "id: " + id + ", Name: " + name + ", Count: " + count + ", Total Cost: " + total_cost + ", Total Earning: " + total_earning
+    return "id: " + id + ", Name: " + name + ", Quantity: " + quantity + ", Total Cost: " + total_cost + ", Total Earning: " + total_earning
   }
 }
 
@@ -281,10 +277,10 @@ object DBSetup {
     def client_id = column[Int]("CLIENT_ID")
     def emp_id = column[Int]("EMP_ID")
     def inv_id = column[Int]("INV_ID")
-    def count = column[Int]("COUNT")
+    def quantity = column[Int]("QUANTITY")
     def total_cost = column[Double]("TOTAL_COST")
     def purchase_date = column[Timestamp]("PURCHASE_DATE")
-    def * = (id, client_id, emp_id, inv_id, count, total_cost, purchase_date)
+    def * = (id, client_id, emp_id, inv_id, quantity, total_cost, purchase_date)
   }
   val purchases = TableQuery[Purchases]
 
@@ -294,10 +290,10 @@ object DBSetup {
     def id = column[Int]("PURCHASE_ID", O.PrimaryKey, O.AutoInc)
     def emp_id = column[Int]("EMP_ID")
     def inv_id = column[Int]("INV_ID")
-    def count = column[Int]("COUNT")
+    def quantity = column[Int]("QUANTITY")
     def total_cost = column[Double]("TOTAL_COST")
     def received = column[Timestamp]("RECEIVED")
-    def * = (id, emp_id, inv_id, count, total_cost, received)
+    def * = (id, emp_id, inv_id, quantity, total_cost, received)
   }
   val shipments = TableQuery[Shipments]
 
@@ -306,10 +302,10 @@ object DBSetup {
     "INVENTORYS") {
     def id = column[Int]("PURCHASE_ID", O.PrimaryKey, O.AutoInc)
     def name = column[String]("NAME")
-    def count = column[Int]("COUNT")
+    def quantity = column[Int]("QUANTITY")
     def total_cost = column[Double]("TOTAL_COST")
     def total_earning = column[Double]("TOTAL_EARNING")
-    def * = (id, name, count, total_cost, total_earning)
+    def * = (id, name, quantity, total_cost, total_earning)
   }
   val inventorys = TableQuery[Inventorys]
 
@@ -335,7 +331,7 @@ object DBSetup {
   val default_blob : Blob = new SerialBlob(Array[Byte](0))
   val setupSequence = DBIO.seq(
     // Create the tables, including primary and foreign keys
-
+ 
     (employees.schema ++ clients.schema ++ meetings.schema
       ++ projects.schema ++ inventorys.schema ++ shipments.schema ++
       payments.schema ++ purchases.schema ++ meetingJoinTable.schema ++ projectJoinTable.schema).create,
@@ -345,4 +341,7 @@ object DBSetup {
   )
    // meetings += (0, 1, "M0", Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE),
  //   inventorys +=(0, "item1", 4, 342.2, 0)
+ 
+
+  
 }
