@@ -46,8 +46,8 @@ object TOTAL_COST extends Total_CostKeyword
 abstract sealed class Total_EarningKeyword extends DoubleTypedKeyword
 object TOTAL_EARNING extends Total_EarningKeyword
 
-abstract sealed class CountKeyword extends IntTypedKeyword
-object COUNT extends CountKeyword
+abstract sealed class QuantityKeyword extends IntTypedKeyword
+object QUANTITY extends QuantityKeyword
 
 abstract sealed class Inv_IdKeyword extends IntTypedKeyword
 object INV_ID extends Inv_IdKeyword
