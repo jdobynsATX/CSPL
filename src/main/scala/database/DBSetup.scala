@@ -88,7 +88,15 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
   }
 
   override def toString: String = {
-    return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay //+ " Schedule: " + schedule
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + name
+    while( resultString.length < 41 ) resultString += " "
+    resultString += "| " + rank
+    while( resultString.length < 52 ) resultString += " "
+    resultString += "| " + pay
+    return resultString
+    //return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay //+ " Schedule: " + schedule
   }
 }
 
@@ -102,7 +110,15 @@ class Client(var id: Int, var name: String, var addDate: Date, var balance: Doub
   }
 
   override def toString: String = {
-    return "id: " + id + ", name: " + name + ", dateAdded: " + addDate + ", Balance: " + balance
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + name
+    while( resultString.length < 41 ) resultString += " "
+    resultString += "| " + addDate
+    while( resultString.length < 62 ) resultString += " "
+    resultString += "| " + balance
+    return resultString
+    //return "id: " + id + ", name: " + name + ", dateAdded: " + addDate + ", Balance: " + balance
   }
 }
 
@@ -138,7 +154,15 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
   }
 
   override def toString: String = {
-    return "id: " + id + ", name: " + name + ", Start Time: " + start + ", End Time: " + end
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + name
+    while( resultString.length < 41 ) resultString += " "
+    resultString += "| " + start
+    while( resultString.length < 62 ) resultString += " "
+    resultString += "| " + end
+    return resultString
+    //return "id: " + id + ", name: " + name + ", Start Time: " + start + ", End Time: " + end
   }
 }
 
@@ -153,7 +177,13 @@ class Project(var id: Int, var client_id: Int, var name: String, var end: Date)
   }
 
   override def toString: String = {
-    return "id: " + id + ", name: " + name + ", End Time: " + end
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + name
+    while( resultString.length < 41 ) resultString += " "
+    resultString += "| " + end
+    return resultString
+    //return "id: " + id + ", name: " + name + ", End Time: " + end
   }
 }
 
@@ -168,7 +198,17 @@ class Payment(var id: Int, var client_id: Int, var emp_id: Int, var amount: Doub
   }
 
   override def toString: String = {
-    return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Amount: " + amount + ", Received: " + received
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + client_id
+    while( resultString.length < 21 ) resultString += " "
+    resultString += "| " + emp_id
+    while( resultString.length < 32 ) resultString += " "
+    resultString += "| " + amount
+    while( resultString.length < 43 ) resultString += " "
+    resultString += "| " + received
+    return resultString
+    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Amount: " + amount + ", Received: " + received
   }
 }
 
@@ -183,7 +223,21 @@ class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int
   }
 
   override def toString: String = {
-    return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Quantity: " + quantity + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + client_id
+    while( resultString.length < 21 ) resultString += " "
+    resultString += "| " + emp_id
+    while( resultString.length < 32 ) resultString += " "
+    resultString += "| " + inv_id
+    while( resultString.length < 43 ) resultString += " "
+    resultString += "| " + quantity
+    while( resultString.length < 54 ) resultString += " "
+    resultString += "| " + total_cost
+    while( resultString.length < 65 ) resultString += " "
+    resultString += "| " + purchase_date
+    return resultString
+    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
   }
 }
 
@@ -198,7 +252,19 @@ class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var quantity: Int,
   }
 
   override def toString: String = {
-    return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", QUANTITY: " + quantity + ", Total Cost: " + total_cost + ", Received: " + received
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + emp_id
+    while( resultString.length < 21 ) resultString += " "
+    resultString += "| " + inv_id
+    while( resultString.length < 32 ) resultString += " "
+    resultString += "| " + quantity
+    while( resultString.length < 43 ) resultString += " "
+    resultString += "| " + total_cost
+    while( resultString.length < 54 ) resultString += " "
+    resultString += "| " + received
+    return resultString
+    //return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Received: " + received
   }
 }
 
@@ -211,9 +277,19 @@ class Inventory(var id: Int, var name: String, var quantity: Int, var total_cost
   def this(data: (Int, String, Int, Double, Double)) {
     this(data._1, data._2, data._3, data._4, data._5);
   }
-
+  
   override def toString: String = {
-    return "id: " + id + ", Name: " + name + ", Quantity: " + quantity + ", Total Cost: " + total_cost + ", Total Earning: " + total_earning
+    var resultString = " " + id
+    while( resultString.length < 10 ) resultString += " "
+    resultString += "| " + name
+    while( resultString.length < 41 ) resultString += " "
+    resultString += "| " + quantity
+    while( resultString.length < 52 ) resultString += " "
+    resultString += "| " + total_cost
+    while( resultString.length < 63 ) resultString += " "
+    resultString += "| " + total_earning
+    return resultString
+    //return "id: " + id + ", Name: " + name + ", Count: " + count + ", Total Cost: " + total_cost + ", Total Earning: " + total_earning
   }
 }
 

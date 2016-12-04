@@ -40,6 +40,7 @@ class DBService() {
   def ListAllEmployees() = {
     // Read all coffees and print them to the console
     println("Employees:")
+    println("    ID    |             NAME             |   RANK   |   PAY    ")
     val employees: Seq[Employee] = GetAllEmployees()
     for (emp <- employees) {
       println(emp)
@@ -141,6 +142,7 @@ class DBService() {
 
   def ListAllClients() = {
     println("Clients:")
+    println("    ID    |             NAME             |        DATE        | BALANCE  ")
     val clients: Seq[Client] = GetAllClients()
     for (client <- clients) {
       println(client)
@@ -209,6 +211,7 @@ class DBService() {
 
   def ListAllMeetings() = {
     println("Meetings:")
+    println("    ID    |             NAME             |       START        |   END")
     db.run(meetings.result).map(_.foreach {
       case (id, client_id, name, start, end) =>
         println("  " + id + "\t" + client_id + "\t" + name + "\t" + start + "\t" + end + "\t")
@@ -277,6 +280,7 @@ class DBService() {
 
   def ListAllProjects() = {
     println("Projects:")
+    println("    ID    |             NAME             |   END")
     db.run(projects.result).map(_.foreach {
       case (id, client_id, name, end) =>
         println("  " + id + "\t" + client_id + "\t" + name + "\t" + end + "\t")
@@ -346,6 +350,7 @@ class DBService() {
 
   def ListAllPayments() = {
     println("Payments:")
+    println("    ID    |  CLIENT  | EMPLOYEE |  AMOUNT  | RECIEVED")
     db.run(payments.result).map(_.foreach {
       case (id, client_id, emp_id, amount, received) =>
         println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + amount + "\t" +received + "\t")
@@ -405,6 +410,7 @@ class DBService() {
 
   def ListAllPurchases() = {
     println("Purchases:")
+    println("    ID    |  CLIENT  | EMPLOYEE | INVENTORY|  COUNT   |   COST   | PURCHASED")
     db.run(purchases.result).map(_.foreach {
       case (id, client_id, emp_id, inv_id, quantity, total_cost, purchase_date) =>
         println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + inv_id + "\t" + quantity + "\t" + total_cost + "\t" + purchase_date + "\t")
@@ -464,6 +470,7 @@ class DBService() {
 
   def ListAllShipments() = {
     println("Shipments:")
+    println("    ID    | EMPLOYEE | INVENTORY|  COUNT   |   COST   | RECIEVED")
     db.run(shipments.result).map(_.foreach {
       case (id, emp_id, inv_id, quantity, total_cost, received) =>
         println("  " + id + "\t" + emp_id + "\t" + inv_id + "\t" + quantity + "\t" + total_cost + "\t" + received + "\t")
@@ -522,6 +529,7 @@ class DBService() {
 
   def ListAllInventorys() = {
     println("Inventories:")
+    println("    ID    |             NAME             |  COUNT   |   COST   | EARNING")
     db.run(inventorys.result).map(_.foreach {
       case (id, name, quantity, total_cost, total_earning) =>
         println("  " + id + "\t" + name + "\t" + quantity + "\t" + total_cost + "\t" + total_earning + "\t")
