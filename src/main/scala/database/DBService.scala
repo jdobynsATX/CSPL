@@ -271,7 +271,7 @@ object DBService {
       meeting <- meetings if meeting.name === name
     } yield meeting
     val action = query.result.head
-    val f: Future[(Int, Int, String, Timestamp, Timestamp)] = db.run(action)
+    val f: Future[(Int, Int, String, Timestamp, Int)] = db.run(action)
 
     val result = Await.result(f, Duration.Inf)
     val retMeeting = new Meeting(result)
