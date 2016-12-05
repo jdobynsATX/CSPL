@@ -60,11 +60,6 @@ object ScheduleExample extends Bdsl {
     PRINT ALL MEETING;
 
     EXPORT CALENDAR "COMPANY_CAL";
-    EXPORT EMPLOYEE 1 CALENDAR "Bill_Calendar";
-    EXPORT EMPLOYEE 2 CALENDAR "Jane_Calendar";
-    EXPORT EMPLOYEE 3 CALENDAR "Lane_Calendar";
-    EXPORT EMPLOYEE 4 CALENDAR "Steven_Calendar";
-    EXPORT EMPLOYEE 5 CALENDAR "Jill_Calendar";
     EXPORT EMPLOYEE 6 CALENDAR "Jack_Calendar";
 
     ASSIGN EMPLOYEE "Steven Jay" TO EVENT MEETING "Design Meeting";
