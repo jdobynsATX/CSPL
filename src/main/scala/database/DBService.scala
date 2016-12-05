@@ -211,11 +211,15 @@ object DBService {
 
   def ListAllMeetings() = {
     println("Meetings:")
-    println("    ID    |             NAME             |       START        |   END")
-    db.run(meetings.result).map(_.foreach {
+    println("    ID    |             NAME             |            START             |   END")
+    /*db.run(meetings.result).map(_.foreach {
       case (id, client_id, name, start, end) =>
         println("  " + id + "\t" + client_id + "\t" + name + "\t" + start + "\t" + end + "\t")
-    })
+    })*/
+    val meetings: Seq[Meeting] = GetAllMeetings()
+    for (meeting <- meetings) {
+      println(meeting)
+    }
   }
 
   def GetAllMeetings(): Array[Meeting] = {
@@ -281,10 +285,14 @@ object DBService {
   def ListAllProjects() = {
     println("Projects:")
     println("    ID    |             NAME             |   END")
-    db.run(projects.result).map(_.foreach {
+    /*db.run(projects.result).map(_.foreach {
       case (id, client_id, name, end) =>
         println("  " + id + "\t" + client_id + "\t" + name + "\t" + end + "\t")
-    })
+    })*/
+    val projects: Seq[Project] = GetAllProjects()
+    for (project <- projects) {
+      println(project)
+    }
   }
 
   def GetAllProjects(): Array[Project] = {
