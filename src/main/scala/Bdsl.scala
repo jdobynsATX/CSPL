@@ -137,8 +137,7 @@ class Bdsl {
         def AS(num: Int) = {
           keyword match {
             case ID => env.id = num
-            case START => env.start = new Timestamp(num)
-            case END => env.end = new Timestamp(num)
+            case DURATION => env.durationMinutes = num
           }
           DBService.UpdateMeeting(env)
           new CreateMeeting(env)
@@ -148,7 +147,6 @@ class Bdsl {
           keyword match {
             case NAME => env.name = str
             case START => env.start = new Timestamp(0)
-            case END => env.end = new Timestamp(0)
           }
           DBService.UpdateMeeting(env)
           new CreateMeeting(env)
@@ -520,7 +518,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id == num.asInstanceOf[Int] ) )
             case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))==0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))==0 ) )
+            case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes == num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name == num.asInstanceOf[String] ) )
           }
         }
@@ -529,7 +527,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id < num.asInstanceOf[Int] ) )
             case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))<0 ) )
+            case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes < num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name < num.asInstanceOf[String] ) )
           }
         }
@@ -538,7 +536,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id > num.asInstanceOf[Int] ) )
             case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))>0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))>0 ) )
+            case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes > num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name > num.asInstanceOf[String] ) )
           }
         }
@@ -547,7 +545,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id <= num.asInstanceOf[Int] ) )
             case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<=0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))<=0 ) )
+            case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes <= num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name <= num.asInstanceOf[String] ) )
           }
         }
@@ -556,7 +554,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id >= num.asInstanceOf[Int] ) )
             case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))>=0 ) )
-            case END => new MeetingQuery( mtng.filter( _.end.compareTo(new Timestamp(num.asInstanceOf[Int]))>=0 ) )
+            case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes >= num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name >= num.asInstanceOf[String] ) )
           }
         }
@@ -572,7 +570,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => mtng.foreach(_.client_id = num)
             case START => mtng.foreach(_.start = new Timestamp(num) )
-            case END => mtng.foreach(_.end = new Timestamp(num) )
+            case DURATION => mtng.foreach(_.changeDuration(num) )
           }
           mtng.foreach( DBService.UpdateMeeting(_) )
           new MeetingQuery(mtng)
@@ -786,7 +784,7 @@ class Bdsl {
             case ID => env.id = num
             case CLIENT_ID => env.client_id = num
             case START => env.start = new Timestamp(num)
-            case END => env.end = new Timestamp(num)
+            case DURATION => env.changeDuration(num)
           }
           DBService.UpdateMeeting(env)
           new ModifyMeeting(env)
@@ -1104,10 +1102,10 @@ class Bdsl {
 
           if (meeting.start.getTime() == 0) {
             // Case where no start time (assume no end either)
+            val empList = DBService.GetEmployeesForMeeting(id)
+            // Scheduler.firstAvailableTimeFromNow()
             
-          } else if (meeting.end.getTime() == 0) {
-            // Case where has start but no end time
-          }
+          } 
         }
 
         def PROJECT(id: Int) = {
@@ -1179,33 +1177,6 @@ class Bdsl {
         }
         bufferedSource.close
       }
-
-      def TO(keyword: MeetingKeyword) {
-        val bufferedSource = io.Source.fromFile(file)
-        for (line <- bufferedSource.getLines) {
-          val cols = line.split(",").map(_.trim)
-          val mtng = DBService.NewMeeting()
-          mtng.client_id = cols(0).toInt
-          mtng.name = cols(1)
-          mtng.start = new Timestamp( cols(2).toInt )
-          mtng.end = new Timestamp( cols(3).toInt )
-          DBService.UpdateMeeting(mtng)
-        }
-        bufferedSource.close
-      }
-
-      def TO(keyword: ProjectKeyword) {
-        val bufferedSource = io.Source.fromFile(file)
-        for (line <- bufferedSource.getLines) {
-          val cols = line.split(",").map(_.trim)
-          val proj = DBService.NewProject()
-          proj.client_id = cols(0).toInt
-          proj.name = cols(1)
-          proj.end = new Date( cols(2).toInt )
-          DBService.UpdateProject(proj)
-        }
-        bufferedSource.close
-      }
     }
   }
 
@@ -1215,7 +1186,7 @@ class Bdsl {
     val meetings = DBService.GetAllMeetings()
 
     for (meeting <- meetings) {
-      if( meeting.end.compareTo(now) < 0 )
+      if( meeting.getEnd().compareTo(now) < 0 )
       {
         println("Closing MEETING " + DBService.DeleteMeeting(meeting.id))
       }

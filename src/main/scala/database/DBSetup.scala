@@ -124,41 +124,50 @@ class Client(var id: Int, var name: String, var addDate: Date, var balance: Doub
   }
 }
 
-class Meeting(var id: Int, var client_id: Int, var name: String, var start: Timestamp, var end: Timestamp) 
+class Meeting(var id: Int, var client_id: Int, var name: String, var start: Timestamp, var durationMinutes: Int) 
       extends DBObject {
   def this(id: Int) {
-    this(id, Meeting.CLIENT_DEFAULT, Meeting.NAME_DEFAULT_VALUE, Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE);
+    this(id, Meeting.CLIENT_DEFAULT, Meeting.NAME_DEFAULT_VALUE, Meeting.START_DEFAULT_VALUE, 0);
   }
 
-  def this(data: (Int, Int, String, Timestamp, Timestamp)) {
+  def this(data: (Int, Int, String, Timestamp, Int)) {
     this(data._1, data._2, data._3, data._4, data._5);
   }
 
-  def setStart(time: LocalDateTime) {
-    var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond()
-    this.start = new Timestamp(epoch * 1000)
-  }
- 
-  def setEnd(time: LocalDateTime) {
-    var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond()
-    this.end = new Timestamp(epoch * 1000)
+  def changeDuration(durationMins: Int) {
+    this.durationMinutes = durationMins
+    // Need to recheck schedules.
   }
 
-  def setStart(startTime: LocalDateTime, durationMins: Int) {
-    val endTime = startTime.plusMinutes(durationMins)
-    var zoneId = ZoneId.systemDefault(); 
-    var epochStart = startTime.atZone(zoneId).toEpochSecond()
-    var epochEnd = endTime.atZone(zoneId).toEpochSecond()
-    this.start = new Timestamp(epochStart * 1000)
-    this.end = new Timestamp(epochEnd * 1000)
+  def getEnd(): Timestamp = {
+    return start
   }
+
+  // def setStart(time: LocalDateTime) {
+  //   var zoneId = ZoneId.systemDefault(); 
+  //   var epoch = time.atZone(zoneId).toEpochSecond()
+  //   this.start = new Timestamp(epoch * 1000)
+  // }
+ 
+  // def setEnd(time: LocalDateTime) {
+  //   var zoneId = ZoneId.systemDefault(); 
+  //   var epoch = time.atZone(zoneId).toEpochSecond()
+  //   this.end = new Timestamp(epoch * 1000)
+  // }
+
+  // def setStart(startTime: LocalDateTime, durationMins: Int) {
+  //   val endTime = startTime.plusMinutes(durationMins)
+  //   var zoneId = ZoneId.systemDefault(); 
+  //   var epochStart = startTime.atZone(zoneId).toEpochSecond()
+  //   var epochEnd = endTime.atZone(zoneId).toEpochSecond()
+  //   this.start = new Timestamp(epochStart * 1000)
+  //   this.end = new Timestamp(epochEnd * 1000)
+  // }
  
   def getCalEvent(): VEvent = {
     var event = new VEvent()
     event.setDateStart(this.start)
-    event.setDateEnd(this.end)
+    event.setDateEnd(this.getEnd())
     event.setSummary(this.name)
     // event.setLocation("NONE")
     return event
@@ -172,7 +181,7 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + start
     while( resultString.length < 72 ) resultString += " "
-    resultString += "| " + end
+    resultString += "| " + getEnd()
     return resultString
     //return "id: " + id + ", name: " + name + ", Start Time: " + start + ", End Time: " + end
   }
@@ -340,14 +349,14 @@ object DBSetup {
   val projects = TableQuery[Projects]
 
   //ISSUE: Foreign key shenanigans
-  class Meetings(tag: Tag) extends Table[(Int, Int, String, Timestamp, Timestamp)](tag, "MEETINGS") {
+  class Meetings(tag: Tag) extends Table[(Int, Int, String, Timestamp, Int)](tag, "MEETINGS") {
     def id = column[Int]("MEETING_ID", O.PrimaryKey, O.AutoInc)
     def client_id = column[Int]("CLIENT_ID")
     def name = column[String]("MEETING_DESCRIPTION")
     def start = column[Timestamp] ("START_TIME")
-    def end = column[Timestamp]("END_TIME")
+    def duration = column[Int]("DURATION")
     def client = foreignKey("MEET_CLIENT_FK", client_id, clients)(_.id)
-    def * = (id, client_id, name, start, end)
+    def * = (id, client_id, name, start, duration)
   }
   val meetings = TableQuery[Meetings]
 

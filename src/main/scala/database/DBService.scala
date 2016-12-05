@@ -223,8 +223,8 @@ object DBService {
 
   def GetAllMeetings(): Array[Meeting] = {
     var result: Array[Meeting] = new Array[Meeting](0)
-    val f: Future[Seq[(Int, Int, String, Timestamp, Timestamp)]] = db.run(meetings.result)
-    val queryResult: Seq[(Int, Int, String, Timestamp, Timestamp)] = Await.result(f, Duration.Inf)
+    val f: Future[Seq[(Int, Int, String, Timestamp, Int)]] = db.run(meetings.result)
+    val queryResult: Seq[(Int, Int, String, Timestamp, Int)] = Await.result(f, Duration.Inf)
     for (mtngData <- queryResult) {
       result = result :+ (new Meeting(mtngData))
     }
@@ -236,7 +236,7 @@ object DBService {
       meeting <- meetings if meeting.id === id
     } yield meeting
     val action = query.result.head
-    val f: Future[(Int, Int, String, Timestamp, Timestamp)] = db.run(action)
+    val f: Future[(Int, Int, String, Timestamp, Int)] = db.run(action)
 
     val result = Await.result(f, Duration.Inf)
     val retMeeting = new Meeting(result)
@@ -249,8 +249,8 @@ object DBService {
       mid <- meetingJoinTable if mid.emp_id === id
       m <- meetings if m.id === mid.meeting_id
     } yield m
-    val f: Future[Seq[(Int, Int, String, Timestamp, Timestamp)]] = db.run(meetingList.result)
-    val queryResult: Seq[(Int, Int, String, Timestamp, Timestamp)] = Await.result(f, Duration.Inf)
+    val f: Future[Seq[(Int, Int, String, Timestamp, Int)]] = db.run(meetingList.result)
+    val queryResult: Seq[(Int, Int, String, Timestamp, Int)] = Await.result(f, Duration.Inf)
     for(meetData <- queryResult) {
       result = result :+ (new Meeting(meetData))
     }
@@ -258,7 +258,7 @@ object DBService {
   }
 
   def NewMeeting(): Meeting = {
-    val insert = (meetings returning meetings.map(_.id)) += (-1, 1 ,"", new Timestamp(0), new Timestamp(0))
+    val insert = (meetings returning meetings.map(_.id)) += (-1, 1 ,"", new Timestamp(0), 0)
     val insertSeq: Future[Int] = db.run(insert)
 
     val meetingId = Await.result(insertSeq, Duration.Inf)
@@ -267,7 +267,7 @@ object DBService {
   }
 
   def UpdateMeeting(meeting: Meeting): Meeting = {
-    val updated = meetings.insertOrUpdate(meeting.id, meeting.client_id, meeting.name, meeting.start, meeting.end)
+    val updated = meetings.insertOrUpdate(meeting.id, meeting.client_id, meeting.name, meeting.start, meeting.durationMinutes)
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)
