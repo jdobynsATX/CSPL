@@ -81,7 +81,6 @@ object DBService {
 
   def UpdateEmployee(emp: Employee): Employee = {
     val updated = employees.insertOrUpdate(emp.id, emp.name, emp.rank, emp.pay, emp.schedule.toByteArray())
-    println( "DEBUG") //DEBUG
     val updateSeq: Future[Int] = db.run(updated)
 
     if (Await.result(updateSeq, Duration.Inf) <= 0)
@@ -240,6 +239,20 @@ object DBService {
     return retMeeting
   }
 
+  def GetMeetingsForEmployee(id: Int): Array[Meeting] = {
+    var result: Array[Meeting] = new Array[Meeting](0)
+    val meetingList = for {
+      mid <- meetingJoinTable if mid.emp_id === id
+      m <- meetings if m.id === mid.meeting_id
+    } yield m
+    val f: Future[Seq[(Int, Int, String, Timestamp, Timestamp)]] = db.run(meetingList.result)
+    val queryResult: Seq[(Int, Int, String, Timestamp, Timestamp)] = Await.result(f, Duration.Inf)
+    for(meetData <- queryResult) {
+      result = result :+ (new Meeting(meetData))
+    }
+    return result
+  }
+
   def NewMeeting(): Meeting = {
     val insert = (meetings returning meetings.map(_.id)) += (-1, 1 ,"", new Timestamp(0), new Timestamp(0))
     val insertSeq: Future[Int] = db.run(insert)
@@ -292,6 +305,20 @@ object DBService {
     val f: Future[Seq[(Int, Int, String, Date)]] = db.run(projects.result)
     val queryResult: Seq[(Int, Int, String, Date)] = Await.result(f, Duration.Inf)
     for (projData <- queryResult) {
+      result = result :+ (new Project(projData))
+    }
+    return result
+  }
+
+  def GetProjectsForEmployee(id: Int): Array[Project] = {
+    var result: Array[Project] = new Array[Project](0)
+    val projectList = for {
+      pid <- projectJoinTable if pid.emp_id === id
+      p <- projects if p.id === pid.project_id
+    } yield p
+    val f: Future[Seq[(Int, Int, String, Date)]] = db.run(projectList.result)
+    val queryResult: Seq[(Int, Int, String, Date)] = Await.result(f, Duration.Inf)
+    for(projData <- queryResult) {
       result = result :+ (new Project(projData))
     }
     return result
