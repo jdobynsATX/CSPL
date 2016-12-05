@@ -440,15 +440,15 @@ class Bdsl {
       class AssignEmployee(emps: Array[Employee]) {
 
           def MEETING(id: Int) = {
-            // println("Adding EMPLOYEE to MEETING ")
+            println("Adding EMPLOYEES to MEETING ")
             emps.foreach(DBService.AddEmployeeToMeeting(_, id))
           }
 
-          // def MEETING(name: String) = {
-          //   // println("Adding EMPLOYEE to MEETING ")
-          // val id = DBService.GetMeeting(name).id
-          //   emps.foreach(DBService.AddEmployeeToMeeting(_, id))
-          // }
+          def MEETING(name: String) = {
+            println("Adding EMPLOYEES to MEETING ")
+            val id = DBService.GetMeeting(name).id
+            emps.foreach(DBService.AddEmployeeToMeeting(_, id))
+          }
 
           // def PROJECT(id: Int) = {
           //   println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
