@@ -141,15 +141,18 @@ class Bdsl {
       class AsContinue(keyword: AttributeKeyword) {
         def AS(num: Int) = {
           keyword match {
+            case CLIENT_ID => env.client_id = num
             case ID => env.id = num
             case DURATION => env.durationMinutes = num
           }
+
           DBService.UpdateMeeting(env)
           new CreateMeeting(env)
         }
 
         def AS(str: String) = {
           keyword match {
+            case CLIENT_ID => env.client_id = DBService.GetClient(str).id
             case NAME => env.name = str
             case START => val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(str)
@@ -180,6 +183,7 @@ class Bdsl {
 
         def AS(str: String) = {
           keyword match {
+            case CLIENT_ID => pro.client_id = DBService.GetClient(str).id
             case NAME => pro.name = str
             case END => val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
               val temp = dateFormat.parse(str)
@@ -1024,6 +1028,7 @@ class Bdsl {
           val inv = DBService.GetInventory(ship.inv_id)
           val temp = inv.total_cost
           inv.total_cost = temp + diff
+		  DBService.UpdateInventory(inv)
           DBService.UpdateShipment(ship)
           new ModifyShipment(ship)
         }
@@ -1219,7 +1224,7 @@ class Bdsl {
       val pay = DBService.GetPayment(id)
       val cli = DBService.GetClient(pay.client_id)
       val temp = cli.balance
-      cli.balance = temp - pay.amount
+      cli.balance = temp + pay.amount
       DBService.UpdateClient(cli)
       println("Removing PAYMENT " + DBService.DeletePayment(id))
     }

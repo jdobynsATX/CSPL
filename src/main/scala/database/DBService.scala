@@ -226,7 +226,7 @@ object DBService {
   }
 
   def NewClient(): Client = {
-    val insert = (clients returning clients.map(_.id)) += (-1, "", new Date(0), 0.0)
+    val insert = (clients returning clients.map(_.id)) += (-1, "", new Date(System.currentTimeMillis()), 0.0)
     val insertSeq: Future[Int] = db.run(insert)
 
     val clientId = Await.result(insertSeq, Duration.Inf)
@@ -527,10 +527,20 @@ object DBService {
   def ListAllPayments() = {
     println("Payments:")
     println("    ID    |  CLIENT  | EMPLOYEE |  AMOUNT  | RECIEVED")
-    db.run(payments.result).map(_.foreach {
-      case (id, client_id, emp_id, amount, received) =>
-        println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + amount + "\t" +received + "\t")
-    })
+    val payments: Seq[Payment] = GetAllPayments()
+    for (payment <- payments) {
+      println(payment)
+    }
+  }
+
+  def GetAllPayments(): Array[Payment] = {
+    var result: Array[Payment] = new Array[Payment](0)
+    val f: Future[Seq[(Int, Int, Int, Double, Timestamp)]] = db.run(payments.result)
+    val queryResult: Seq[(Int, Int, Int, Double, Timestamp)] = Await.result(f, Duration.Inf)
+    for (paymentData <- queryResult) {
+      result = result :+ (new Payment(paymentData))
+    }
+    return result
   }
 
   def GetPayment(id: Int): Payment = {
@@ -547,7 +557,7 @@ object DBService {
 
 
   def NewPayment(): Payment = {
-    val insert = (payments returning payments.map(_.id)) += (-1, -1, -1, 0.0, new Timestamp(0))
+    val insert = (payments returning payments.map(_.id)) += (-1, -1, -1, 0.0, new Timestamp(System.currentTimeMillis()))
     val insertSeq: Future[Int] = db.run(insert)
 
     val paymentId = Await.result(insertSeq, Duration.Inf)
@@ -587,10 +597,20 @@ object DBService {
   def ListAllPurchases() = {
     println("Purchases:")
     println("    ID    |  CLIENT  | EMPLOYEE | INVENTORY|  COUNT   |   COST   | PURCHASED")
-    db.run(purchases.result).map(_.foreach {
-      case (id, client_id, emp_id, inv_id, quantity, total_cost, purchase_date) =>
-        println("  " + id + "\t" + client_id + "\t" + emp_id + "\t" + inv_id + "\t" + quantity + "\t" + total_cost + "\t" + purchase_date + "\t")
-    })
+    val purchases: Seq[Purchase] = GetAllPurchases()
+    for (purchase <- purchases) {
+      println(purchase)
+    }
+  }
+
+  def GetAllPurchases(): Array[Purchase] = {
+    var result: Array[Purchase] = new Array[Purchase](0)
+    val f: Future[Seq[(Int, Int, Int, Int, Int, Double, Timestamp)]] = db.run(purchases.result)
+    val queryResult: Seq[(Int, Int, Int, Int, Int, Double, Timestamp)] = Await.result(f, Duration.Inf)
+    for (purchaseData <- queryResult) {
+      result = result :+ (new Purchase(purchaseData))
+    }
+    return result
   }
 
   def GetPurchase(id: Int): Purchase = {
@@ -607,7 +627,7 @@ object DBService {
 
 
   def NewPurchase(): Purchase = {
-    val insert = (purchases returning purchases.map(_.id)) += (-1, -1, -1, -1, 0, 0.0, new Timestamp(0))
+    val insert = (purchases returning purchases.map(_.id)) += (-1, -1, -1, -1, 0, 0.0, new Timestamp(System.currentTimeMillis()))
     val insertSeq: Future[Int] = db.run(insert)
 
     val purchaseId = Await.result(insertSeq, Duration.Inf)
@@ -647,10 +667,20 @@ object DBService {
   def ListAllShipments() = {
     println("Shipments:")
     println("    ID    | EMPLOYEE | INVENTORY|  COUNT   |   COST   | RECIEVED")
-    db.run(shipments.result).map(_.foreach {
-      case (id, emp_id, inv_id, quantity, total_cost, received) =>
-        println("  " + id + "\t" + emp_id + "\t" + inv_id + "\t" + quantity + "\t" + total_cost + "\t" + received + "\t")
-    })
+    val shipments: Seq[Shipment] = GetAllShipments()
+    for (shipment <- shipments) {
+      println(shipment)
+    }
+  }
+
+  def GetAllShipments(): Array[Shipment] = {
+    var result: Array[Shipment] = new Array[Shipment](0)
+    val f: Future[Seq[(Int, Int, Int, Int, Double, Timestamp)]] = db.run(shipments.result)
+    val queryResult: Seq[(Int, Int, Int, Int, Double, Timestamp)] = Await.result(f, Duration.Inf)
+    for (shipmentData <- queryResult) {
+      result = result :+ (new Shipment(shipmentData))
+    }
+    return result
   }
 
   def GetShipment(id: Int): Shipment = {
@@ -666,7 +696,7 @@ object DBService {
   }
 
   def NewShipment(): Shipment = {
-    val insert = (shipments returning shipments.map(_.id)) += (-1, -1, -1, 0, 0.0, new Timestamp(0))
+    val insert = (shipments returning shipments.map(_.id)) += (-1, -1, -1, 0, 0.0, new Timestamp(System.currentTimeMillis()))
     val insertSeq: Future[Int] = db.run(insert)
 
     val shipmentId = Await.result(insertSeq, Duration.Inf)
@@ -706,10 +736,20 @@ object DBService {
   def ListAllInventorys() = {
     println("Inventories:")
     println("    ID    |             NAME             |  COUNT   |   COST   | EARNING")
-    db.run(inventorys.result).map(_.foreach {
-      case (id, name, quantity, total_cost, total_earning) =>
-        println("  " + id + "\t" + name + "\t" + quantity + "\t" + total_cost + "\t" + total_earning + "\t")
-    })
+    val inventories: Seq[Inventory] = GetAllInventorys()
+    for (inventory <- inventories) {
+      println(inventory)
+    }
+  }
+
+  def GetAllInventorys(): Array[Inventory] = {
+    var result: Array[Inventory] = new Array[Inventory](0)
+    val f: Future[Seq[(Int, String, Int, Double, Double)]] = db.run(inventorys.result)
+    val queryResult: Seq[(Int, String, Int, Double, Double)] = Await.result(f, Duration.Inf)
+    for (invData <- queryResult) {
+      result = result :+ (new Inventory(invData))
+    }
+    return result
   }
 
   def GetInventory(id: Int): Inventory = {
