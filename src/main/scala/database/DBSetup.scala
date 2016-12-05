@@ -143,11 +143,19 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
     return start
   }
 
-  // def setStart(time: LocalDateTime) {
-  //   var zoneId = ZoneId.systemDefault(); 
-  //   var epoch = time.atZone(zoneId).toEpochSecond()
-  //   this.start = new Timestamp(epoch * 1000)
-  // }
+  def getStartTime(): LocalDateTime = {
+    return LocalDateTime.now()
+  }
+
+  def getEndTime(): LocalDateTime = {
+    return LocalDateTime.now()
+  }
+
+  def setStart(time: LocalDateTime) {
+    var zoneId = ZoneId.systemDefault(); 
+    var epoch = time.atZone(zoneId).toEpochSecond()
+    this.start = new Timestamp(epoch * 1000)
+  }
  
   // def setEnd(time: LocalDateTime) {
   //   var zoneId = ZoneId.systemDefault(); 

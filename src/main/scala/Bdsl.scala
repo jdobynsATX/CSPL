@@ -1,10 +1,12 @@
 package cs345.bdsl
 
 import cs345.database._
+import cs345.scheduler._
 
 import java.util.Calendar
 import java.sql.Date
 import java.sql.Timestamp
+import java.time.LocalDateTime
 import scala.language.postfixOps
 import scala.collection.mutable.Map
 
@@ -1096,16 +1098,30 @@ class Bdsl {
 
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
-          println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeMeeting(emp.id, id))
+          println("Adding EMPLOYEE to MEETING ")
           var employee = emp
           var meeting = DBService.GetMeeting(id)
 
-          if (meeting.start.getTime() == 0) {
-            // Case where no start time (assume no end either)
-            val empList = DBService.GetEmployeesForMeeting(id)
-            // Scheduler.firstAvailableTimeFromNow()
-            
-          } 
+          if (meeting.start.getTime() != 0) {
+            // Case where none assigned to meeting
+            val prevEmpList = DBService.GetEmployeesForMeeting(id)
+            for (emp <- prevEmpList) {
+              emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
+            }
+            DBService.AssignEmployeeMeeting(emp.id, id)
+          } else {
+            // Case where already assigned.
+            DBService.AssignEmployeeMeeting(emp.id, id)
+            // NEED TO DO FUTURE TIME
+          }
+          val empList = DBService.GetEmployeesForMeeting(id)
+          var newStartTime: LocalDateTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
+          meeting.setStart(newStartTime)
+          for (emp <- empList) {
+            emp.schedule.setBusy(meeting.getStartTime(), meeting.getEndTime())
+            DBService.UpdateEmployee(emp)
+          }
+          DBService.UpdateMeeting(meeting)
         }
 
         def PROJECT(id: Int) = {
