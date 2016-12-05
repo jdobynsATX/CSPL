@@ -141,15 +141,18 @@ class Bdsl {
       class AsContinue(keyword: AttributeKeyword) {
         def AS(num: Int) = {
           keyword match {
+            case CLIENT_ID => env.client_id = num
             case ID => env.id = num
             case DURATION => env.durationMinutes = num
           }
+
           DBService.UpdateMeeting(env)
           new CreateMeeting(env)
         }
 
         def AS(str: String) = {
           keyword match {
+            case CLIENT_ID => env.client_id = DBService.GetClient(str).id
             case NAME => env.name = str
             case START => val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(str)
@@ -180,6 +183,7 @@ class Bdsl {
 
         def AS(str: String) = {
           keyword match {
+            case CLIENT_ID => pro.client_id = DBService.GetClient(str).id
             case NAME => pro.name = str
             case END => val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
               val temp = dateFormat.parse(str)
