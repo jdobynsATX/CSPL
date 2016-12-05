@@ -33,7 +33,7 @@ object Employee {
 
 object Client {
   val NAME_DEFAULT_VALUE = ""
-  val ADDDATE_DEFAULT_VALUE: Date = new Date(1480906361)
+  val ADDDATE_DEFAULT_VALUE: Date = new Date(System.currentTimeMillis())
   val BALANCE_DEFAULT = 0.0
 }
 
@@ -52,14 +52,14 @@ object Project {
 
 object Payment {
   val CLIENT_DEFAULT = 1
-  val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(System.currentTimeMillis())
   val EMPLOYEE_DEFAULT = -1
   val AMOUNT_DEFAULT = 0.0
 }
 
 object Purchase {
   val CLIENT_DEFAULT = 1
-  val PURCHASE_DATE_VALUE: Timestamp = new Timestamp(0)
+  val PURCHASE_DATE_VALUE: Timestamp = new Timestamp(System.currentTimeMillis())
   val EMPLOYEE_DEFAULT = -1
   val INVENTORY_DEFAULT = -1
   val QUANTITY_DEFAULT_VALUE = 0
@@ -67,7 +67,7 @@ object Purchase {
 }
 
 object Shipment {
-  val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(0)
+  val RECEIVED_DEFAULT_VALUE: Timestamp = new Timestamp(System.currentTimeMillis())
   val EMPLOYEE_DEFAULT = -1
   val INVENTORY_DEFAULT = -1
   val QUANTITY_DEFAULT_VALUE = 0
