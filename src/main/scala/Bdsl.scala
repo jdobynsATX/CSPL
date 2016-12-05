@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat
 
 import cs345.scheduler._
 
-import java.util.Calendar
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -440,15 +439,15 @@ class Bdsl {
       class AssignEmployee(emps: Array[Employee]) {
 
           def MEETING(id: Int) = {
-            // println("Adding EMPLOYEE to MEETING ")
+            println("Adding EMPLOYEES to MEETING ")
             emps.foreach(DBService.AddEmployeeToMeeting(_, id))
           }
 
-          // def MEETING(name: String) = {
-          //   // println("Adding EMPLOYEE to MEETING ")
-          // val id = DBService.GetMeeting(name).id
-          //   emps.foreach(DBService.AddEmployeeToMeeting(_, id))
-          // }
+          def MEETING(name: String) = {
+            println("Adding EMPLOYEES to MEETING ")
+            val id = DBService.GetMeeting(name).id
+            emps.foreach(DBService.AddEmployeeToMeeting(_, id))
+          }
 
           // def PROJECT(id: Int) = {
           //   println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
@@ -1330,8 +1329,25 @@ class Bdsl {
     }
   }
 
+  object EXPORT {
+    def EMPLOYEE( id: Int ) = {
+      new EmployeeExport(id)
+    }
+
+    def TO(file: String) {
+      Calendar.ExportCompanySchedule(file)
+    }
+
+    class EmployeeExport(id: Int) {
+      def TO(file: String) {
+        Calendar.ExportEmployeeSchedule(id, file)
+      }
+    }
+
+  }
+
   def CLOSE = {
-    val now = Calendar.getInstance().getTime()
+    val now = java.util.Calendar.getInstance().getTime()
     val projects = DBService.GetAllProjects()
     val meetings = DBService.GetAllMeetings()
 

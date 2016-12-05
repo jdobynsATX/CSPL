@@ -1,3 +1,5 @@
+package cs345.scheduler
+
 import cs345.database._
 
 import java.io._
