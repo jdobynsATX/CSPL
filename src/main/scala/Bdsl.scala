@@ -1025,6 +1025,7 @@ class Bdsl {
           val inv = DBService.GetInventory(ship.inv_id)
           val temp = inv.total_cost
           inv.total_cost = temp + diff
+		  DBService.UpdateInventory(inv)
           DBService.UpdateShipment(ship)
           new ModifyShipment(ship)
         }
@@ -1220,7 +1221,7 @@ class Bdsl {
       val pay = DBService.GetPayment(id)
       val cli = DBService.GetClient(pay.client_id)
       val temp = cli.balance
-      cli.balance = temp - pay.amount
+      cli.balance = temp + pay.amount
       DBService.UpdateClient(cli)
       println("Removing PAYMENT " + DBService.DeletePayment(id))
     }
