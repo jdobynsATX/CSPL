@@ -136,6 +136,7 @@ Ex) CREATE NEW PAYMENT FOR_CLIENT 4 FOR_AMOUNT 36.75 REVIEWED_BY 4
 
 ##Keywords
 ```
+ObjectKeywords W/ AttributeKeywords
 EMPLOYEE
   ID
   NAME
