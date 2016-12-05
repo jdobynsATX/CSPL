@@ -67,6 +67,7 @@ class Bdsl {
     class CreateEmployee(emp: Employee) {
 
       def WITH(keyword: AttributeKeyword) = {
+        println("WITH")
         new AsContinue(keyword)
       }
 
@@ -144,7 +145,11 @@ class Bdsl {
         }
 
         def AS(str: String) = {
-          env.name = str
+          keyword match {
+            case NAME => env.name = str
+            case START => env.start = new Timestamp(0)
+            case END => env.end = new Timestamp(0)
+          }
           DBService.UpdateMeeting(env)
           new CreateMeeting(env)
         }
@@ -1094,6 +1099,15 @@ class Bdsl {
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
           println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeMeeting(emp.id, id))
+          var employee = emp
+          var meeting = DBService.GetMeeting(id)
+
+          if (meeting.start.getTime() == 0) {
+            // Case where no start time (assume no end either)
+            
+          } else if (meeting.end.getTime() == 0) {
+            // Case where has start but no end time
+          }
         }
 
         def PROJECT(id: Int) = {
@@ -1159,8 +1173,7 @@ class Bdsl {
           val cols = line.split(",").map(_.trim)
           val cli = DBService.NewClient()
           cli.name = cols(0)
-          cli.addDate = new Date( cols(1).toInt )
-          cli.balance = cols(2).toDouble
+          cli.balance = cols(1).toDouble
           DBService.UpdateClient(cli)
         }
         bufferedSource.close
