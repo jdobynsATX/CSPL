@@ -1,6 +1,6 @@
 import cs345.bdsl._
 
-object ScheduleTest extends Bdsl {
+object ScheduleExample extends Bdsl {
 
   def main(args: Array[String]): Unit = {
     CREATE NEW EMPLOYEE WITH NAME AS "Bill Peters" WITH RANK AS 1; // EMP ID: 1
