@@ -1,5 +1,6 @@
 # Business DSL
 ### CS 345 Fall 2016
+This is a business oriented domain specific language designed to easily perform operations on a business system with simple English syntax. It  has operations to create and modify data, perform batch modifications on a query of objects, and import data from files. One of the main benefits of this DSL is the ability to assign employees and clients to meetings and automatically reschedule meeting times to fit individual schedules, and to export these schedules to iCalendar (.ics) files.
 
 #### Group Members
 - Nathan Bain
