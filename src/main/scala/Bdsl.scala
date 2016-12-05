@@ -433,8 +433,9 @@ class Bdsl {
         emps.foreach( println(_) )
       }
 
+      //ISSUE: Removes correctly but troubling printing
       def REMOVE = {
-        //emps.foreach( println( "Removing EMPLOYEE " + DBService.DeleteEmployee(_) ) )
+        println("REMOVING BATCH OF EMPLOYEES " + emps.foreach(DBService.DeleteEmployee(_)))
       }
     }
 
@@ -529,7 +530,7 @@ class Bdsl {
       }
 
       def REMOVE = {
-        //cli.foreach( println( "Removing CLIENT " + DBService.DeleteClient(_.id) ) )
+        println("REMOVING BATCH OF CLIENTS " + cli.foreach(DBService.DeleteClient(_)))
       }
     }
 
@@ -631,7 +632,7 @@ class Bdsl {
       }
 
       def REMOVE = {
-        //mtng.foreach( println( "Removing MEETING " + DBService.DeleteMeeting(_.id) ) )
+        println("REMOVING BATCH OF MEETINGS " + mtng.foreach(DBService.DeleteMeeting(_)))
       }
     }
 
@@ -727,7 +728,7 @@ class Bdsl {
       }
 
       def REMOVE = {
-        //proj.foreach( println( "Removing PROJECT " + DBService.DeleteProject(_.id) ) )
+        println("REMOVING BATCH OF PROJECTS " + proj.foreach(DBService.DeleteProject(_)))
       }
     }
   }
