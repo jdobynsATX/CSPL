@@ -134,6 +134,7 @@ object DBService {
     val prevEmpList = DBService.GetEmployeesForMeeting(id)
     for (emp <- prevEmpList) {
       emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
+      DBService.UpdateEmployee(emp)
     }
 
     // Assign employee to meeting.
