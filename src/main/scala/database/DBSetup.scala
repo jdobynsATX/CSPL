@@ -237,7 +237,7 @@ class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int
     while( resultString.length < 65 ) resultString += " "
     resultString += "| " + purchase_date
     return resultString
-    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
+    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", quantity: " + quantity + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
   }
 }
 
@@ -264,7 +264,7 @@ class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var quantity: Int,
     while( resultString.length < 54 ) resultString += " "
     resultString += "| " + received
     return resultString
-    //return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", Count: " + count + ", Total Cost: " + total_cost + ", Received: " + received
+    //return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", quantity: " + quantity + ", Total Cost: " + total_cost + ", Received: " + received
   }
 }
 
@@ -277,7 +277,7 @@ class Inventory(var id: Int, var name: String, var quantity: Int, var total_cost
   def this(data: (Int, String, Int, Double, Double)) {
     this(data._1, data._2, data._3, data._4, data._5);
   }
-  
+
   override def toString: String = {
     var resultString = " " + id
     while( resultString.length < 10 ) resultString += " "
@@ -289,7 +289,7 @@ class Inventory(var id: Int, var name: String, var quantity: Int, var total_cost
     while( resultString.length < 63 ) resultString += " "
     resultString += "| " + total_earning
     return resultString
-    //return "id: " + id + ", Name: " + name + ", Count: " + count + ", Total Cost: " + total_cost + ", Total Earning: " + total_earning
+    //return "id: " + id + ", Name: " + name + ", quantity: " + quantity + ", Total Cost: " + total_cost + ", Total Earning: " + total_earning
   }
 }
 
@@ -418,6 +418,4 @@ object DBSetup {
    // meetings += (0, 1, "M0", Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE),
  //   inventorys +=(0, "item1", 4, 342.2, 0)
  
-
-  
 }
