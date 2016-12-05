@@ -358,7 +358,7 @@ object DBSetup {
     def client_id = column[Int]("CLIENT_ID")
     def name = column[String]("PROJECT_DESCRIPTION")
     def end = column[Date]("COMPLETION_DATE")
-    def client = foreignKey("PROJ_CLIENT_FK", client_id, clients)(_.id)
+    def client = foreignKey("PROJ_CLIENT_FK", client_id, clients)(_.id, onDelete=ForeignKeyAction.Cascade)
     def * = (id, client_id, name, end)
   }
   val projects = TableQuery[Projects]
@@ -370,7 +370,7 @@ object DBSetup {
     def name = column[String]("MEETING_DESCRIPTION")
     def start = column[Timestamp] ("START_TIME")
     def duration = column[Int]("DURATION")
-    def client = foreignKey("MEET_CLIENT_FK", client_id, clients)(_.id)
+    def client = foreignKey("MEET_CLIENT_FK", client_id, clients)(_.id, onDelete=ForeignKeyAction.Cascade)
     def * = (id, client_id, name, start, duration)
   }
   val meetings = TableQuery[Meetings]
