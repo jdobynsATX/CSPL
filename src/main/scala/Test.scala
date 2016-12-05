@@ -49,8 +49,6 @@ object Test extends Bdsl {
     UPDATE CLIENT 1 MODIFY NAME TO "Morgan Smith"
 
     UPDATE EMPLOYEE 3 MODIFY PAY TO 10 MODIFY NAME TO "Bob Jones";
-
-    // val DBService = new DBService
     
     PRINT ALL EMPLOYEE;
 

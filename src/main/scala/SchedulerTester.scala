@@ -41,8 +41,7 @@ object SchedulerTester {
     // SCHEDULE 90 Meeting with 3 employees in list emps1
     val meeting1StartTime = Scheduler.firstAvailableTimeFromNow(90, emps1)
     // SET start and end times, using provided function.
-    meeting1.setStart(meeting1StartTime)
-    meeting1.setEnd(meeting1StartTime.plusMinutes(90))
+    meeting1.setStart(meeting1StartTime, 90)
     // SET busy for all employees in list emps1
     for (emp <- emps1) {
         emp.schedule.setBusy(meeting1StartTime, meeting1StartTime.plusMinutes(90))
@@ -53,8 +52,7 @@ object SchedulerTester {
     meeting2.name = "Test meeting 2"
 
     val meeting2StartTime = Scheduler.firstAvailableTimeFromNow(90, emps2)
-    meeting2.setStart(meeting2StartTime)
-    meeting2.setEnd(meeting2StartTime.plusMinutes(90))
+    meeting2.setStart(meeting2StartTime, 90)
     
     for (emp <- emps2) {
         emp.schedule.setBusy(meeting2StartTime, meeting2StartTime.plusMinutes(90))

@@ -88,9 +88,10 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
   }
 
   override def toString: String = {
+    val minimum = 28
     var resultString = " " + id
     while( resultString.length < 10 ) resultString += " "
-    resultString += "| " + name
+    resultString += "| " + name.substring(0, minimum.min(name.length))
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + rank
     while( resultString.length < 52 ) resultString += " "
@@ -110,9 +111,10 @@ class Client(var id: Int, var name: String, var addDate: Date, var balance: Doub
   }
 
   override def toString: String = {
+    val minimum = 28
     var resultString = " " + id
     while( resultString.length < 10 ) resultString += " "
-    resultString += "| " + name
+    resultString += "| " + name.substring(0, minimum.min(name.length))
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + addDate
     while( resultString.length < 62 ) resultString += " "
@@ -134,14 +136,23 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
 
   def setStart(time: LocalDateTime) {
     var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond();
-    this.start = new Timestamp(epoch * 1000);
+    var epoch = time.atZone(zoneId).toEpochSecond()
+    this.start = new Timestamp(epoch * 1000)
   }
  
   def setEnd(time: LocalDateTime) {
     var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond();
-    this.end = new Timestamp(epoch * 1000);
+    var epoch = time.atZone(zoneId).toEpochSecond()
+    this.end = new Timestamp(epoch * 1000)
+  }
+
+  def setStart(startTime: LocalDateTime, durationMins: Int) {
+    val endTime = startTime.plusMinutes(durationMins)
+    var zoneId = ZoneId.systemDefault(); 
+    var epochStart = startTime.atZone(zoneId).toEpochSecond()
+    var epochEnd = endTime.atZone(zoneId).toEpochSecond()
+    this.start = new Timestamp(epochStart * 1000)
+    this.end = new Timestamp(epochEnd * 1000)
   }
  
   def getCalEvent(): VEvent = {
@@ -154,12 +165,13 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
   }
 
   override def toString: String = {
+    val minimum = 28
     var resultString = " " + id
     while( resultString.length < 10 ) resultString += " "
-    resultString += "| " + name
+    resultString += "| " + name.substring(0, minimum.min(name.length))
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + start
-    while( resultString.length < 62 ) resultString += " "
+    while( resultString.length < 72 ) resultString += " "
     resultString += "| " + end
     return resultString
     //return "id: " + id + ", name: " + name + ", Start Time: " + start + ", End Time: " + end
@@ -177,9 +189,10 @@ class Project(var id: Int, var client_id: Int, var name: String, var end: Date)
   }
 
   override def toString: String = {
+    val minimum = 28
     var resultString = " " + id
     while( resultString.length < 10 ) resultString += " "
-    resultString += "| " + name
+    resultString += "| " + name.substring(0, minimum.min(name.length))
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + end
     return resultString
@@ -198,6 +211,7 @@ class Payment(var id: Int, var client_id: Int, var emp_id: Int, var amount: Doub
   }
 
   override def toString: String = {
+    val minimum = 28
     var resultString = " " + id
     while( resultString.length < 10 ) resultString += " "
     resultString += "| " + client_id
@@ -279,9 +293,10 @@ class Inventory(var id: Int, var name: String, var quantity: Int, var total_cost
   }
 
   override def toString: String = {
+    val minimum = 28
     var resultString = " " + id
     while( resultString.length < 10 ) resultString += " "
-    resultString += "| " + name
+    resultString += "| " + name.substring(0, minimum.min(name.length))
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + quantity
     while( resultString.length < 52 ) resultString += " "
