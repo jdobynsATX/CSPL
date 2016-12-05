@@ -257,6 +257,20 @@ object DBService {
     return result
   }
 
+  def GetEmployeesForMeeting(id: Int): Array[Employee] = {
+    var result: Array[Employee] = new Array[Employee](0)
+    val empList = for {
+      eid <- meetingJoinTable if eid.meeting_id === id
+      e <- employees if e.id === eid.emp_id
+    } yield e
+    val f: Future[Seq[(Int, String, Int, Double, Array[Byte])]] = db.run(empList.result)
+    val queryResult: Seq[(Int, String, Int, Double, Array[Byte])] = Await.result(f, Duration.Inf)
+    for(empData <- queryResult) {
+      result = result :+ (new Employee(empData))
+    }
+    return result
+  }
+
   def NewMeeting(): Meeting = {
     val insert = (meetings returning meetings.map(_.id)) += (-1, 1 ,"", new Timestamp(0), 0)
     val insertSeq: Future[Int] = db.run(insert)
@@ -276,12 +290,21 @@ object DBService {
   }
 
   def DeleteMeeting(meeting: Meeting): Meeting = {
-    val query = meetings.filter(_.id === meeting.id)
+    val meetID = meeting.id
+    val query = meetings.filter(_.id === meetID)
     val action = query.delete
     val affectedRowsCount: Future[Int] = db.run(action)
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
       throw new RuntimeException("Did not find meeting")
+
+    val query2 = meetingJoinTable.filter(_.meeting_id === meetID)
+    val action2 = query2.delete
+    val affectedRowsCount2 = db.run(action2)
+
+    if (Await.result(affectedRowsCount2, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find meeting/employee relation")
+
     return meeting
   }
 
@@ -292,6 +315,14 @@ object DBService {
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
       throw new RuntimeException("Did not find meeting")
+
+    val query2 = meetingJoinTable.filter(_.meeting_id === id)
+    val action2 = query2.delete
+    val affectedRowsCount2 = db.run(action2)
+
+    if (Await.result(affectedRowsCount2, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find meeting/employee relation")
+
     return id
   }
 
@@ -332,6 +363,20 @@ object DBService {
     return result
   }
 
+  def GetEmployeesForProject(id: Int): Array[Employee] = {
+    var result: Array[Employee] = new Array[Employee](0)
+    val empList = for {
+      eid <- projectJoinTable if eid.project_id === id
+      e <- employees if e.id === eid.emp_id
+    } yield e
+    val f: Future[Seq[(Int, String, Int, Double, Array[Byte])]] = db.run(empList.result)
+    val queryResult: Seq[(Int, String, Int, Double, Array[Byte])] = Await.result(f, Duration.Inf)
+    for(empData <- queryResult) {
+      result = result :+ (new Employee(empData))
+    }
+    return result
+  }
+
   def GetProject(id: Int): Project = {
     val query = for {
       project <- projects if project.id === id
@@ -364,12 +409,21 @@ object DBService {
   }
 
   def DeleteProject(project: Project): Project = {
-    val query = projects.filter(_.id === project.id)
+    val projID = project.id
+    val query = projects.filter(_.id === projID)
     val action = query.delete
     val affectedRowsCount: Future[Int] = db.run(action)
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
       throw new RuntimeException("Did not find project")
+
+    val query2 = projectJoinTable.filter(_.project_id === projID)
+    val action2 = query2.delete
+    val affectedRowsCount2 = db.run(action2)
+
+    if (Await.result(affectedRowsCount2, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find project/employee relation")
+
     return project
   }
 
@@ -380,6 +434,14 @@ object DBService {
 
     if (Await.result(affectedRowsCount, Duration.Inf) <= 0)
       throw new RuntimeException("Did not find project")
+
+    val query2 = projectJoinTable.filter(_.project_id === id)
+    val action2 = query2.delete
+    val affectedRowsCount2 = db.run(action2)
+
+    if (Await.result(affectedRowsCount2, Duration.Inf) <= 0)
+      throw new RuntimeException("Did not find project/employee relation")
+
     return id
   }
 

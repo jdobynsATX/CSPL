@@ -1171,8 +1171,7 @@ class Bdsl {
           val cols = line.split(",").map(_.trim)
           val cli = DBService.NewClient()
           cli.name = cols(0)
-          cli.addDate = new Date( cols(1).toInt )
-          cli.balance = cols(2).toDouble
+          cli.balance = cols(1).toDouble
           DBService.UpdateClient(cli)
         }
         bufferedSource.close
