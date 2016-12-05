@@ -266,10 +266,6 @@ object DBService {
   def ListAllMeetings() = {
     println("Meetings:")
     println("    ID    |             NAME             |            START             |   END")
-    /*db.run(meetings.result).map(_.foreach {
-      case (id, client_id, name, start, end) =>
-        println("  " + id + "\t" + client_id + "\t" + name + "\t" + start + "\t" + end + "\t")
-    })*/
     val meetings: Seq[Meeting] = GetAllMeetings()
     for (meeting <- meetings) {
       println(meeting)
