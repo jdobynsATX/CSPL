@@ -144,11 +144,13 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
   }
 
   def getStartTime(): LocalDateTime = {
-    return LocalDateTime.now()
+    var epochSecond = start.getTime() / 1000
+    return LocalDateTime.ofEpochSecond(epochSecond, 0, 0)
   }
 
   def getEndTime(): LocalDateTime = {
-    return LocalDateTime.now()
+    var epochSecond = getEnd().getTime() / 1000
+    return LocalDateTime.ofEpochSecond(epochSecond, 0, 0)
   }
 
   def setStart(time: LocalDateTime) {

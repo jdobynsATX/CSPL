@@ -45,6 +45,23 @@ object Scheduler {
     return LocalDateTime.of(0,0,0,0,0)
   }
 
+  def firstAvailableTimeFromTime(meeting: Meeting, employees: Seq[Employee], time: LocalDateTime): LocalDateTime = {
+    var curTime = time.withSecond(0).withNano(0)
+    for (curIter <- 1 to 3000) {
+      // println( "Value of curTime: " + curTime )
+      var timeWorks = true
+      for (emp <- employees) {
+        if (!emp.schedule.isFree(curTime, curTime.plusMinutes(meeting.durationMinutes)))
+          timeWorks = false
+      }
+      if (timeWorks)
+        return curTime
+
+      curTime = curTime.plusMinutes(30)
+    }
+    return LocalDateTime.of(0,0,0,0,0)
+  }
+
   def firstAvailableTimeFromNow(meeting: Meeting, employees: Seq[Employee], atLeast: Int): LocalDateTime = {
     if (employees.size < atLeast) {
       return LocalDateTime.of(0,0,0,0,0)
