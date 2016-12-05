@@ -6,6 +6,7 @@ import biweekly.Biweekly
 import biweekly.component.VEvent
 import slick.driver.H2Driver.api._
 // import slick.driver.MySQLDriver.api._
+import java.util.Calendar
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
@@ -28,7 +29,7 @@ object Employee {
 
 object Client {
   val NAME_DEFAULT_VALUE = ""
-  val ADDDATE_DEFAULT_VALUE: Date = new Date(0)
+  val ADDDATE_DEFAULT_VALUE: Date = new Date(1480906361)
   val BALANCE_DEFAULT = 0.0
 }
 
@@ -103,7 +104,7 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
 
 class Client(var id: Int, var name: String, var addDate: Date, var balance: Double) extends DBObject {
   def this(id: Int) {
-    this(id, Client.NAME_DEFAULT_VALUE, Client.ADDDATE_DEFAULT_VALUE, Client.BALANCE_DEFAULT);
+    this(id, Client.NAME_DEFAULT_VALUE, new Date(Calendar.getInstance().getTimeInMillis()), Client.BALANCE_DEFAULT);
   }
 
   def this(data: (Int, String, Date, Double)) {
@@ -140,7 +141,7 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
   }
 
   def getEnd(): Timestamp = {
-    return start
+    return new Timestamp( start.getTime + durationMinutes * 6000 ) 
   }
 
   def getStartTime(): LocalDateTime = {
