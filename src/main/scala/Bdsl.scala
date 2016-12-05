@@ -181,7 +181,7 @@ class Bdsl {
 
         def AS(str: String) = {
           keyword match {
-            case name => pro.name = str
+            case NAME => pro.name = str
             case END => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
               val temp = dateFormat.parse(str)
               pro.end = new Date(temp.getTime())
@@ -1164,34 +1164,32 @@ class Bdsl {
 
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
-          println("Adding EMPLOYEE to MEETING ")
+          // println("Adding EMPLOYEE to MEETING ")
           var employee = emp
           var meeting = DBService.GetMeeting(id)
-          println(meeting)
-          println(meeting.start.getTime())
+
+          var newStartTime: LocalDateTime = LocalDateTime.now()
           if (meeting.start.getTime() != 0) {
             // Case where already assigned.
-            println("meeting alread has people")
             val prevEmpList = DBService.GetEmployeesForMeeting(id)
             for (emp <- prevEmpList) {
               emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
             }
-            DBService.AssignEmployeeMeeting(emp.id, id)
-          } else {
-            println("meeting has no people")
-            // Case where none assigned to meeting
-            DBService.AssignEmployeeMeeting(emp.id, id)
-            // NEED TO DO FUTURE TIME
           }
-          val empList = DBService.GetEmployeesForMeeting(id)
-          var newStartTime: LocalDateTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
-          println(newStartTime)
+          
+          DBService.AssignEmployeeMeeting(emp.id, id)
+
+          var empList: Seq[Employee] = DBService.GetEmployeesForMeeting(id)
+          if (meeting.start.getTime() != 0) {
+            newStartTime = Scheduler.firstAvailableTimeFromTime(meeting, empList, meeting.getStartTime())
+          } else {
+            newStartTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
+          }
+          
           meeting.setStart(newStartTime)
           for (emp <- empList) {
-            println("Before update" + emp.schedule)
             emp.schedule.setBusy(meeting.getStartTime(), meeting.getEndTime())
             DBService.UpdateEmployee(emp)
-            println("After update" + emp.schedule)
           }
           DBService.UpdateMeeting(meeting)
         }

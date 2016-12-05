@@ -96,7 +96,7 @@ class ScheduleMap(var startDate: LocalDate, val intervalMins: Int, val numDays: 
   }
 
   override def toString(): String = {
-    return bitmap.cardinality() + ""
+    return bitmap.hashCode() + ""
     // return bitmap.toString()
   }
 }

@@ -14,6 +14,7 @@ import javax.sql.rowset.serial.SerialBlob
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.Instant
 //ISSUE: Blob is a placeholder for a user-defined type
 trait DBObject {
   
@@ -146,13 +147,19 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
   }
 
   def getStartTime(): LocalDateTime = {
+    val instant = Instant.now(); //can be LocalDateTime
+    val systemZone = ZoneId.systemDefault(); // my timezone
+    val currentOffsetForMyZone = systemZone.getRules().getOffset(instant); // DUMB Offset stuff
     var epochSecond = start.getTime() / 1000
-    return LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.UTC)
+    return LocalDateTime.ofEpochSecond(epochSecond, 0, currentOffsetForMyZone)
   }
 
   def getEndTime(): LocalDateTime = {
+    val instant = Instant.now(); //can be LocalDateTime
+    val systemZone = ZoneId.systemDefault(); // my timezone
+    val currentOffsetForMyZone = systemZone.getRules().getOffset(instant); // DUMB Offset stuff
     var epochSecond = getEnd().getTime() / 1000
-    return LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.UTC)
+    return LocalDateTime.ofEpochSecond(epochSecond, 0, currentOffsetForMyZone)
   }
 
   def setStart(time: LocalDateTime) {
