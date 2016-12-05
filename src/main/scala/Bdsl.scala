@@ -1,6 +1,9 @@
 package cs345.bdsl
 
 import cs345.database._
+
+import java.text.SimpleDateFormat
+
 import cs345.scheduler._
 
 import java.util.Calendar
@@ -106,16 +109,18 @@ class Bdsl {
 
       class AsContinue(keyword: AttributeKeyword) {
         def AS(num: Int) = {
-          keyword match {
-            case ID => cli.id = num
-            case DATE => cli.addDate = new Date(num)
-          }
+          cli.id = num
           DBService.UpdateClient(cli)
           new CreateClient(cli)
         }
 
         def AS(str: String) = {
-          cli.name = str
+          keyword match {
+            case NAME => cli.name = str
+            case DATE => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(str)
+              cli.addDate = new java.sql.Date(temp.getTime())
+          }
           DBService.UpdateClient(cli)
           new CreateClient(cli)
         }
@@ -148,7 +153,9 @@ class Bdsl {
         def AS(str: String) = {
           keyword match {
             case NAME => env.name = str
-            case START => env.start = new Timestamp(0)
+            case START => val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val temp = dateFormat.parse(str)
+              env.start = new Timestamp(temp.getTime())
           }
           DBService.UpdateMeeting(env)
           new CreateMeeting(env)
@@ -168,14 +175,18 @@ class Bdsl {
           keyword match {
             case ID => pro.id = num
             case CLIENT_ID => pro.client_id = num
-            case END => pro.end = new Date(num)
           }
           DBService.UpdateProject(pro)
           new CreateProject(pro)
         }
 
         def AS(str: String) = {
-          pro.name = str
+          keyword match {
+            case name => pro.name = str
+            case END => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(str)
+              pro.end = new Date(temp.getTime())
+          }
           DBService.UpdateProject(pro)
           new CreateProject(pro)
         }
@@ -436,7 +447,10 @@ class Bdsl {
       class WhereContinue( keyword: AttributeKeyword ) {
         def EQUAL( num: Any ) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))==0 ) )
+            case DATE =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+			  new ClientQuery(cli.filter(_.addDate.compareTo(new Date(temp.getTime())) == 0))
             case BALANCE => new ClientQuery( cli.filter( _.balance == num.asInstanceOf[Double] ) )
             case NAME => new ClientQuery( cli.filter( _.name == num.asInstanceOf[String] ) )
           }
@@ -444,7 +458,10 @@ class Bdsl {
 
         def LESSTHAN( num: Any ) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))<0 ) )
+            case DATE =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+			  new ClientQuery(cli.filter(_.addDate.compareTo(new Date(temp.getTime())) < 0))
             case BALANCE => new ClientQuery( cli.filter( _.balance < num.asInstanceOf[Double] ) )
             case NAME => new ClientQuery( cli.filter( _.name < num.asInstanceOf[String] ) )
           }
@@ -452,7 +469,10 @@ class Bdsl {
 
         def GREATERTHAN( num: Any ) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))>0 ) )
+            case DATE =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+			  new ClientQuery(cli.filter(_.addDate.compareTo(new Date(temp.getTime())) > 0))
             case BALANCE => new ClientQuery( cli.filter( _.balance > num.asInstanceOf[Double] ) )
             case NAME => new ClientQuery( cli.filter( _.name > num.asInstanceOf[String] ) )
           }
@@ -460,7 +480,10 @@ class Bdsl {
 
         def LESSTHANEQUAL( num: Any ) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))<=0 ) )
+            case DATE =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+			  new ClientQuery(cli.filter(_.addDate.compareTo(new Date(temp.getTime())) <= 0))
             case BALANCE => new ClientQuery( cli.filter( _.balance <= num.asInstanceOf[Double] ) )
             case NAME => new ClientQuery( cli.filter( _.name <= num.asInstanceOf[String] ) )
           }
@@ -468,7 +491,10 @@ class Bdsl {
 
         def GREATERTHANEQUAL( num: Any ) = {
           keyword match {
-            case DATE => new ClientQuery( cli.filter( _.addDate.compareTo(new Date(num.asInstanceOf[Int]))>=0 ) )
+            case DATE =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+			  new ClientQuery(cli.filter(_.addDate.compareTo(new Date(temp.getTime())) >= 0))
             case BALANCE => new ClientQuery( cli.filter( _.balance >= num.asInstanceOf[Double] ) )
             case NAME => new ClientQuery( cli.filter( _.name >= num.asInstanceOf[String] ) )
           }
@@ -478,14 +504,7 @@ class Bdsl {
       def MODIFY(keyword: AttributeKeyword) = {
         new UpdateContinue( keyword )
       }
-
-      class UpdateContinue( keyword: AttributeKeyword ) {
-        def TO(num: Int) = {
-          cli.foreach(_.addDate = new Date( num ))
-          cli.foreach( DBService.UpdateClient(_) )
-          new ClientQuery(cli)
-        }
-
+ class UpdateContinue( keyword: AttributeKeyword ) {
         def TO(num: Double) = {
           cli.foreach(_.balance = num)
           cli.foreach( DBService.UpdateClient(_) )
@@ -493,7 +512,12 @@ class Bdsl {
         }
 
         def TO(str: String) = {
-          cli.foreach(_.name = str)
+          keyword match {
+            case NAME => cli.foreach(_.name = str)
+            case DATE => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(str)
+              cli.foreach(_.addDate = new java.sql.Date(temp.getTime()))
+          }
           cli.foreach( DBService.UpdateClient(_) )
           new ClientQuery(cli)
         }
@@ -519,7 +543,10 @@ class Bdsl {
         def EQUAL( num: Any ) = {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id == num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))==0 ) )
+            case START =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) == 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes == num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name == num.asInstanceOf[String] ) )
           }
@@ -528,7 +555,10 @@ class Bdsl {
         def LESSTHAN( num: Any ) = {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id < num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<0 ) )
+            case START =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) < 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes < num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name < num.asInstanceOf[String] ) )
           }
@@ -546,7 +576,10 @@ class Bdsl {
         def LESSTHANEQUAL( num: Any ) = {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id <= num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))<=0 ) )
+            case START =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) <= 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes <= num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name <= num.asInstanceOf[String] ) )
           }
@@ -555,7 +588,10 @@ class Bdsl {
         def GREATERTHANEQUAL( num: Any ) = {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id >= num.asInstanceOf[Int] ) )
-            case START => new MeetingQuery( mtng.filter( _.start.compareTo(new Timestamp(num.asInstanceOf[Int]))>=0 ) )
+            case START =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) >= 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes >= num.asInstanceOf[Int] ) )
             case NAME => new MeetingQuery( mtng.filter( _.name >= num.asInstanceOf[String] ) )
           }
@@ -571,7 +607,6 @@ class Bdsl {
         def TO(num: Int) = {
           keyword match {
             case CLIENT_ID => mtng.foreach(_.client_id = num)
-            case START => mtng.foreach(_.start = new Timestamp(num) )
             case DURATION => mtng.foreach(_.changeDuration(num) )
           }
           mtng.foreach( DBService.UpdateMeeting(_) )
@@ -579,7 +614,12 @@ class Bdsl {
         }
 
         def TO(str: String) = {
-          mtng.foreach(_.name = str)
+          keyword match {
+            case NAME => mtng.foreach(_.name = str)
+            case START => val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val temp = dateFormat.parse(str)
+              mtng.foreach(_.start = new java.sql.Timestamp(temp.getTime()))
+          }
           mtng.foreach( DBService.UpdateMeeting(_) )
           new MeetingQuery(mtng)
         }
@@ -605,7 +645,10 @@ class Bdsl {
         def EQUAL( num: Any ) = {
           keyword match {
             case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id == num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))==0 ) )
+       		case END =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new ProjectQuery(proj.filter(_.end.compareTo(new Date(temp.getTime())) == 0))
             case NAME => new ProjectQuery( proj.filter( _.name == num.asInstanceOf[String] ) )
           }
         }
@@ -613,15 +656,21 @@ class Bdsl {
         def LESSTHAN( num: Any ) = {
           keyword match {
             case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id < num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))<0 ) )
-            case NAME => new ProjectQuery( proj.filter( _.name < num.asInstanceOf[String] ) )
+    	    case END =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new ProjectQuery(proj.filter(_.end.compareTo(new Date(temp.getTime())) < 0))
+	        case NAME => new ProjectQuery( proj.filter( _.name < num.asInstanceOf[String] ) )
           }
         }
 
         def GREATERTHAN( num: Any ) = {
           keyword match {
             case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id > num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))>0 ) )
+  		  	case END =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new ProjectQuery(proj.filter(_.end.compareTo(new Date(temp.getTime())) > 0))
             case NAME => new ProjectQuery( proj.filter( _.name > num.asInstanceOf[String] ) )
           }
         }
@@ -629,15 +678,21 @@ class Bdsl {
         def LESSTHANEQUAL( num: Any ) = {
           keyword match {
             case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id <= num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))<=0 ) )
-            case NAME => new ProjectQuery( proj.filter( _.name <= num.asInstanceOf[String] ) )
+    	    case END =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new ProjectQuery(proj.filter(_.end.compareTo(new Date(temp.getTime())) <= 0))
+ 	        case NAME => new ProjectQuery( proj.filter( _.name <= num.asInstanceOf[String] ) )
           }
         }
 
         def GREATERTHANEQUAL( num: Any ) = {
           keyword match {
             case CLIENT_ID => new ProjectQuery( proj.filter( _.client_id >= num.asInstanceOf[Int] ) )
-            case END => new ProjectQuery( proj.filter( _.end.compareTo(new Date(num.asInstanceOf[Int]))>=0 ) )
+	        case END =>
+              val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(num.asInstanceOf[String])
+              new ProjectQuery(proj.filter(_.end.compareTo(new Date(temp.getTime())) >= 0))
             case NAME => new ProjectQuery( proj.filter( _.name >= num.asInstanceOf[String] ) )
           }
         }
@@ -649,16 +704,18 @@ class Bdsl {
 
       class UpdateContinue( keyword: AttributeKeyword ) {
         def TO(num: Int) = {
-          keyword match {
-            case CLIENT_ID => proj.foreach(_.client_id = num)
-            case END => proj.foreach(_.end = new Date(num) )
-          }
+          proj.foreach(_.client_id = num)
           proj.foreach( DBService.UpdateProject(_) )
           new ProjectQuery(proj)
         }
 
         def TO(str: String) = {
-          proj.foreach(_.name = str)
+          keyword match {
+            case NAME =>  proj.foreach(_.name = str)
+            case END => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(str)
+              proj.foreach(_.end = new java.sql.Date(temp.getTime()))
+          }
           proj.foreach( DBService.UpdateProject(_) )
           new ProjectQuery(proj)
         }
@@ -751,16 +808,18 @@ class Bdsl {
 
       class UpdateContinue(keyword: AttributeKeyword) {
         def TO(num: Int) = {
-          keyword match {
-            case ID => cli.id = num
-            case DATE => cli.addDate = new Date(num)
-          }
+          cli.id = num
           DBService.UpdateClient(cli)
           new ModifyClient(cli)
         }
 
         def TO(str: String) = {
-          cli.name = str
+          keyword match {
+            case NAME => cli.name = str
+            case DATE => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(str)
+              cli.addDate = new java.sql.Date(temp.getTime())
+          }
           DBService.UpdateClient(cli)
           new ModifyClient(cli)
         }
@@ -785,7 +844,6 @@ class Bdsl {
           keyword match {
             case ID => env.id = num
             case CLIENT_ID => env.client_id = num
-            case START => env.start = new Timestamp(num)
             case DURATION => env.changeDuration(num)
           }
           DBService.UpdateMeeting(env)
@@ -793,7 +851,12 @@ class Bdsl {
         }
 
         def TO(str: String) = {
-          env.name = str
+          keyword match {
+            case NAME => env.name = str
+            case START => val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val temp = dateFormat.parse(str)
+              env.start = new java.sql.Timestamp(temp.getTime())
+          }
           DBService.UpdateMeeting(env)
           new ModifyMeeting(env)
         }
@@ -812,14 +875,18 @@ class Bdsl {
           keyword match {
             case ID => pro.id = num
             case CLIENT_ID => pro.client_id = num
-            case END => pro.end = new Date(num)
           }
           DBService.UpdateProject(pro)
           new ModifyProject(pro)
         }
 
         def TO(str: String) = {
-          pro.name = str
+			keyword match {
+            case NAME => pro.name = str
+            case END => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+              val temp = dateFormat.parse(str)
+              pro.end = new java.sql.Date(temp.getTime())
+          }
           DBService.UpdateProject(pro)
           new ModifyProject(pro)
         }
