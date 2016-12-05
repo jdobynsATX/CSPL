@@ -2,6 +2,7 @@ package cs345.bdsl
 
 import cs345.database._
 
+import java.util.Calendar
 import java.sql.Date
 import java.sql.Timestamp
 import scala.language.postfixOps
@@ -1204,6 +1205,26 @@ class Bdsl {
           DBService.UpdateProject(proj)
         }
         bufferedSource.close
+      }
+    }
+  }
+
+  def CLOSE = {
+    val now = Calendar.getInstance().getTime()
+    val projects = DBService.GetAllProjects()
+    val meetings = DBService.GetAllMeetings()
+
+    for (meeting <- meetings) {
+      if( meeting.end.compareTo(now) < 0 )
+      {
+        println("Closing MEETING " + DBService.DeleteMeeting(meeting.id))
+      }
+    }
+
+    for (project <- projects) {
+      if( project.end.compareTo(now) < 0 )
+      {
+        println("Closing PROJECT " + DBService.DeleteProject(project.id))
       }
     }
   }
