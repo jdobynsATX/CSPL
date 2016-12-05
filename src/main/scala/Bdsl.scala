@@ -116,7 +116,7 @@ class Bdsl {
         def AS(str: String) = {
           keyword match {
             case NAME => cli.name = str
-            case DATE => val dateFormat = new SimpleDateFormat("dd/MM/yyyy")
+            case DATE => val dateFormat = new SimpleDateFormat("MM/dd/yyyy")
               val temp = dateFormat.parse(str)
               cli.addDate = new java.sql.Date(temp.getTime())
           }
@@ -152,7 +152,7 @@ class Bdsl {
         def AS(str: String) = {
           keyword match {
             case NAME => env.name = str
-            case START => val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+            case START => val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(str)
               env.start = new Timestamp(temp.getTime())
           }
@@ -543,7 +543,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id == num.asInstanceOf[Int] ) )
             case START =>
-              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(num.asInstanceOf[String])
               new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) == 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes == num.asInstanceOf[Int] ) )
@@ -555,7 +555,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id < num.asInstanceOf[Int] ) )
             case START =>
-              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(num.asInstanceOf[String])
               new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) < 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes < num.asInstanceOf[Int] ) )
@@ -576,7 +576,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id <= num.asInstanceOf[Int] ) )
             case START =>
-              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(num.asInstanceOf[String])
               new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) <= 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes <= num.asInstanceOf[Int] ) )
@@ -588,7 +588,7 @@ class Bdsl {
           keyword match {
             case CLIENT_ID => new MeetingQuery( mtng.filter( _.client_id >= num.asInstanceOf[Int] ) )
             case START =>
-              val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+              val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(num.asInstanceOf[String])
               new MeetingQuery(mtng.filter(_.start.compareTo(new Timestamp(temp.getTime())) >= 0))
             case DURATION => new MeetingQuery( mtng.filter( _.durationMinutes >= num.asInstanceOf[Int] ) )
@@ -615,7 +615,7 @@ class Bdsl {
         def TO(str: String) = {
           keyword match {
             case NAME => mtng.foreach(_.name = str)
-            case START => val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+            case START => val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(str)
               mtng.foreach(_.start = new java.sql.Timestamp(temp.getTime()))
           }
@@ -852,7 +852,7 @@ class Bdsl {
         def TO(str: String) = {
           keyword match {
             case NAME => env.name = str
-            case START => val dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a")
+            case START => val dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a")
               val temp = dateFormat.parse(str)
               env.start = new java.sql.Timestamp(temp.getTime())
           }
