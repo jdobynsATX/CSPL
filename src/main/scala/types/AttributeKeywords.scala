@@ -19,13 +19,16 @@ object RANK extends RankKeyword
 abstract sealed class PayKeyword extends DoubleTypedKeyword
 object PAY extends PayKeyword
 
-abstract sealed class StartKeyword extends IntTypedKeyword
+abstract sealed class StartKeyword extends StringTypedKeyword
 object START extends StartKeyword
 
-abstract sealed class EndKeyword extends IntTypedKeyword
+abstract sealed class EndKeyword extends StringTypedKeyword
 object END extends EndKeyword
 
-abstract sealed class DateKeyword extends IntTypedKeyword
+abstract sealed class DurationKeyword extends IntTypedKeyword
+object DURATION extends DurationKeyword
+
+abstract sealed class DateKeyword extends StringTypedKeyword
 object DATE extends DateKeyword
 
 abstract sealed class Client_IdKeyword extends IntTypedKeyword
@@ -52,8 +55,8 @@ object QUANTITY extends QuantityKeyword
 abstract sealed class Inv_IdKeyword extends IntTypedKeyword
 object INV_ID extends Inv_IdKeyword
 
-abstract sealed class ReceivedKeyword extends IntTypedKeyword
+abstract sealed class ReceivedKeyword extends StringTypedKeyword
 object RECEIVED extends ReceivedKeyword
 
-abstract sealed class Purchase_DateKeyword extends IntTypedKeyword
+abstract sealed class Purchase_DateKeyword extends StringTypedKeyword
 object PURCHASE_DATE extends Purchase_DateKeyword

@@ -4,15 +4,21 @@ import cs345.scheduler.datastructures._
  
 import biweekly.Biweekly
 import biweekly.component.VEvent
+import biweekly.property.Attendee
+import biweekly.property.Comment
 import slick.driver.H2Driver.api._
 // import slick.driver.MySQLDriver.api._
+
+import java.util.Calendar
 import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 import java.time.LocalDateTime
 import java.time.ZoneId
-//ISSUE: Blob is a placeholder for a user-defined type
+import java.time.ZoneOffset
+import java.time.Instant
+
 trait DBObject {
   
 }
@@ -22,13 +28,12 @@ object Employee {
   val NAME_DEFAULT_VALUE = ""
   val RANK_DEFAULT_VALUE = -1
   val PAY_DEFAULT_VALUE = 0.0
-  // val BITSET_DEFAULT: Blob = new SerialBlob(new Array[Byte](0))
   val SCHEDULE_DEFAULT:Array[Byte] = (new ScheduleMap()).toByteArray()
 }
 
 object Client {
   val NAME_DEFAULT_VALUE = ""
-  val ADDDATE_DEFAULT_VALUE: Date = new Date(0)
+  val ADDDATE_DEFAULT_VALUE: Date = new Date(1480906361)
   val BALANCE_DEFAULT = 0.0
 }
 
@@ -87,6 +92,12 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
     this(data._1, data._2, data._3, data._4, new ScheduleMap(data._5));
   }
 
+  def getAttendeeCard(): Attendee = {
+    var attendee: Attendee = new Attendee(name, name.replaceAll("\\s+","").toLowerCase() + "@company.com")
+    attendee.setRsvp(false)
+    return attendee
+  }
+
   override def toString: String = {
     val minimum = 28
     var resultString = " " + id
@@ -97,17 +108,21 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
     while( resultString.length < 52 ) resultString += " "
     resultString += "| " + pay
     return resultString
-    //return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay //+ " Schedule: " + schedule
   }
 }
 
 class Client(var id: Int, var name: String, var addDate: Date, var balance: Double) extends DBObject {
   def this(id: Int) {
-    this(id, Client.NAME_DEFAULT_VALUE, Client.ADDDATE_DEFAULT_VALUE, Client.BALANCE_DEFAULT);
+    this(id, Client.NAME_DEFAULT_VALUE, new Date(Calendar.getInstance().getTimeInMillis()), Client.BALANCE_DEFAULT);
   }
 
   def this(data: (Int, String, Date, Double)) {
     this(data._1, data._2, data._3, data._4);
+  }
+
+  def getComment(): Comment = {
+    val comment = new Comment("Contact: " + name);
+    return comment
   }
 
   override def toString: String = {
@@ -120,47 +135,60 @@ class Client(var id: Int, var name: String, var addDate: Date, var balance: Doub
     while( resultString.length < 62 ) resultString += " "
     resultString += "| " + balance
     return resultString
-    //return "id: " + id + ", name: " + name + ", dateAdded: " + addDate + ", Balance: " + balance
   }
 }
 
-class Meeting(var id: Int, var client_id: Int, var name: String, var start: Timestamp, var end: Timestamp) 
+class Meeting(var id: Int, var client_id: Int, var name: String, var start: Timestamp, var durationMinutes: Int) 
       extends DBObject {
   def this(id: Int) {
-    this(id, Meeting.CLIENT_DEFAULT, Meeting.NAME_DEFAULT_VALUE, Meeting.START_DEFAULT_VALUE, Meeting.END_DEFAULT_VALUE);
+    this(id, Meeting.CLIENT_DEFAULT, Meeting.NAME_DEFAULT_VALUE, Meeting.START_DEFAULT_VALUE, 0);
   }
 
-  def this(data: (Int, Int, String, Timestamp, Timestamp)) {
+  def this(data: (Int, Int, String, Timestamp, Int)) {
     this(data._1, data._2, data._3, data._4, data._5);
   }
 
-  def setStart(time: LocalDateTime) {
-    var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond()
-    this.start = new Timestamp(epoch * 1000)
-  }
- 
-  def setEnd(time: LocalDateTime) {
-    var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond()
-    this.end = new Timestamp(epoch * 1000)
+  def changeDuration(durationMins: Int) {
+    this.durationMinutes = durationMins
+    // TODO: Need to recheck schedules.
   }
 
-  def setStart(startTime: LocalDateTime, durationMins: Int) {
-    val endTime = startTime.plusMinutes(durationMins)
-    var zoneId = ZoneId.systemDefault(); 
-    var epochStart = startTime.atZone(zoneId).toEpochSecond()
-    var epochEnd = endTime.atZone(zoneId).toEpochSecond()
-    this.start = new Timestamp(epochStart * 1000)
-    this.end = new Timestamp(epochEnd * 1000)
+  def getEnd(): Timestamp = {
+    return new Timestamp( start.getTime + durationMinutes * 60000 ) 
+  }
+
+  def getStartTime(): LocalDateTime = {
+    val instant = Instant.now(); //can be LocalDateTime
+    val systemZone = ZoneId.systemDefault(); // my timezone
+    val currentOffsetForMyZone = systemZone.getRules().getOffset(instant); // DUMB Offset stuff
+    var epochSecond = start.getTime() / 1000
+    return LocalDateTime.ofEpochSecond(epochSecond, 0, currentOffsetForMyZone)
+  }
+
+  def getEndTime(): LocalDateTime = {
+    val instant = Instant.now(); //can be LocalDateTime
+    val systemZone = ZoneId.systemDefault(); // my timezone
+    val currentOffsetForMyZone = systemZone.getRules().getOffset(instant); // DUMB Offset stuff
+    var epochSecond = getEnd().getTime() / 1000
+    return LocalDateTime.ofEpochSecond(epochSecond, 0, currentOffsetForMyZone)
+  }
+
+  def setStart(time: LocalDateTime) {
+    var zoneId = ZoneId.systemDefault()
+    var epoch = time.atZone(zoneId).toEpochSecond()
+    this.start = new Timestamp(epoch * 1000)
   }
  
   def getCalEvent(): VEvent = {
     var event = new VEvent()
     event.setDateStart(this.start)
-    event.setDateEnd(this.end)
+    event.setDateEnd(this.getEnd())
     event.setSummary(this.name)
-    // event.setLocation("NONE")
+    val employees: Seq[Employee] = DBService.GetEmployeesForMeeting(id)
+    for (employee <- employees) {
+      event.addAttendee(employee.getAttendeeCard())
+    }
+    event.addComment(DBService.GetClient(client_id).getComment())
     return event
   }
 
@@ -172,7 +200,7 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + start
     while( resultString.length < 72 ) resultString += " "
-    resultString += "| " + end
+    resultString += "| " + getEnd()
     return resultString
     //return "id: " + id + ", name: " + name + ", Start Time: " + start + ", End Time: " + end
   }
@@ -196,7 +224,6 @@ class Project(var id: Int, var client_id: Int, var name: String, var end: Date)
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + end
     return resultString
-    //return "id: " + id + ", name: " + name + ", End Time: " + end
   }
 }
 
@@ -222,7 +249,6 @@ class Payment(var id: Int, var client_id: Int, var emp_id: Int, var amount: Doub
     while( resultString.length < 43 ) resultString += " "
     resultString += "| " + received
     return resultString
-    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Amount: " + amount + ", Received: " + received
   }
 }
 
@@ -251,7 +277,6 @@ class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int
     while( resultString.length < 65 ) resultString += " "
     resultString += "| " + purchase_date
     return resultString
-    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", quantity: " + quantity + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
   }
 }
 
@@ -278,7 +303,6 @@ class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var quantity: Int,
     while( resultString.length < 54 ) resultString += " "
     resultString += "| " + received
     return resultString
-    //return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", quantity: " + quantity + ", Total Cost: " + total_cost + ", Received: " + received
   }
 }
 
@@ -340,14 +364,14 @@ object DBSetup {
   val projects = TableQuery[Projects]
 
   //ISSUE: Foreign key shenanigans
-  class Meetings(tag: Tag) extends Table[(Int, Int, String, Timestamp, Timestamp)](tag, "MEETINGS") {
+  class Meetings(tag: Tag) extends Table[(Int, Int, String, Timestamp, Int)](tag, "MEETINGS") {
     def id = column[Int]("MEETING_ID", O.PrimaryKey, O.AutoInc)
     def client_id = column[Int]("CLIENT_ID")
     def name = column[String]("MEETING_DESCRIPTION")
     def start = column[Timestamp] ("START_TIME")
-    def end = column[Timestamp]("END_TIME")
+    def duration = column[Int]("DURATION")
     def client = foreignKey("MEET_CLIENT_FK", client_id, clients)(_.id)
-    def * = (id, client_id, name, start, end)
+    def * = (id, client_id, name, start, duration)
   }
   val meetings = TableQuery[Meetings]
 
