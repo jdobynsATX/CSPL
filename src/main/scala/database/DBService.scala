@@ -1,7 +1,7 @@
 package cs345.database
 
-
 import cs345.scheduler.datastructures._
+import cs345.scheduler._
 
 import scala.concurrent.{Future, Await}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,6 +13,7 @@ import java.sql.Date
 import java.sql.Timestamp
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
+import java.time.LocalDateTime
 
 object DBService {
   val db = Database.forConfig("h2mem1")
@@ -113,7 +114,35 @@ object DBService {
     val insert = meetingJoinTable += (meet_id, emp_id)
     val insertSeq: Future[Int] = db.run(insert)
     val insertComplete = Await.result(insertSeq, Duration.Inf)
-    //DEBUG/ISSUE IMPORTANT: Schedule the employee here
+  }
+
+  def AddEmployeeToMeeting(emp: Employee, id: Int) {
+    var meeting = DBService.GetMeeting(id)
+    // Remove previous assignment of meeting, if any.
+    val prevEmpList = DBService.GetEmployeesForMeeting(id)
+    for (emp <- prevEmpList) {
+      emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
+    }
+
+    // Assign employee to meeting.
+    DBService.AssignEmployeeMeeting(emp.id, id)
+
+    var newStartTime: LocalDateTime = LocalDateTime.now()
+    // Use scheduling algorithm based on if meeting already has time or not.
+    var empList: Seq[Employee] = DBService.GetEmployeesForMeeting(id)
+    if (meeting.start.getTime() != 0) {
+      newStartTime = Scheduler.firstAvailableTimeFromTime(meeting, empList, meeting.getStartTime())
+    } else {
+      newStartTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
+    }
+    
+    // Set the new time, then update all employees and meetings.
+    meeting.setStart(newStartTime)
+    for (emp <- empList) {
+      emp.schedule.setBusy(meeting.getStartTime(), meeting.getEndTime())
+      DBService.UpdateEmployee(emp)
+    }
+    DBService.UpdateMeeting(meeting)
   }
  
   def AssignEmployeeProject(emp_id: Int, pro_id: Int)= {
