@@ -134,14 +134,23 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
 
   def setStart(time: LocalDateTime) {
     var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond();
-    this.start = new Timestamp(epoch * 1000);
+    var epoch = time.atZone(zoneId).toEpochSecond()
+    this.start = new Timestamp(epoch * 1000)
   }
  
   def setEnd(time: LocalDateTime) {
     var zoneId = ZoneId.systemDefault(); 
-    var epoch = time.atZone(zoneId).toEpochSecond();
-    this.end = new Timestamp(epoch * 1000);
+    var epoch = time.atZone(zoneId).toEpochSecond()
+    this.end = new Timestamp(epoch * 1000)
+  }
+
+  def setStart(startTime: LocalDateTime, durationMins: Int) {
+    val endTime = startTime.plusMinutes(durationMins)
+    var zoneId = ZoneId.systemDefault(); 
+    var epochStart = startTime.atZone(zoneId).toEpochSecond()
+    var epochEnd = endTime.atZone(zoneId).toEpochSecond()
+    this.start = new Timestamp(epochStart * 1000)
+    this.end = new Timestamp(epochEnd * 1000)
   }
  
   def getCalEvent(): VEvent = {

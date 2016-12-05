@@ -48,8 +48,7 @@ object Scheduler {
   }
 
   def allEmployeesForTime(start: LocalDateTime, end: LocalDateTime): Seq[Employee] = {
-    // getallemployees
-    var employees = new Array[Employee](0)
+    var employees = DBService.GetAllEmployees()
     var resultList = new Array[Employee](0)
     for (emp <- employees) {
       if (emp.schedule.isFree(start, end))
