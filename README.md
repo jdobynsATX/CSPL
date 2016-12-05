@@ -62,24 +62,38 @@ UPDATE EMPLOYEE 3 MODIFY RANK TO 6
 REMOVE objectType id
 REMOVE EMPLOYEE 3
 ```
-
+####Assignment to meetings
+```
+ASSIGN EMPLOYEE id TO EVENT MEETING id
+ASSIGN EMPLOYEE 5 TO EVENT MEETING 3
+```
 ####Printing objects
 ```
 PRINT ALL objectType
 PRINT ALL EMPLOYEE
+PRINT ALL
 ```
-
+####Batch Operations
+```
+BATCH ALL objectType [ WHERE attribute comparator value ] [ MODIFY attribute TO value ] [ ASSIGN TO EVENT MEETING id ][ PRINT ] [ REMOVE ]
+BATCH ALL EMPLOYEE WHERE RANK LESSTHANEQUAL 11 MODIFY RANK TO 11 PRINT
+```
+This works for employees, clients, meetings, and projects. Employees can also be batch assigned to meetings.
+####Importing from files
+```
+IMPORT FROM "filename.csv" TO objectType
+IMPORT FROM "employees.csv" TO EMPLOYEE
+```
+This works for csv files for employees and clients.
 ####Restocking
 ```
-CREATE NEW SHIPMENT OF_ITEM -id- FOR_AMOUNT -count- FOR_COST -total_cost-
+CREATE NEW SHIPMENT OF_ITEM id FOR_AMOUNT quantity FOR_COST cost
 ```
-
 ####Orders
 ```
-CREATE NEW PURCHASE FOR_CLIENT -client_id- OF_ITEM -inv_id- FOR_AMOUNT -count- FOR_COST -cost- REVIEWED_BY -emp_id-
+CREATE NEW PURCHASE FOR_CLIENT id OF_ITEM id FOR_AMOUNT quantity FOR_COST cost REVIEWED_BY id
 ```
-
 ####Payments
 ```
-CREATE NEW PAYMENT FOR_CLIENT -client_id- FOR_AMOUNT -amount- REVIEWED_BY -emp_id-
+CREATE NEW PAYMENT FOR_CLIENT id FOR_AMOUNT amount REVIEWED_BY id
 ```
