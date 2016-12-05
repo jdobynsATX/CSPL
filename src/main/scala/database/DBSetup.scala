@@ -142,7 +142,7 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
   }
 
   def getEnd(): Timestamp = {
-    return new Timestamp( start.getTime + durationMinutes * 6000 ) 
+    return new Timestamp( start.getTime + durationMinutes * 60000 ) 
   }
 
   def getStartTime(): LocalDateTime = {

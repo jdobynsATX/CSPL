@@ -72,7 +72,6 @@ class Bdsl {
     class CreateEmployee(emp: Employee) {
 
       def WITH(keyword: AttributeKeyword) = {
-        println("WITH")
         new AsContinue(keyword)
       }
 
@@ -1168,25 +1167,31 @@ class Bdsl {
           println("Adding EMPLOYEE to MEETING ")
           var employee = emp
           var meeting = DBService.GetMeeting(id)
-
+          println(meeting)
+          println(meeting.start.getTime())
           if (meeting.start.getTime() != 0) {
-            // Case where none assigned to meeting
+            // Case where already assigned.
+            println("meeting alread has people")
             val prevEmpList = DBService.GetEmployeesForMeeting(id)
             for (emp <- prevEmpList) {
               emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
             }
             DBService.AssignEmployeeMeeting(emp.id, id)
           } else {
-            // Case where already assigned.
+            println("meeting has no people")
+            // Case where none assigned to meeting
             DBService.AssignEmployeeMeeting(emp.id, id)
             // NEED TO DO FUTURE TIME
           }
           val empList = DBService.GetEmployeesForMeeting(id)
           var newStartTime: LocalDateTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
+          println(newStartTime)
           meeting.setStart(newStartTime)
           for (emp <- empList) {
+            println("Before update" + emp.schedule)
             emp.schedule.setBusy(meeting.getStartTime(), meeting.getEndTime())
             DBService.UpdateEmployee(emp)
+            println("After update" + emp.schedule)
           }
           DBService.UpdateMeeting(meeting)
         }
