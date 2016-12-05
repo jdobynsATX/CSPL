@@ -433,6 +433,37 @@ class Bdsl {
         emps.foreach( println(_) )
       }
 
+      def ASSIGN(keyword: EventKeyword) = {
+        new AssignEmployee(emps)
+      }
+
+      class AssignEmployee(emps: Array[Employee]) {
+
+          def MEETING(id: Int) = {
+            // println("Adding EMPLOYEE to MEETING ")
+            emps.foreach(DBService.AddEmployeeToMeeting(_, id))
+          }
+
+          // def MEETING(name: String) = {
+          //   // println("Adding EMPLOYEE to MEETING ")
+          // val id = DBService.GetMeeting(name).id
+          //   emps.foreach(DBService.AddEmployeeToMeeting(_, id))
+          // }
+
+          // def PROJECT(id: Int) = {
+          //   println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
+          // }
+
+          // def PROJECT(name: String) = {
+          //   val id = DBService.GetProject(name).id
+          //   println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
+          // }
+
+        
+
+      }
+ 
+
       def REMOVE = {
         //emps.foreach( println( "Removing EMPLOYEE " + DBService.DeleteEmployee(_) ) )
       }
@@ -739,9 +770,19 @@ class Bdsl {
       new ModifyEmployee(DBService.GetEmployee(id))
     }
 
+    def EMPLOYEE(name: String) = {
+      println("Updating EMPLOYEE " + name)
+      new ModifyEmployee(DBService.GetEmployee(name))
+    }
+
     def CLIENT(id: Int) = {
       println("Updating CLIENT " + id)
       new ModifyClient(DBService.GetClient(id))
+    }
+
+    def CLIENT(name: String) = {
+      println("Updating CLIENT " + name)
+      new ModifyClient(DBService.GetClient(name))
     }
 
     def MEETING(id: Int) = {
@@ -749,14 +790,29 @@ class Bdsl {
       new ModifyMeeting(DBService.GetMeeting(id))
     }
 
+    def MEETING(name: String) = {
+      println("Updating MEETING " + name)
+      new ModifyMeeting(DBService.GetMeeting(name))
+    }
+
     def PROJECT(id: Int) = {
       println("Updating PROJECT " + id)
       new ModifyProject(DBService.GetProject(id))
     }
 
+    def PROJECT(name: String) = {
+      println("Updating PROJECT " + name)
+      new ModifyProject(DBService.GetProject(name))
+    }
+
     def INVENTORY(id: Int) = {
       println("Updating INVENTORY " + id)
       new ModifyInventory(DBService.GetInventory(id))
+    }
+
+    def INVENTORY(name: String) = {
+      println("Updating INVENTORY " + name)
+      new ModifyInventory(DBService.GetInventory(name))
     }
 
     def SHIPMENT(id: Int) = {
@@ -1096,7 +1152,17 @@ class Bdsl {
       println("Removing EMPLOYEE " + DBService.DeleteEmployee(id))
     }
 
+    def EMPLOYEE(name: String) = {
+      val id = DBService.GetEmployee(name).id
+      println("Removing EMPLOYEE " + DBService.DeleteEmployee(id))
+    }
+
     def CLIENT(id: Int) = {
+      println("Removing CLIENT " + DBService.DeleteClient(id))
+    }
+
+    def CLIENT(name: String) = {
+      val id = DBService.GetClient(name).id
       println("Removing CLIENT " + DBService.DeleteClient(id))
     }
 
@@ -1104,11 +1170,26 @@ class Bdsl {
       println("Removing MEETING " + DBService.DeleteMeeting(id))
     }
 
+    def MEETING(name: String) = {
+      val id = DBService.GetMeeting(name).id
+      println("Removing MEETING " + DBService.DeleteMeeting(id))
+    }
+
     def PROJECT(id: Int) = {
       println("Removing PROJECT " + DBService.DeleteProject(id))
     }
 
+    def PROJECT(name: String) = {
+      val id = DBService.GetProject(name).id
+      println("Removing PROJECT " + DBService.DeleteProject(id))
+    }
+
     def INVENTORY(id: Int) = {
+      println("Removing INVENTORY " + DBService.DeleteInventory(id))
+    }
+
+    def INVENTORY(name: String) = {
+      val id = DBService.GetInventory(name).id
       println("Removing INVENTORY " + DBService.DeleteInventory(id))
     }
 
@@ -1153,24 +1234,36 @@ class Bdsl {
       new AssignEmployee(DBService.GetEmployee(id))
     }
 
+    def EMPLOYEE(name: String) = {
+      new AssignEmployee(DBService.GetEmployee(name))
+    }
+
     class AssignEmployee(emp: Employee) {
       def TO(keyword: EventKeyword) = {
         new Assignment(keyword)
       }
 
-      def MEETING(id: Int) = {
-        println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeMeeting(emp.id, id))
-      }
-
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
-          // println("Adding EMPLOYEE to MEETING ")
+          println("Adding EMPLOYEE to MEETING ")
+          DBService.AddEmployeeToMeeting(emp, id)
+        }
+
+        def MEETING(name: String) = {
+          println("Adding EMPLOYEE to MEETING ")
+          val id = DBService.GetMeeting(name).id
           DBService.AddEmployeeToMeeting(emp, id)
         }
 
         def PROJECT(id: Int) = {
-          println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeProject(emp.id, id))
+          println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
         }
+
+        def PROJECT(name: String) = {
+          val id = DBService.GetProject(name).id
+          println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
+        }
+
       }
 
     }

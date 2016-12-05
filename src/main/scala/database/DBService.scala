@@ -70,6 +70,18 @@ object DBService {
     return e
   }
 
+  def GetEmployee(name: String): Employee = {
+    val query = for {
+      emp <- employees if emp.name === name
+    } yield emp
+    val action = query.result.head
+    val f: Future[(Int, String, Int, Double,  Array[Byte])] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val e = new Employee(result)
+    return e
+  }
+
   def NewEmployee(): Employee = {
     val default_blob = (new ScheduleMap()).toByteArray()
     val insert = (employees returning employees.map(_.id)) += (-1, "", -1, -1, default_blob)
@@ -109,11 +121,11 @@ object DBService {
     return id
   }
 
-
-  def AssignEmployeeMeeting(emp_id: Int, meet_id: Int)= {
+  def AssignEmployeeMeeting(emp_id: Int, meet_id: Int) : Int= {
     val insert = meetingJoinTable += (meet_id, emp_id)
     val insertSeq: Future[Int] = db.run(insert)
     val insertComplete = Await.result(insertSeq, Duration.Inf)
+    return meet_id
   }
 
   def AddEmployeeToMeeting(emp: Employee, id: Int) {
@@ -131,6 +143,7 @@ object DBService {
     // Use scheduling algorithm based on if meeting already has time or not.
     var empList: Seq[Employee] = DBService.GetEmployeesForMeeting(id)
     if (meeting.start.getTime() != 0) {
+      // println("Has PREV start time: " + meeting.getStartTime())
       newStartTime = Scheduler.firstAvailableTimeFromTime(meeting, empList, meeting.getStartTime())
     } else {
       newStartTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
@@ -145,11 +158,11 @@ object DBService {
     DBService.UpdateMeeting(meeting)
   }
  
-  def AssignEmployeeProject(emp_id: Int, pro_id: Int)= {
+  def AssignEmployeeProject(emp_id: Int, pro_id: Int) : Int = {
     val insert = projectJoinTable += (pro_id, emp_id)
     val insertSeq: Future[Int] = db.run(insert)
     val insertComplete = Await.result(insertSeq, Duration.Inf)
-    //DEBUG/ISSUE IMPORTANT: Schedule the employee here
+    return pro_id
   }
  
    def ListAllMeetingAssignments() = {
@@ -190,6 +203,18 @@ object DBService {
   def GetClient(id: Int): Client = {
     val query = for {
       client <- clients if client.id === id
+    } yield client
+    val action = query.result.head
+    val f: Future[(Int, String, Date, Double)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retClient = new Client(result)
+    return retClient
+  }
+
+  def GetClient(name: String): Client = {
+    val query = for {
+      client <- clients if client.name === name
     } yield client
     val action = query.result.head
     val f: Future[(Int, String, Date, Double)] = db.run(action)
@@ -263,6 +288,18 @@ object DBService {
   def GetMeeting(id: Int): Meeting = {
     val query = for {
       meeting <- meetings if meeting.id === id
+    } yield meeting
+    val action = query.result.head
+    val f: Future[(Int, Int, String, Timestamp, Int)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retMeeting = new Meeting(result)
+    return retMeeting
+  }
+
+  def GetMeeting(name: String): Meeting = {
+    val query = for {
+      meeting <- meetings if meeting.name === name
     } yield meeting
     val action = query.result.head
     val f: Future[(Int, Int, String, Timestamp, Int)] = db.run(action)
@@ -409,6 +446,18 @@ object DBService {
   def GetProject(id: Int): Project = {
     val query = for {
       project <- projects if project.id === id
+    } yield project
+    val action = query.result.head
+    val f: Future[(Int, Int, String, Date)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retProject = new Project(result)
+    return retProject
+  }
+
+  def GetProject(name: String): Project = {
+    val query = for {
+      project <- projects if project.name === name
     } yield project
     val action = query.result.head
     val f: Future[(Int, Int, String, Date)] = db.run(action)
@@ -665,6 +714,18 @@ object DBService {
   def GetInventory(id: Int): Inventory = {
     val query = for {
       inventory <- inventorys if inventory.id === id
+    } yield inventory
+    val action = query.result.head
+    val f: Future[(Int, String, Int, Double, Double)] = db.run(action)
+
+    val result = Await.result(f, Duration.Inf)
+    val retInventory = new Inventory(result)
+    return retInventory
+  }
+
+  def GetInventory(name: String): Inventory = {
+    val query = for {
+      inventory <- inventorys if inventory.name === name
     } yield inventory
     val action = query.result.head
     val f: Future[(Int, String, Int, Double, Double)] = db.run(action)
