@@ -433,7 +433,34 @@ class Bdsl {
         emps.foreach( println(_) )
       }
 
-      //ISSUE: Removes correctly but troubling printing
+      def ASSIGN(keyword: EventKeyword) = {
+        new AssignEmployee(emps)
+      }
+
+      class AssignEmployee(emps: Array[Employee]) {
+
+          def MEETING(id: Int) = {
+            // println("Adding EMPLOYEE to MEETING ")
+            emps.foreach(DBService.AddEmployeeToMeeting(_, id))
+          }
+
+          // def MEETING(name: String) = {
+          //   // println("Adding EMPLOYEE to MEETING ")
+          // val id = DBService.GetMeeting(name).id
+          //   emps.foreach(DBService.AddEmployeeToMeeting(_, id))
+          // }
+
+          // def PROJECT(id: Int) = {
+          //   println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
+          // }
+
+          // def PROJECT(name: String) = {
+          //   val id = DBService.GetProject(name).id
+          //   println("Adding EMPLOYEE to PROJECT " + DBService.AssignEmployeeProject(emp.id, id))
+          // }
+
+      }
+
       def REMOVE = {
         println("REMOVING BATCH OF EMPLOYEES " + emps.foreach(DBService.DeleteEmployee(_)))
       }
@@ -1213,45 +1240,16 @@ class Bdsl {
         new Assignment(keyword)
       }
 
-      def MEETING(id: Int) = {
-        println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeMeeting(emp.id, id))
-      }
-
-      def MEETING(name: String) = {
-        val id = DBService.GetMeeting(name).id
-        println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeMeeting(emp.id, id))
-      }
-
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
-          // println("Adding EMPLOYEE to MEETING ")
-          var meeting = DBService.GetMeeting(id)
-          
-          // Remove previous assignment of meeting, if any.
-          val prevEmpList = DBService.GetEmployeesForMeeting(id)
-          for (emp <- prevEmpList) {
-            emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
-          }
+          println("Adding EMPLOYEE to MEETING ")
+          DBService.AddEmployeeToMeeting(emp, id)
+        }
 
-          // Assign employee to meeting.
-          DBService.AssignEmployeeMeeting(emp.id, id)
-
-          var newStartTime: LocalDateTime = LocalDateTime.now()
-          // Use scheduling algorithm based on if meeting already has time or not.
-          var empList: Seq[Employee] = DBService.GetEmployeesForMeeting(id)
-          if (meeting.start.getTime() != 0) {
-            newStartTime = Scheduler.firstAvailableTimeFromTime(meeting, empList, meeting.getStartTime())
-          } else {
-            newStartTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
-          }
-          
-          // Set the new time, then update all employees and meetings.
-          meeting.setStart(newStartTime)
-          for (emp <- empList) {
-            emp.schedule.setBusy(meeting.getStartTime(), meeting.getEndTime())
-            DBService.UpdateEmployee(emp)
-          }
-          DBService.UpdateMeeting(meeting)
+        def MEETING(name: String) = {
+          println("Adding EMPLOYEE to MEETING ")
+          val id = DBService.GetMeeting(name).id
+          DBService.AddEmployeeToMeeting(emp, id)
         }
 
         def PROJECT(id: Int) = {
