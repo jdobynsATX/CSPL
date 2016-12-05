@@ -4,8 +4,11 @@ import cs345.scheduler.datastructures._
  
 import biweekly.Biweekly
 import biweekly.component.VEvent
+import biweekly.property.Attendee
+import biweekly.property.Comment
 import slick.driver.H2Driver.api._
 // import slick.driver.MySQLDriver.api._
+
 import java.util.Calendar
 import java.sql.Date
 import java.sql.Timestamp
@@ -15,7 +18,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.Instant
-//ISSUE: Blob is a placeholder for a user-defined type
+
 trait DBObject {
   
 }
@@ -25,7 +28,6 @@ object Employee {
   val NAME_DEFAULT_VALUE = ""
   val RANK_DEFAULT_VALUE = -1
   val PAY_DEFAULT_VALUE = 0.0
-  // val BITSET_DEFAULT: Blob = new SerialBlob(new Array[Byte](0))
   val SCHEDULE_DEFAULT:Array[Byte] = (new ScheduleMap()).toByteArray()
 }
 
@@ -90,6 +92,12 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
     this(data._1, data._2, data._3, data._4, new ScheduleMap(data._5));
   }
 
+  def getAttendeeCard(): Attendee = {
+    var attendee: Attendee = new Attendee(name, name.replaceAll("\\s+","").toLowerCase() + "@company.com")
+    attendee.setRsvp(false)
+    return attendee
+  }
+
   override def toString: String = {
     val minimum = 28
     var resultString = " " + id
@@ -100,7 +108,6 @@ class Employee(var id: Int, var name: String, var rank: Int, var pay: Double, va
     while( resultString.length < 52 ) resultString += " "
     resultString += "| " + pay
     return resultString
-    //return "id: " + id + " name: " + name + " rank: " + rank + " pay: " + pay //+ " Schedule: " + schedule
   }
 }
 
@@ -113,6 +120,11 @@ class Client(var id: Int, var name: String, var addDate: Date, var balance: Doub
     this(data._1, data._2, data._3, data._4);
   }
 
+  def getComment(): Comment = {
+    val comment = new Comment("Contact: " + name);
+    return comment
+  }
+
   override def toString: String = {
     val minimum = 28
     var resultString = " " + id
@@ -123,7 +135,6 @@ class Client(var id: Int, var name: String, var addDate: Date, var balance: Doub
     while( resultString.length < 62 ) resultString += " "
     resultString += "| " + balance
     return resultString
-    //return "id: " + id + ", name: " + name + ", dateAdded: " + addDate + ", Balance: " + balance
   }
 }
 
@@ -139,7 +150,7 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
 
   def changeDuration(durationMins: Int) {
     this.durationMinutes = durationMins
-    // Need to recheck schedules.
+    // TODO: Need to recheck schedules.
   }
 
   def getEnd(): Timestamp = {
@@ -168,27 +179,16 @@ class Meeting(var id: Int, var client_id: Int, var name: String, var start: Time
     this.start = new Timestamp(epoch * 1000)
   }
  
-  // def setEnd(time: LocalDateTime) {
-  //   var zoneId = ZoneId.systemDefault(); 
-  //   var epoch = time.atZone(zoneId).toEpochSecond()
-  //   this.end = new Timestamp(epoch * 1000)
-  // }
-
-  // def setStart(startTime: LocalDateTime, durationMins: Int) {
-  //   val endTime = startTime.plusMinutes(durationMins)
-  //   var zoneId = ZoneId.systemDefault(); 
-  //   var epochStart = startTime.atZone(zoneId).toEpochSecond()
-  //   var epochEnd = endTime.atZone(zoneId).toEpochSecond()
-  //   this.start = new Timestamp(epochStart * 1000)
-  //   this.end = new Timestamp(epochEnd * 1000)
-  // }
- 
   def getCalEvent(): VEvent = {
     var event = new VEvent()
     event.setDateStart(this.start)
     event.setDateEnd(this.getEnd())
     event.setSummary(this.name)
-    // event.setLocation("NONE")
+    val employees: Seq[Employee] = DBService.GetEmployeesForMeeting(id)
+    for (employee <- employees) {
+      event.addAttendee(employee.getAttendeeCard())
+    }
+    event.addComment(DBService.GetClient(client_id).getComment())
     return event
   }
 
@@ -224,7 +224,6 @@ class Project(var id: Int, var client_id: Int, var name: String, var end: Date)
     while( resultString.length < 41 ) resultString += " "
     resultString += "| " + end
     return resultString
-    //return "id: " + id + ", name: " + name + ", End Time: " + end
   }
 }
 
@@ -250,7 +249,6 @@ class Payment(var id: Int, var client_id: Int, var emp_id: Int, var amount: Doub
     while( resultString.length < 43 ) resultString += " "
     resultString += "| " + received
     return resultString
-    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Amount: " + amount + ", Received: " + received
   }
 }
 
@@ -279,7 +277,6 @@ class Purchase(var id: Int, var client_id: Int, var emp_id: Int, var inv_id: Int
     while( resultString.length < 65 ) resultString += " "
     resultString += "| " + purchase_date
     return resultString
-    //return "id: " + id + ", Client: " + client_id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", quantity: " + quantity + ", Total Cost: " + total_cost + ", Purchase Date: " + purchase_date
   }
 }
 
@@ -306,7 +303,6 @@ class Shipment(var id: Int, var emp_id: Int, var inv_id: Int, var quantity: Int,
     while( resultString.length < 54 ) resultString += " "
     resultString += "| " + received
     return resultString
-    //return "id: " + id + ", Employee: " + emp_id + ", Inventory: " + inv_id + ", quantity: " + quantity + ", Total Cost: " + total_cost + ", Received: " + received
   }
 }
 

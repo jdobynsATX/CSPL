@@ -36,6 +36,7 @@ object ScheduleTest extends Bdsl {
     // BATCH ALL EMPLOYEE WHERE RANK LESSTHANEQUAL 2 ASSIGN TO MEETING 6;
     
     PRINT ALL MEETING;
+    Calendar.ExportEmployeeSchedule(1, "CEO_Schedule");
   }
 
 }
