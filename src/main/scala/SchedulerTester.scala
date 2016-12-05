@@ -85,20 +85,20 @@ object SchedulerTester {
     }
     println(meeting4)
 
-    val meeting5StartTime = Scheduler.firstAvailableTimeFromNow(30, emps1)
+    val meeting5StartTime = Scheduler.firstAvailableTimeFromNow(60, emps1)
     println(meeting5StartTime)
 
     // CALENDAR TESTING
-    var ical = new ICalendar()
-    ical.addEvent(meeting1.getCalEvent())
-    ical.addEvent(meeting2.getCalEvent())
-    ical.addEvent(meeting3.getCalEvent())
-    var str = Biweekly.write(ical).go()
-    println(str)
+    // var ical = new ICalendar()
+    // ical.addEvent(meeting1.getCalEvent())
+    // ical.addEvent(meeting2.getCalEvent())
+    // ical.addEvent(meeting3.getCalEvent())
+    // var str = Biweekly.write(ical).go()
+    // println(str)
 
-    val pw = new PrintWriter(new File("calendartest.ics" ))
-    pw.write(str)
-    pw.close
+    // val pw = new PrintWriter(new File("calendartest.ics" ))
+    // pw.write(str)
+    // pw.close
 
     // var schedule1 = new ScheduleMap()
     // var schedule2 = new ScheduleMap()

@@ -72,7 +72,7 @@ class ScheduleMap(var startDate: LocalDate, val intervalMins: Int, val numDays: 
   }
 
   def isFree(startTime: LocalDateTime, endTime: LocalDateTime): Boolean = {
-    return bitmap.get(convertToOffset(startTime), convertToOffset(endTime)).isEmpty()
+    return bitmap.get(convertToOffset(startTime), convertToOffset(endTime.minusMinutes(1)) + 1).isEmpty()
   }
 
   def getStartDate(): LocalDate = {
