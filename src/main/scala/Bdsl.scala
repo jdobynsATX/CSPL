@@ -1333,12 +1333,12 @@ class Bdsl {
       new EmployeeExport(id)
     }
 
-    def TO(file: String) {
+    def CALENDAR(file: String) {
       Calendar.ExportCompanySchedule(file)
     }
 
     class EmployeeExport(id: Int) {
-      def TO(file: String) {
+      def CALENDAR(file: String) {
         Calendar.ExportEmployeeSchedule(id, file)
       }
     }
