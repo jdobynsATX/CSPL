@@ -226,7 +226,7 @@ object DBService {
   }
 
   def NewClient(): Client = {
-    val insert = (clients returning clients.map(_.id)) += (-1, "", new Date(0), 0.0)
+    val insert = (clients returning clients.map(_.id)) += (-1, "", new Date(System.currentTimeMillis()), 0.0)
     val insertSeq: Future[Int] = db.run(insert)
 
     val clientId = Await.result(insertSeq, Duration.Inf)
@@ -557,7 +557,7 @@ object DBService {
 
 
   def NewPayment(): Payment = {
-    val insert = (payments returning payments.map(_.id)) += (-1, -1, -1, 0.0, new Timestamp(0))
+    val insert = (payments returning payments.map(_.id)) += (-1, -1, -1, 0.0, new Timestamp(System.currentTimeMillis()))
     val insertSeq: Future[Int] = db.run(insert)
 
     val paymentId = Await.result(insertSeq, Duration.Inf)
@@ -627,7 +627,7 @@ object DBService {
 
 
   def NewPurchase(): Purchase = {
-    val insert = (purchases returning purchases.map(_.id)) += (-1, -1, -1, -1, 0, 0.0, new Timestamp(0))
+    val insert = (purchases returning purchases.map(_.id)) += (-1, -1, -1, -1, 0, 0.0, new Timestamp(System.currentTimeMillis()))
     val insertSeq: Future[Int] = db.run(insert)
 
     val purchaseId = Await.result(insertSeq, Duration.Inf)
@@ -696,7 +696,7 @@ object DBService {
   }
 
   def NewShipment(): Shipment = {
-    val insert = (shipments returning shipments.map(_.id)) += (-1, -1, -1, 0, 0.0, new Timestamp(0))
+    val insert = (shipments returning shipments.map(_.id)) += (-1, -1, -1, 0, 0.0, new Timestamp(System.currentTimeMillis()))
     val insertSeq: Future[Int] = db.run(insert)
 
     val shipmentId = Await.result(insertSeq, Duration.Inf)
