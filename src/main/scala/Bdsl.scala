@@ -12,55 +12,53 @@ import scala.collection.mutable.Map
   */
 
 class Bdsl {
-  val dbService = new DBService
-
   object CREATE {
 
     def NEW(keyword: EmployeeKeyword) = {
-      val emp = dbService.NewEmployee()
+      val emp = DBService.NewEmployee()
       println("Created new employee with ID " + emp.id)
       new CreateEmployee(emp)
     }
 
     def NEW(keyword: ClientKeyword) = {
-      val cli = dbService.NewClient()
+      val cli = DBService.NewClient()
       println("Created new client with ID " + cli.id)
       new CreateClient(cli)
     }
 
     def NEW(keyword: MeetingKeyword) = {
-      val env = dbService.NewMeeting()
+      val env = DBService.NewMeeting()
       println("Created new meeting with ID " + env.id)
       new CreateMeeting(env)
     }
 
     def NEW(keyword: ProjectKeyword) = {
-      val pro = dbService.NewProject()
+      val pro = DBService.NewProject()
       println("Created new project with ID " + pro.id)
       new CreateProject(pro)
     }
 
     def NEW(keyword: InventoryKeyword) = {
-      val inv = dbService.NewInventory()
+      val inv = DBService.NewInventory()
       println("Created new inventory with ID " + inv.id)
       new CreateInventory(inv)
     }
 
     def NEW(keyword: PurchaseKeyword) = {
-      val pur = dbService.NewPurchase()
+      val pur = DBService.NewPurchase()
       println("Created new purchase with ID " + pur.id)
       new CreatePurchase(pur, 0, 0)
     }
 
     def NEW(keyword: PaymentKeyword) = {
-      val pay = dbService.NewPayment()
+      val pay = DBService.NewPayment()
       println("Created new payment with ID " + pay.id)
       new CreatePayment(pay, 0)
     }
 
 
     def NEW(keyword: ShipmentKeyword) = {
-      val ship = dbService.NewShipment()
+      val ship = DBService.NewShipment()
       println("Created new shipment with ID " + ship.id)
       new CreateShipment(ship, 0)
     }
@@ -77,19 +75,19 @@ class Bdsl {
             case ID => emp.id = num
             case RANK => emp.rank = num
           }
-          dbService.UpdateEmployee(emp)
+          DBService.UpdateEmployee(emp)
           new CreateEmployee(emp)
         }
 
         def AS(str: String) = {
           emp.name = str
-          dbService.UpdateEmployee(emp)
+          DBService.UpdateEmployee(emp)
           new CreateEmployee(emp)
         }
 
         def AS(dou: Double) = {
           emp.pay = dou
-          dbService.UpdateEmployee(emp)
+          DBService.UpdateEmployee(emp)
           new CreateEmployee(emp)
         }
       }
@@ -108,19 +106,19 @@ class Bdsl {
             case ID => cli.id = num
             case DATE => cli.addDate = new Date(num)
           }
-          dbService.UpdateClient(cli)
+          DBService.UpdateClient(cli)
           new CreateClient(cli)
         }
 
         def AS(str: String) = {
           cli.name = str
-          dbService.UpdateClient(cli)
+          DBService.UpdateClient(cli)
           new CreateClient(cli)
         }
 
         def AS(dou: Double) = {
           cli.balance = dou
-          dbService.UpdateClient(cli)
+          DBService.UpdateClient(cli)
           new CreateClient(cli)
         }
       }
@@ -140,13 +138,13 @@ class Bdsl {
             case START => env.start = new Timestamp(num)
             case END => env.end = new Timestamp(num)
           }
-          dbService.UpdateMeeting(env)
+          DBService.UpdateMeeting(env)
           new CreateMeeting(env)
         }
 
         def AS(str: String) = {
           env.name = str
-          dbService.UpdateMeeting(env)
+          DBService.UpdateMeeting(env)
           new CreateMeeting(env)
         }
       }
@@ -166,13 +164,13 @@ class Bdsl {
             case CLIENT_ID => pro.client_id = num
             case END => pro.end = new Date(num)
           }
-          dbService.UpdateProject(pro)
+          DBService.UpdateProject(pro)
           new CreateProject(pro)
         }
 
         def AS(str: String) = {
           pro.name = str
-          dbService.UpdateProject(pro)
+          DBService.UpdateProject(pro)
           new CreateProject(pro)
         }
       }
@@ -191,7 +189,7 @@ class Bdsl {
             case ID => inv.id = num
             case QUANTITY => inv.quantity = num
           }
-          dbService.UpdateInventory(inv)
+          DBService.UpdateInventory(inv)
           new CreateInventory(inv)
         }
 
@@ -200,13 +198,13 @@ class Bdsl {
             case TOTAL_COST => inv.total_cost = dou
             case TOTAL_EARNING => inv.total_earning = dou
           }
-          dbService.UpdateInventory(inv)
+          DBService.UpdateInventory(inv)
           new CreateInventory(inv)
         }
 
         def AS(str: String) = {
           inv.name = str
-          dbService.UpdateInventory(inv)
+          DBService.UpdateInventory(inv)
           new CreateInventory(inv)
         }
       }
@@ -218,44 +216,44 @@ class Bdsl {
 
       def FOR_CLIENT(num: Int) = {
         pur.client_id = num
-        dbService.UpdatePurchase(pur)
+        DBService.UpdatePurchase(pur)
         new CreatePurchase(pur, num, 0)
       }
 
       def FOR_AMOUNT(num: Int) = {
         pur.quantity = num
-        dbService.UpdatePurchase(pur)
-        val item = dbService.GetInventory(id2)
+        DBService.UpdatePurchase(pur)
+        val item = DBService.GetInventory(id2)
         val temp = item.quantity
         item.quantity = temp - num
-        dbService.UpdateInventory(item)
+        DBService.UpdateInventory(item)
         new CreatePurchase(pur, id, id2)
       }
 
       def FOR_COST(dou: Double) = {
         pur.total_cost = dou
-        dbService.UpdatePurchase(pur)
-        val client = dbService.GetClient(id)
+        DBService.UpdatePurchase(pur)
+        val client = DBService.GetClient(id)
         val temp = client.balance
         client.balance = temp + dou
-        dbService.UpdateClient(client)
-        val item = dbService.GetInventory(id2)
+        DBService.UpdateClient(client)
+        val item = DBService.GetInventory(id2)
         val temp2 = item.total_earning
         item.total_earning = temp2 + dou
-        dbService.UpdateInventory(item)
+        DBService.UpdateInventory(item)
         new CreatePurchase(pur, id, id2)
       }
 
       def OF_ITEM(num: Int) = {
         pur.inv_id = num
-        dbService.UpdatePurchase(pur)
+        DBService.UpdatePurchase(pur)
         new CreatePurchase(pur, id, num)
       }
 
 
       def REVIEWED_BY(num: Int) = {
         pur.emp_id = num
-        dbService.UpdatePurchase(pur)
+        DBService.UpdatePurchase(pur)
       }
     }
 
@@ -263,23 +261,23 @@ class Bdsl {
 
       def FOR_CLIENT(num: Int) = {
         pay.client_id = num
-        dbService.UpdatePayment(pay)
+        DBService.UpdatePayment(pay)
         new CreatePayment(pay, num)
       }
 
       def FOR_AMOUNT(dou: Double) = {
         pay.amount = dou
-        dbService.UpdatePayment(pay)
-        val client = dbService.GetClient(id)
+        DBService.UpdatePayment(pay)
+        val client = DBService.GetClient(id)
         val temp = client.balance
         client.balance = temp - dou
-        dbService.UpdateClient(client)
+        DBService.UpdateClient(client)
         new CreatePayment(pay, id)
       }
 
       def REVIEWED_BY(num: Int) = {
         pay.emp_id = num
-        dbService.UpdatePayment(pay)
+        DBService.UpdatePayment(pay)
       }
     }
 
@@ -287,33 +285,33 @@ class Bdsl {
 
       def OF_ITEM(num: Int) = {
         ship.inv_id = num
-        dbService.UpdateShipment(ship)
+        DBService.UpdateShipment(ship)
         new CreateShipment(ship, num)
       }
 
       def FOR_COST(dou: Double) = {
         ship.total_cost = dou
-        dbService.UpdateShipment(ship)
-        val inv = dbService.GetInventory(id)
+        DBService.UpdateShipment(ship)
+        val inv = DBService.GetInventory(id)
         val temp = inv.total_cost
         inv.total_cost = temp + dou
-        dbService.UpdateInventory(inv)
+        DBService.UpdateInventory(inv)
         new CreateShipment(ship, id)
       }
 
       def FOR_AMOUNT(num: Int) = {
         ship.quantity = num
-        dbService.UpdateShipment(ship)
-        val inv = dbService.GetInventory(id)
+        DBService.UpdateShipment(ship)
+        val inv = DBService.GetInventory(id)
         val temp = inv.quantity
         inv.quantity = temp + num
-        dbService.UpdateInventory(inv)
+        DBService.UpdateInventory(inv)
         new CreateShipment(ship, id)
       }
 
       def RECEIVED_BY(num: Int) = {
         ship.emp_id = num
-        dbService.UpdateShipment(ship)
+        DBService.UpdateShipment(ship)
         new CreateShipment(ship, id)
       }
     }
@@ -323,22 +321,22 @@ class Bdsl {
   object BATCH {
 
     def ALL( keyword: EmployeeKeyword ) = {
-      val emps = dbService.GetAllEmployees()
+      val emps = DBService.GetAllEmployees()
       new EmployeeQuery( emps )
     }
 
     def ALL( keyword: ClientKeyword ) = {
-      val cli = dbService.GetAllClients()
+      val cli = DBService.GetAllClients()
       new ClientQuery( cli )
     }
 
     def ALL( keyword: MeetingKeyword ) = {
-      val mtng = dbService.GetAllMeetings()
+      val mtng = DBService.GetAllMeetings()
       new MeetingQuery( mtng )
     }
 
     def ALL( keyword: ProjectKeyword ) = {
-      val proj = dbService.GetAllProjects()
+      val proj = DBService.GetAllProjects()
       new ProjectQuery( proj )
     }
 
@@ -396,19 +394,19 @@ class Bdsl {
       class UpdateContinue( keyword: AttributeKeyword ) {
         def TO(num: Int) = {
           emps.foreach(_.rank = num)
-          emps.foreach( dbService.UpdateEmployee(_) )
+          emps.foreach( DBService.UpdateEmployee(_) )
           new EmployeeQuery(emps)
         }
 
         def TO(num: Double) = {
           emps.foreach(_.pay = num)
-          emps.foreach( dbService.UpdateEmployee(_) )
+          emps.foreach( DBService.UpdateEmployee(_) )
           new EmployeeQuery(emps)
         }
 
         def TO(str: String) = {
           emps.foreach(_.name = str)
-          emps.foreach( dbService.UpdateEmployee(_) )
+          emps.foreach( DBService.UpdateEmployee(_) )
           new EmployeeQuery(emps)
         }
       }
@@ -420,7 +418,7 @@ class Bdsl {
       }
 
       def REMOVE = {
-        //emps.foreach( println( "Removing EMPLOYEE " + dbService.DeleteEmployee(_) ) )
+        //emps.foreach( println( "Removing EMPLOYEE " + DBService.DeleteEmployee(_) ) )
       }
     }
 
@@ -478,19 +476,19 @@ class Bdsl {
       class UpdateContinue( keyword: AttributeKeyword ) {
         def TO(num: Int) = {
           cli.foreach(_.addDate = new Date( num ))
-          cli.foreach( dbService.UpdateClient(_) )
+          cli.foreach( DBService.UpdateClient(_) )
           new ClientQuery(cli)
         }
 
         def TO(num: Double) = {
           cli.foreach(_.balance = num)
-          cli.foreach( dbService.UpdateClient(_) )
+          cli.foreach( DBService.UpdateClient(_) )
           new ClientQuery(cli)
         }
 
         def TO(str: String) = {
           cli.foreach(_.name = str)
-          cli.foreach( dbService.UpdateClient(_) )
+          cli.foreach( DBService.UpdateClient(_) )
           new ClientQuery(cli)
         }
       }
@@ -502,7 +500,7 @@ class Bdsl {
       }
 
       def REMOVE = {
-        //cli.foreach( println( "Removing CLIENT " + dbService.DeleteClient(_.id) ) )
+        //cli.foreach( println( "Removing CLIENT " + DBService.DeleteClient(_.id) ) )
       }
     }
 
@@ -570,13 +568,13 @@ class Bdsl {
             case START => mtng.foreach(_.start = new Timestamp(num) )
             case END => mtng.foreach(_.end = new Timestamp(num) )
           }
-          mtng.foreach( dbService.UpdateMeeting(_) )
+          mtng.foreach( DBService.UpdateMeeting(_) )
           new MeetingQuery(mtng)
         }
 
         def TO(str: String) = {
           mtng.foreach(_.name = str)
-          mtng.foreach( dbService.UpdateMeeting(_) )
+          mtng.foreach( DBService.UpdateMeeting(_) )
           new MeetingQuery(mtng)
         }
       }
@@ -588,7 +586,7 @@ class Bdsl {
       }
 
       def REMOVE = {
-        //mtng.foreach( println( "Removing MEETING " + dbService.DeleteMeeting(_.id) ) )
+        //mtng.foreach( println( "Removing MEETING " + DBService.DeleteMeeting(_.id) ) )
       }
     }
 
@@ -649,13 +647,13 @@ class Bdsl {
             case CLIENT_ID => proj.foreach(_.client_id = num)
             case END => proj.foreach(_.end = new Date(num) )
           }
-          proj.foreach( dbService.UpdateProject(_) )
+          proj.foreach( DBService.UpdateProject(_) )
           new ProjectQuery(proj)
         }
 
         def TO(str: String) = {
           proj.foreach(_.name = str)
-          proj.foreach( dbService.UpdateProject(_) )
+          proj.foreach( DBService.UpdateProject(_) )
           new ProjectQuery(proj)
         }
       }
@@ -667,7 +665,7 @@ class Bdsl {
       }
 
       def REMOVE = {
-        //proj.foreach( println( "Removing PROJECT " + dbService.DeleteProject(_.id) ) )
+        //proj.foreach( println( "Removing PROJECT " + DBService.DeleteProject(_.id) ) )
       }
     }
   }
@@ -676,42 +674,42 @@ class Bdsl {
 
     def EMPLOYEE(id: Int) = {
       println("Updating EMPLOYEE " + id)
-      new ModifyEmployee(dbService.GetEmployee(id))
+      new ModifyEmployee(DBService.GetEmployee(id))
     }
 
     def CLIENT(id: Int) = {
       println("Updating CLIENT " + id)
-      new ModifyClient(dbService.GetClient(id))
+      new ModifyClient(DBService.GetClient(id))
     }
 
     def MEETING(id: Int) = {
       println("Updating MEETING " + id)
-      new ModifyMeeting(dbService.GetMeeting(id))
+      new ModifyMeeting(DBService.GetMeeting(id))
     }
 
     def PROJECT(id: Int) = {
       println("Updating PROJECT " + id)
-      new ModifyProject(dbService.GetProject(id))
+      new ModifyProject(DBService.GetProject(id))
     }
 
     def INVENTORY(id: Int) = {
       println("Updating INVENTORY " + id)
-      new ModifyInventory(dbService.GetInventory(id))
+      new ModifyInventory(DBService.GetInventory(id))
     }
 
     def SHIPMENT(id: Int) = {
       println("Updating SHIPMENT " + id)
-      new ModifyShipment(dbService.GetShipment(id))
+      new ModifyShipment(DBService.GetShipment(id))
     }
 
     def PURCHASE(id: Int) = {
       println("Updating PURCHASE " + id)
-      new ModifyPurchase(dbService.GetPurchase(id))
+      new ModifyPurchase(DBService.GetPurchase(id))
     }
 
     def PAYMENT(id: Int) = {
       println("Updating PAYMENT " + id)
-      new ModifyPayment(dbService.GetPayment(id))
+      new ModifyPayment(DBService.GetPayment(id))
     }
 
     class ModifyEmployee(emp: Employee) {
@@ -726,13 +724,13 @@ class Bdsl {
             case ID => emp.id = num
             case RANK => emp.rank = num
           }
-          dbService.UpdateEmployee(emp)
+          DBService.UpdateEmployee(emp)
           new ModifyEmployee(emp)
         }
 
         def TO(dou: Double) = {
           emp.pay = dou
-          dbService.UpdateEmployee(emp)
+          DBService.UpdateEmployee(emp)
           new ModifyEmployee(emp)
         }
       }
@@ -751,19 +749,19 @@ class Bdsl {
             case ID => cli.id = num
             case DATE => cli.addDate = new Date(num)
           }
-          dbService.UpdateClient(cli)
+          DBService.UpdateClient(cli)
           new ModifyClient(cli)
         }
 
         def TO(str: String) = {
           cli.name = str
-          dbService.UpdateClient(cli)
+          DBService.UpdateClient(cli)
           new ModifyClient(cli)
         }
 
         def TO(dou: Double) = {
           cli.balance = dou
-          dbService.UpdateClient(cli)
+          DBService.UpdateClient(cli)
           new ModifyClient(cli)
         }
       }
@@ -784,13 +782,13 @@ class Bdsl {
             case START => env.start = new Timestamp(num)
             case END => env.end = new Timestamp(num)
           }
-          dbService.UpdateMeeting(env)
+          DBService.UpdateMeeting(env)
           new ModifyMeeting(env)
         }
 
         def TO(str: String) = {
           env.name = str
-          dbService.UpdateMeeting(env)
+          DBService.UpdateMeeting(env)
           new ModifyMeeting(env)
         }
       }
@@ -810,13 +808,13 @@ class Bdsl {
             case CLIENT_ID => pro.client_id = num
             case END => pro.end = new Date(num)
           }
-          dbService.UpdateProject(pro)
+          DBService.UpdateProject(pro)
           new ModifyProject(pro)
         }
 
         def TO(str: String) = {
           pro.name = str
-          dbService.UpdateProject(pro)
+          DBService.UpdateProject(pro)
           new ModifyProject(pro)
         }
       }
@@ -835,7 +833,7 @@ class Bdsl {
             case ID => inv.id = num
             case QUANTITY => inv.quantity = num
           }
-          dbService.UpdateInventory(inv)
+          DBService.UpdateInventory(inv)
           new ModifyInventory(inv)
         }
 
@@ -844,13 +842,13 @@ class Bdsl {
             case TOTAL_COST => inv.total_cost = dou
             case TOTAL_EARNING => inv.total_earning = dou
           }
-          dbService.UpdateInventory(inv)
+          DBService.UpdateInventory(inv)
           new ModifyInventory(inv)
         }
 
         def TO(str: String) = {
           inv.name = str
-          dbService.UpdateInventory(inv)
+          DBService.UpdateInventory(inv)
           new ModifyInventory(inv)
         }
       }
@@ -869,29 +867,29 @@ class Bdsl {
             case EMP_ID => ship.emp_id = num
             case INV_ID =>
               val oldid = ship.inv_id
-              val oldinv = dbService.GetInventory(oldid)
+              val oldinv = DBService.GetInventory(oldid)
               val temp = oldinv.quantity
               val temp2 = oldinv.total_cost
               oldinv.quantity = temp - ship.quantity
               oldinv.total_cost = temp2 - ship.total_cost
-              dbService.UpdateInventory(oldinv)
+              DBService.UpdateInventory(oldinv)
               ship.inv_id = num
-              val inv = dbService.GetInventory(num)
+              val inv = DBService.GetInventory(num)
               val newtemp = inv.quantity
               val newtemp2 = inv.total_cost
               inv.quantity = newtemp - ship.quantity
               inv.total_cost = newtemp2 - ship.total_cost
-              dbService.UpdateInventory(inv)
+              DBService.UpdateInventory(inv)
             case QUANTITY =>
               val tempcount = ship.quantity
               ship.quantity = num
               val diff = num - tempcount
-              val inv = dbService.GetInventory(ship.inv_id)
+              val inv = DBService.GetInventory(ship.inv_id)
               val temp = inv.quantity
               inv.quantity = temp + diff
-              dbService.UpdateInventory(inv)
+              DBService.UpdateInventory(inv)
           }
-          dbService.UpdateShipment(ship)
+          DBService.UpdateShipment(ship)
           new ModifyShipment(ship)
         }
 
@@ -899,10 +897,10 @@ class Bdsl {
           val tempcost = ship.total_cost
           ship.total_cost = dou
           val diff = dou - tempcost
-          val inv = dbService.GetInventory(ship.inv_id)
+          val inv = DBService.GetInventory(ship.inv_id)
           val temp = inv.total_cost
           inv.total_cost = temp + diff
-          dbService.UpdateShipment(ship)
+          DBService.UpdateShipment(ship)
           new ModifyShipment(ship)
         }
       }
@@ -921,40 +919,40 @@ class Bdsl {
             case EMP_ID => pur.emp_id = num
             case INV_ID =>
               val oldid = pur.inv_id
-              val oldinv = dbService.GetInventory(oldid)
+              val oldinv = DBService.GetInventory(oldid)
               val temp = oldinv.quantity
               val temp2 = oldinv.total_cost
               oldinv.quantity = temp - pur.quantity
               oldinv.total_cost = temp2 - pur.total_cost
-              dbService.UpdateInventory(oldinv)
+              DBService.UpdateInventory(oldinv)
               pur.inv_id = num
-              val inv = dbService.GetInventory(num)
+              val inv = DBService.GetInventory(num)
               val newtemp = inv.quantity
               val newtemp2 = inv.total_cost
               inv.quantity = newtemp + pur.quantity
               inv.total_cost = newtemp2 + pur.total_cost
-              dbService.UpdateInventory(inv)
+              DBService.UpdateInventory(inv)
             case QUANTITY =>
               val tempcount = pur.quantity
               pur.quantity = num
               val diff = num - tempcount
-              val inv = dbService.GetInventory(pur.inv_id)
+              val inv = DBService.GetInventory(pur.inv_id)
               val temp = inv.quantity
               inv.quantity = temp + diff
-              dbService.UpdateInventory(inv)
+              DBService.UpdateInventory(inv)
             case CLIENT_ID =>
               val oldid = pur.client_id
-              val oldcli = dbService.GetClient(oldid)
+              val oldcli = DBService.GetClient(oldid)
               val temp = oldcli.balance
               oldcli.balance = temp - pur.total_cost
-              dbService.UpdateClient(oldcli)
+              DBService.UpdateClient(oldcli)
               pur.client_id = num
-              val cli = dbService.GetClient(num)
+              val cli = DBService.GetClient(num)
               val newtemp = cli.balance
               cli.balance = newtemp + pur.total_cost
-              dbService.UpdateClient(cli)
+              DBService.UpdateClient(cli)
           }
-          dbService.UpdatePurchase(pur)
+          DBService.UpdatePurchase(pur)
           new ModifyPurchase(pur)
         }
 
@@ -962,15 +960,15 @@ class Bdsl {
           val tempcost = pur.total_cost
           pur.total_cost = dou
           val diff = dou - tempcost
-          val inv = dbService.GetInventory(pur.inv_id)
+          val inv = DBService.GetInventory(pur.inv_id)
           val temp = inv.total_earning
           inv.total_earning = temp + diff
-          dbService.UpdateInventory(inv)
-          val cli = dbService.GetClient(pur.client_id)
+          DBService.UpdateInventory(inv)
+          val cli = DBService.GetClient(pur.client_id)
           val temp2 = cli.balance
           cli.balance = temp2 + diff
-          dbService.UpdateClient(cli)
-          dbService.UpdatePurchase(pur)
+          DBService.UpdateClient(cli)
+          DBService.UpdatePurchase(pur)
           new ModifyPurchase(pur)
         }
       }
@@ -989,17 +987,17 @@ class Bdsl {
             case EMP_ID => pay.emp_id = num
             case CLIENT_ID =>
               val oldid = pay.client_id
-              val oldcli = dbService.GetClient(oldid)
+              val oldcli = DBService.GetClient(oldid)
               val temp = oldcli.balance
               oldcli.balance = temp + pay.amount
-              dbService.UpdateClient(oldcli)
+              DBService.UpdateClient(oldcli)
               pay.client_id = num
-              val cli = dbService.GetClient(num)
+              val cli = DBService.GetClient(num)
               val newtemp = cli.balance
               cli.balance = newtemp - pay.amount
-              dbService.UpdateClient(cli)
+              DBService.UpdateClient(cli)
           }
-          dbService.UpdatePayment(pay)
+          DBService.UpdatePayment(pay)
           new ModifyPayment(pay)
         }
 
@@ -1007,11 +1005,11 @@ class Bdsl {
           val tempamount = pay.amount
           pay.amount = dou
           val diff = dou - tempamount
-          val cli = dbService.GetClient(pay.client_id)
+          val cli = DBService.GetClient(pay.client_id)
           val temp2 = cli.balance
           cli.balance = temp2 - diff
-          dbService.UpdateClient(cli)
-          dbService.UpdatePayment(pay)
+          DBService.UpdateClient(cli)
+          DBService.UpdatePayment(pay)
           new ModifyPayment(pay)
         }
       }
@@ -1023,64 +1021,64 @@ class Bdsl {
   object REMOVE {
 
     def EMPLOYEE(id: Int) = {
-      println("Removing EMPLOYEE " + dbService.DeleteEmployee(id))
+      println("Removing EMPLOYEE " + DBService.DeleteEmployee(id))
     }
 
     def CLIENT(id: Int) = {
-      println("Removing CLIENT " + dbService.DeleteClient(id))
+      println("Removing CLIENT " + DBService.DeleteClient(id))
     }
 
     def MEETING(id: Int) = {
-      println("Removing MEETING " + dbService.DeleteMeeting(id))
+      println("Removing MEETING " + DBService.DeleteMeeting(id))
     }
 
     def PROJECT(id: Int) = {
-      println("Removing PROJECT " + dbService.DeleteProject(id))
+      println("Removing PROJECT " + DBService.DeleteProject(id))
     }
 
     def INVENTORY(id: Int) = {
-      println("Removing INVENTORY " + dbService.DeleteInventory(id))
+      println("Removing INVENTORY " + DBService.DeleteInventory(id))
     }
 
     def SHIPMENT(id: Int) = {
-      val ship = dbService.GetShipment(id)
-      val inv = dbService.GetInventory(ship.inv_id)
+      val ship = DBService.GetShipment(id)
+      val inv = DBService.GetInventory(ship.inv_id)
       val temp = inv.total_cost
       val temp2 = inv.quantity
       inv.total_cost = temp - ship.total_cost
       inv.quantity = temp2 - ship.quantity
-      dbService.UpdateInventory(inv)
-      println("Removing SHIPMENT " + dbService.DeleteShipment(id))
+      DBService.UpdateInventory(inv)
+      println("Removing SHIPMENT " + DBService.DeleteShipment(id))
     }
 
     def PURCHASE(id: Int) = {
-      val pur = dbService.GetPurchase(id)
-      val inv = dbService.GetInventory(pur.inv_id)
+      val pur = DBService.GetPurchase(id)
+      val inv = DBService.GetInventory(pur.inv_id)
       val temp = inv.total_earning
       val temp2 = inv.quantity
       inv.total_earning = temp - pur.total_cost
       inv.quantity = temp2 + pur.quantity
-      dbService.UpdateInventory(inv)
-      val cli = dbService.GetClient(pur.client_id)
+      DBService.UpdateInventory(inv)
+      val cli = DBService.GetClient(pur.client_id)
       val tempb = cli.balance
       cli.balance = tempb - pur.total_cost
-      dbService.UpdateClient(cli)
-      println("Removing PURCHASE " + dbService.DeletePurchase(id))
+      DBService.UpdateClient(cli)
+      println("Removing PURCHASE " + DBService.DeletePurchase(id))
     }
 
     def PAYMENT(id: Int) = {
-      val pay = dbService.GetPayment(id)
-      val cli = dbService.GetClient(pay.client_id)
+      val pay = DBService.GetPayment(id)
+      val cli = DBService.GetClient(pay.client_id)
       val temp = cli.balance
       cli.balance = temp - pay.amount
-      dbService.UpdateClient(cli)
-      println("Removing PAYMENT " + dbService.DeletePayment(id))
+      DBService.UpdateClient(cli)
+      println("Removing PAYMENT " + DBService.DeletePayment(id))
     }
   }
 
   object ASSIGN {
     def EMPLOYEE(id: Int) = {
-      new AssignEmployee(dbService.GetEmployee(id))
+      new AssignEmployee(DBService.GetEmployee(id))
     }
 
     class AssignEmployee(emp: Employee) {
@@ -1089,16 +1087,16 @@ class Bdsl {
       }
 
       def MEETING(id: Int) = {
-        println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeMeeting(emp.id, id))
+        println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeMeeting(emp.id, id))
       }
 
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
-          println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeMeeting(emp.id, id))
+          println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeMeeting(emp.id, id))
         }
 
         def PROJECT(id: Int) = {
-          println("Adding EMPLOYEE to MEETING " + dbService.AssignEmployeeProject(emp.id, id))
+          println("Adding EMPLOYEE to MEETING " + DBService.AssignEmployeeProject(emp.id, id))
         }
       }
 
@@ -1109,28 +1107,28 @@ class Bdsl {
   object PRINT {
     def ALL(keyword: ObjectKeyword) = {
       keyword match {
-        case EMPLOYEE => dbService.ListAllEmployees()
-        case CLIENT => dbService.ListAllClients()
-        case MEETING => dbService.ListAllMeetings()
-        case PROJECT => dbService.ListAllProjects()
-        case INVENTORY => dbService.ListAllInventorys()
-        case PAYMENT => dbService.ListAllPayments()
-        case PURCHASE => dbService.ListAllPurchases()
-        case SHIPMENT => dbService.ListAllShipments()
-        case MEETING_ASSIGNMENTS => dbService.ListAllMeetingAssignments()
-        case PROJECT_ASSIGNMENTS => dbService.ListAllProjectAssignments()
+        case EMPLOYEE => DBService.ListAllEmployees()
+        case CLIENT => DBService.ListAllClients()
+        case MEETING => DBService.ListAllMeetings()
+        case PROJECT => DBService.ListAllProjects()
+        case INVENTORY => DBService.ListAllInventorys()
+        case PAYMENT => DBService.ListAllPayments()
+        case PURCHASE => DBService.ListAllPurchases()
+        case SHIPMENT => DBService.ListAllShipments()
+        case MEETING_ASSIGNMENTS => DBService.ListAllMeetingAssignments()
+        case PROJECT_ASSIGNMENTS => DBService.ListAllProjectAssignments()
       }
     }
 
     def ALL = {
-      dbService.ListAllEmployees()
-      dbService.ListAllClients()
-      dbService.ListAllMeetings()
-      dbService.ListAllProjects()
-      dbService.ListAllInventorys()
-      dbService.ListAllPayments()
-      dbService.ListAllPurchases()
-      dbService.ListAllShipments()
+      DBService.ListAllEmployees()
+      DBService.ListAllClients()
+      DBService.ListAllMeetings()
+      DBService.ListAllProjects()
+      DBService.ListAllInventorys()
+      DBService.ListAllPayments()
+      DBService.ListAllPurchases()
+      DBService.ListAllShipments()
     }
 
   }
@@ -1145,11 +1143,11 @@ class Bdsl {
         val bufferedSource = io.Source.fromFile(file)
         for (line <- bufferedSource.getLines) {
           val cols = line.split(",").map(_.trim)
-          val emp = dbService.NewEmployee()
+          val emp = DBService.NewEmployee()
           emp.name = cols(0)
           emp.rank = cols(1).toInt
           emp.pay = cols(2).toDouble
-          dbService.UpdateEmployee(emp)
+          DBService.UpdateEmployee(emp)
         }
         bufferedSource.close
       }
@@ -1158,11 +1156,11 @@ class Bdsl {
         val bufferedSource = io.Source.fromFile(file)
         for (line <- bufferedSource.getLines) {
           val cols = line.split(",").map(_.trim)
-          val cli = dbService.NewClient()
+          val cli = DBService.NewClient()
           cli.name = cols(0)
           cli.addDate = new Date( cols(1).toInt )
           cli.balance = cols(2).toDouble
-          dbService.UpdateClient(cli)
+          DBService.UpdateClient(cli)
         }
         bufferedSource.close
       }
@@ -1171,12 +1169,12 @@ class Bdsl {
         val bufferedSource = io.Source.fromFile(file)
         for (line <- bufferedSource.getLines) {
           val cols = line.split(",").map(_.trim)
-          val mtng = dbService.NewMeeting()
+          val mtng = DBService.NewMeeting()
           mtng.client_id = cols(0).toInt
           mtng.name = cols(1)
           mtng.start = new Timestamp( cols(2).toInt )
           mtng.end = new Timestamp( cols(3).toInt )
-          dbService.UpdateMeeting(mtng)
+          DBService.UpdateMeeting(mtng)
         }
         bufferedSource.close
       }
@@ -1185,11 +1183,11 @@ class Bdsl {
         val bufferedSource = io.Source.fromFile(file)
         for (line <- bufferedSource.getLines) {
           val cols = line.split(",").map(_.trim)
-          val proj = dbService.NewProject()
+          val proj = DBService.NewProject()
           proj.client_id = cols(0).toInt
           proj.name = cols(1)
           proj.end = new Date( cols(2).toInt )
-          dbService.UpdateProject(proj)
+          DBService.UpdateProject(proj)
         }
         bufferedSource.close
       }

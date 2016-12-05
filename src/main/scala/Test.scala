@@ -46,7 +46,7 @@ object Test extends Bdsl {
 
     UPDATE EMPLOYEE 3 MODIFY PAY TO 10 MODIFY NAME TO "Bob Jones";
 
-    // val dbService = new DBService
+    // val DBService = new DBService
     
     PRINT ALL EMPLOYEE;
 
@@ -65,15 +65,15 @@ object Test extends Bdsl {
     PRINT ALL CLIENT;
 
     /*
-    var cli = dbService.NewClient()
+    var cli = DBService.NewClient()
     cli.name = "Client Name"
     cli.addDate = new Date(999923438);
-    dbService.UpdateClient(cli);
-    dbService.NewClient()
-    println(dbService.GetClient(1));
-    dbService.ListAllClients();
-    dbService.DeleteClient(2);
-    dbService.ListAllClients();
+    DBService.UpdateClient(cli);
+    DBService.NewClient()
+    println(DBService.GetClient(1));
+    DBService.ListAllClients();
+    DBService.DeleteClient(2);
+    DBService.ListAllClients();
     */
 
     CREATE NEW MEETING WITH NAME AS "Meeting with Morgan Smith";
@@ -89,31 +89,31 @@ object Test extends Bdsl {
     PRINT ALL MEETING;
 
     /*
-    var event = dbService.NewEvent()
+    var event = DBService.NewEvent()
     event.name = "EVENT Name"
     event.start = new Timestamp(999923438);
     event.end = new Timestamp(999923438);
-    dbService.UpdateEvent(event);
-    dbService.NewEvent()
-    println(dbService.GetEvent(1));
-    dbService.ListAllEvents();
-    dbService.DeleteEvent(2);
-    dbService.ListAllEvents();
+    DBService.UpdateEvent(event);
+    DBService.NewEvent()
+    println(DBService.GetEvent(1));
+    DBService.ListAllEvents();
+    DBService.DeleteEvent(2);
+    DBService.ListAllEvents();
     */
     
-    /*var emp = dbService.NewEmployee();
+    /*var emp = DBService.NewEmployee();
     println(emp);
 
     emp.name = "TEST";
-    println(dbService.UpdateEmployee(emp));
-    dbService.GetAllEmployees();
+    println(DBService.UpdateEmployee(emp));
+    DBService.GetAllEmployees();
 
-    dbService.DeleteEmployee(emp);
-    dbService.GetAllEmployees();
+    DBService.DeleteEmployee(emp);
+    DBService.GetAllEmployees();
 */
 
     PRINT ALL;*/
 
-    dbService.Stop();
+    DBService.Stop();
   }
 }

@@ -14,7 +14,7 @@ import java.sql.Timestamp
 import java.sql.Blob
 import javax.sql.rowset.serial.SerialBlob
 
-class DBService() {
+object DBService {
   val db = Database.forConfig("h2mem1")
 
   val setupFuture = db.run(DBSetup.setupSequence)
