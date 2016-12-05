@@ -48,7 +48,7 @@ object Scheduler {
   def firstAvailableTimeFromTime(meeting: Meeting, employees: Seq[Employee], time: LocalDateTime): LocalDateTime = {
     var curTime = time.withSecond(0).withNano(0)
     for (curIter <- 1 to 3000) {
-      println( "Value of curTime: " + curTime )
+      // println( "Value of curTime: " + curTime )
       var timeWorks = true
       for (emp <- employees) {
         if (!emp.schedule.isFree(curTime, curTime.plusMinutes(meeting.durationMinutes)))

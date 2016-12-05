@@ -1165,20 +1165,19 @@ class Bdsl {
       class Assignment(keyword: EventKeyword) {
         def MEETING(id: Int) = {
           // println("Adding EMPLOYEE to MEETING ")
-          var employee = emp
           var meeting = DBService.GetMeeting(id)
-
-          var newStartTime: LocalDateTime = LocalDateTime.now()
-          if (meeting.start.getTime() != 0) {
-            // Case where already assigned.
-            val prevEmpList = DBService.GetEmployeesForMeeting(id)
-            for (emp <- prevEmpList) {
-              emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
-            }
-          }
           
+          // Remove previous assignment of meeting, if any.
+          val prevEmpList = DBService.GetEmployeesForMeeting(id)
+          for (emp <- prevEmpList) {
+            emp.schedule.setFree(meeting.getStartTime(), meeting.getEndTime())
+          }
+
+          // Assign employee to meeting.
           DBService.AssignEmployeeMeeting(emp.id, id)
 
+          var newStartTime: LocalDateTime = LocalDateTime.now()
+          // Use scheduling algorithm based on if meeting already has time or not.
           var empList: Seq[Employee] = DBService.GetEmployeesForMeeting(id)
           if (meeting.start.getTime() != 0) {
             newStartTime = Scheduler.firstAvailableTimeFromTime(meeting, empList, meeting.getStartTime())
@@ -1186,6 +1185,7 @@ class Bdsl {
             newStartTime = Scheduler.firstAvailableTimeFromNow(meeting, empList)
           }
           
+          // Set the new time, then update all employees and meetings.
           meeting.setStart(newStartTime)
           for (emp <- empList) {
             emp.schedule.setBusy(meeting.getStartTime(), meeting.getEndTime())
